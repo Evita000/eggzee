@@ -689,10 +689,18 @@ function mousePressed() {
         }
       }, 10000); // 10 seconds
     } 
-    else if (mouseInsideRect(gameBtn)) {
-      state = "miniGame";
-      gameStartTime = millis();
-      heartsCaught = 0;
+   else if (mouseInsideRect(gameBtn)) {
+  state = "miniGame";
+  gameStartTime = millis();
+  heartsCaught = 0;
+
+  // hide buttons during game
+  feedBtn.visible = false;
+  danceBtn.visible = false;
+  gameBtn.visible = false;
+  jokeBtn.visible = false;
+}
+
     } 
     else if (mouseInsideRect(jokeBtn)) {
       tellJoke();
@@ -725,6 +733,7 @@ function touchStarted() {
   mousePressed(); // reuse same logic
   return false;   // prevent mobile double-trigger scrolling
 }
+
 
 
 
