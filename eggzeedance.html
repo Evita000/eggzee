@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>💃 Eggzee Dance Scene</title>
+
+  <!-- CreateJS runtime -->
+  <script src="https://code.createjs.com/1.0.0/createjs.min.js"></script>
+  <!-- Animate export -->
+  <script src="eggzeedanceworks.js"></script>
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      background-color: black;
+      overflow: hidden;
+    }
+
+    #animation_container, #canvas {
+      position: absolute;
+      margin: auto;
+      inset: 0;
+      display: block;
+      background-color: black;
+    }
+  </style>
+</head>
+
+<body onload="init();">
+  <div id="animation_container">
+    <canvas id="canvas"></canvas>
+  </div>
+
+  <script>
+    var canvas, stage, exportRoot, comp, lib;
+
+    function init() {
+      console.log("🎬 Starting Eggzee Dance...");
+      canvas = document.getElementById("canvas");
+      comp = AdobeAn.getComposition("1204F486BCA4BF4E9AA6F7C9DE17DD26");
+      lib = comp.getLibrary();
+
+      var loader = new createjs.LoadQueue(false);
+      loader.addEventListener("fileload", function(evt) {
+        if (evt.item.type === "image") {
+          comp.getImages()[evt.item.id] = evt.result;
+        }
+      });
+      loader.addEventListener("complete", handleComplete);
+      loader.loadManifest(lib.properties.manifest);
+    }
+
+    function handleComplete() {
+  exportRoot = new lib.eggzeedanceworks();
+  stage = new lib.Stage(canvas);
+
+  // 🪩 Load your dancefloor background image
+  var bgImage = new Image();
+  bgImage.src = "assets/dancefloor1.png"; // make sure this matches your filename exactly
+  bgImage.onload = function() {
+    var bg = new createjs.Bitmap(bgImage);
+    bg.scaleX = canvas.width / bgImage.width;
+    bg.scaleY = canvas.height / bgImage.height;
+    stage.addChild(bg); // add background first
+    stage.addChild(exportRoot); // add Eggzee animation above it
+  };
+
+  AdobeAn.compositionLoaded(lib.properties.id);
+  AdobeAn.makeResponsive(true, "both", false, 1, [canvas]);
+
+  createjs.Ticker.framerate = lib.properties.fps;
+  createjs.Ticker.addEventListener("tick", stage);
+
+  console.log("💃 Eggzee is dancing on her dancefloor!");
+}
+
+  </script>
+  <button id="returnBtn"
+style="position:fixed; bottom:20px; right:20px; padding:12px 18px; font-size:18px;
+border:none; border-radius:10px; background:#ffd6e0; color:#333; cursor:pointer;">
+⬅️ Return to Eggzee
+</button>
+
+<script>
+document.getElementById("returnBtn").addEventListener("click", () => {
+  window.close(); // closes this tab
+});
+</script>
+
+</body>
+</html>
+
+</body>
+</html>
+
+
+
+
