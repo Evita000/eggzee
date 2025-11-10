@@ -658,7 +658,8 @@ function mousePressed() {
     } 
     else if (mouseInsideRect(danceBtn)) {
       // 🪩 Open Animate dance tab
-     window.open("eggzeedance.html", "_blank");
+    window.open("eggzeedance.html?v=3", "_blank");
+
 
 
       state = "dance";
@@ -724,5 +725,6 @@ function touchStarted() {
   mousePressed(); // reuse same logic
   return false;   // prevent mobile double-trigger scrolling
 }
+
 
 
