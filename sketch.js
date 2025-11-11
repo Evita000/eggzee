@@ -393,6 +393,12 @@ function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
 
+function touchMoved() {
+  eggzee.x = mouseX;
+  eggzee.y = mouseY;
+  return false;
+}
+
 
 
 
