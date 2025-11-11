@@ -202,6 +202,7 @@ function drawFeedScene() {
 
 // 🧩 Fix: restore missing drawFoods()
 // 🧩 FIX — restore missing function
+// 🧩 FIX — restore missing drawFoods()
 function drawFoods() {
   if (!foods || foods.length === 0) return;
   textSize(40);
@@ -209,6 +210,7 @@ function drawFoods() {
     text(f.emoji, f.x, f.y);
   }
 }
+
 
 
 // ---------- ANIMATION HELPERS ----------
@@ -638,6 +640,7 @@ function resetToMainMenu() {
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
+
 
 
 
