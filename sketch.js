@@ -515,7 +515,7 @@ function drawJoke() {
 
 
 function drawOverlayText() {
-  if (state === "awake") {
+  if (state === "awake" && !showJoke) { // 👈 hides overlay text when joke is active
     textAlign(CENTER, CENTER);
     textStyle(BOLD);
 
@@ -546,6 +546,7 @@ function drawOverlayText() {
     noStroke();
   }
 }
+
 
 
 
@@ -688,6 +689,7 @@ function setupDanceButtonFix() {
   danceLink.attribute("target", "_blank");
   danceLink.style("display", "none");
 }
+
 
 
 
