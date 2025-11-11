@@ -121,10 +121,16 @@ function drawEggzeeScene() {
 function drawFeedScene() {
   if (!eggzee.visible) eggzee.visible = true;
 
-  // 🐣 Eggzee
+  // 🐣 Draw Eggzee
   push();
   translate(eggzee.x, eggzee.y);
-  image(eggzeeAwakeImg, 0, 0, eggzeeAwakeImg.width * 0.12, eggzeeAwakeImg.height * 0.12);
+  image(
+    eggzeeAwakeImg,
+    0,
+    0,
+    eggzeeAwakeImg.width * 0.12,
+    eggzeeAwakeImg.height * 0.12
+  );
   pop();
 
   // 🍎 Spawn random foods
@@ -138,7 +144,7 @@ function drawFeedScene() {
     });
   }
 
-  // 🍪 Draw + drag foods
+  // 🍪 Draw & drag foods
   for (let f of foods) {
     if (f.beingDragged) {
       f.x = mouseX;
@@ -147,7 +153,7 @@ function drawFeedScene() {
     textSize(40);
     text(f.emoji, f.x, f.y);
 
-    // 🩷 When Eggzee "eats" it
+    // 🩷 Eggzee eats food
     if (dist(f.x, f.y, eggzee.x, eggzee.y) < 80) {
       f.toRemove = true;
       showYum = true;
@@ -164,7 +170,7 @@ function drawFeedScene() {
         });
       }
 
-      // ❤️ Heart float
+      // ❤️ Heart
       hearts.push({
         x: eggzee.x + random(-20, 20),
         y: eggzee.y - 60,
@@ -176,7 +182,7 @@ function drawFeedScene() {
 
   foods = foods.filter(f => !f.toRemove);
 
-  // ✨ Sparkles anim
+  // ✨ Sparkle animation
   for (let i = sparkles.length - 1; i >= 0; i--) {
     const s = sparkles[i];
     fill(255, 255, 200, s.alpha);
@@ -187,7 +193,7 @@ function drawFeedScene() {
     if (s.alpha <= 0) sparkles.splice(i, 1);
   }
 
-  // ❤️ Hearts anim
+  // ❤️ Hearts animation
   for (let i = hearts.length - 1; i >= 0; i--) {
     const h = hearts[i];
     textSize(40);
@@ -197,7 +203,7 @@ function drawFeedScene() {
     if (h.alpha <= 0) hearts.splice(i, 1);
   }
 
-  // 💬 Yum bubble (only one)
+  // 💬 Yum bubble (only once)
   if (showYum) {
     if (millis() - yumTimer < 1500) {
       fill(255, 240, 250);
@@ -211,14 +217,18 @@ function drawFeedScene() {
     }
   }
 
-  // 🕒 Auto-return after 25 seconds
+  // 🕒 Auto-return to main menu
   if (!feedStartTime) feedStartTime = millis();
-  if (millis() - feedStartTime > 25000) {
+  const elapsedFeed = millis() - feedStartTime;
+
+  if (elapsedFeed > 25000) {
+    // reset feed state
     foods = [];
     sparkles = [];
     hearts = [];
+    showYum = false;
     feedStartTime = null;
-    state = "awake";
+    state = "awake"; // go back to main menu
   }
 }
 
@@ -478,4 +488,5 @@ function setupDanceButtonFix() {
   danceLink.attribute("target", "_blank");
   danceLink.style("display", "none");
 }
+
 
