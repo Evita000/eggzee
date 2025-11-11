@@ -387,9 +387,47 @@ function drawYumBubble() {
 // ---------- TEXT & ENERGY ----------
 function drawJoke() {
   if (!showJoke) return;
-  fill(255);
-  text(jokeText, width / 2, height / 2 - 200);
+
+  // 🗯 Joke bubble style
+  const bubblePadding = 40;
+  textSize(20);
+  const bubbleW = textWidth(jokeText) + bubblePadding;
+  const bubbleH = 80;
+  const bx = width / 2;
+  const by = height / 2 - 200;
+
+  // 🎨 Bubble background
+  fill(255, 245, 255, 230); // soft pink-white background
+  stroke(180, 120, 200);
+  strokeWeight(2);
+  rect(bx - bubbleW / 2, by - bubbleH / 2, bubbleW, bubbleH, 25);
+
+  // 🫧 Tail below the bubble
+  noStroke();
+  fill(255, 245, 255, 230);
+  triangle(
+    bx - 15, by + bubbleH / 2,
+    bx + 15, by + bubbleH / 2,
+    bx, by + bubbleH / 2 + 20
+  );
+
+  // 💬 Joke text
+  fill(50);
+  noStroke();
+  textAlign(CENTER, CENTER);
+  text(jokeText, bx, by);
+
+  // 💫 Subtle floating effect
+  push();
+  translate(0, sin(frameCount * 0.05) * 3);
+  pop();
+
+  // 🕒 Hide joke after 3 seconds
+  if (millis() - jokeTimer > 3000) {
+    showJoke = false;
+  }
 }
+
 
 function drawOverlayText() {
   fill(255);
@@ -508,6 +546,7 @@ function setupDanceButtonFix() {
   danceLink.attribute("target", "_blank");
   danceLink.style("display", "none");
 }
+
 
 
 
