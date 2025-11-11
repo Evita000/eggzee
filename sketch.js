@@ -111,11 +111,23 @@ function drawHatchingScene() {
 
 function drawEggzeeScene() {
   if (!eggzee.visible) return;
-  eggzee.rotation = sin(frameCount * 0.05) * 5;
+
+  // 🥚 Normal gentle motion or laugh wiggle when telling a joke
+  if (showJoke) {
+    eggzee.rotation = sin(frameCount * 0.5) * 8; // stronger laugh wiggle
+  } else {
+    eggzee.rotation = sin(frameCount * 0.05) * 5; // normal idle motion
+  }
+
   push();
   translate(eggzee.x, eggzee.y);
   rotate(radians(eggzee.rotation));
-  image(eggzeeAwakeImg, 0, 0, eggzeeAwakeImg.width * eggzee.scale, eggzeeAwakeImg.height * eggzee.scale);
+  image(
+    eggzeeAwakeImg,
+    0, 0,
+    eggzeeAwakeImg.width * eggzee.scale,
+    eggzeeAwakeImg.height * eggzee.scale
+  );
   pop();
 }
 
@@ -577,6 +589,7 @@ function setupDanceButtonFix() {
   danceLink.attribute("target", "_blank");
   danceLink.style("display", "none");
 }
+
 
 
 
