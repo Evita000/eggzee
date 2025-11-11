@@ -230,29 +230,25 @@ drawYumBubble();
 
 // ---------- OTHER SCENES ----------
 function drawSleepScene() {
-  background(15, 10, 40);
+  // 🌃 Show the city night background
+  if (cityNightImg) {
+    image(cityNightImg, width / 2, height / 2, width, height);
+  } else {
+    background(15, 10, 40); // fallback if image missing
+  }
 
-  // 💤 soft fade-in night overlay
-  fill(0, 0, 30, 100);
-  rect(0, 0, width, height);
-
-  // 🐣 Eggzee rocking gently in sleep
+  // 😴 Floating Eggzee sleeping animation
   push();
   translate(eggzee.x, eggzee.y + sin(frameCount * 0.05) * 8);
   image(eggzeeSleepImg, 0, 0, eggzeeSleepImg.width * 0.1, eggzeeSleepImg.height * 0.1);
   pop();
 
-  // 🌙 little floating Zzz’s
-  textSize(28);
-  fill(255, 255, 255, 200);
-  text("💤", width / 2 - 50 + sin(frameCount * 0.05) * 20, height / 2 - 150);
-  text("💤", width / 2 + 10 + sin(frameCount * 0.07) * 15, height / 2 - 200);
-  text("💤", width / 2 + 60 + sin(frameCount * 0.09) * 10, height / 2 - 250);
-
+  // 💬 Text overlay
   fill(255);
-  textSize(18);
-  text("Eggzee is sleeping... Tap to wake 🌙", width / 2, height - 80);
+  textSize(20);
+  text("💤 Eggzee is sleeping... Tap to wake! 💫", width / 2, height - 100);
 }
+
 
 
 function drawMiniGame() {
@@ -613,6 +609,7 @@ function setupDanceButtonFix() {
   danceLink.attribute("target", "_blank");
   danceLink.style("display", "none");
 }
+
 
 
 
