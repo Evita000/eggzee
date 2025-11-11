@@ -426,42 +426,48 @@ function drawJoke() {
   let alpha = map(elapsed, 0, 3000, 255, 0);
   alpha = constrain(alpha, 0, 255);
 
-  // 🫧 Smooth pop-in
-  bubbleScale = lerp(bubbleScale, 1, 0.15);
+  // 🌈 Soft pulsing effect (breathing motion)
+  const pulse = 1 + sin(frameCount * 0.08) * 0.05; // gentle in/out
+  const pulseAlpha = 180 + sin(frameCount * 0.1) * 60; // glow fade
 
   const bubbleX = width / 2;
-  const bubbleY = height / 2 - 200;
-  const bubbleW = min(width * 0.7, 420);
-  const bubbleH = 110;
+  const bubbleY = height / 2 - 150; // closer to Eggzee
+  const bubbleW = min(width * 0.5, 320);
+  const bubbleH = 70;
 
   push();
   translate(bubbleX, bubbleY);
-  scale(bubbleScale);
+  scale(pulse); // small scale pulse
   translate(-bubbleX, -bubbleY);
 
-  // 💭 bubble background (soft pink glow)
-  fill(255, 230, 250, alpha);
-  stroke(255, 120, 220, alpha);
-  strokeWeight(4);
-  rectMode(CENTER);
-  rect(bubbleX, bubbleY, bubbleW, bubbleH, 30);
-
-  // 💫 tail
+  // 💭 glowing bubble background
   noStroke();
-  fill(255, 230, 250, alpha);
+  fill(255, 230, 250, pulseAlpha); // soft pink
+  rectMode(CENTER);
+  rect(bubbleX, bubbleY, bubbleW, bubbleH, 20);
+
+  // ✨ subtle outer glow
+  stroke(255, 150, 220, alpha * 0.7);
+  strokeWeight(3);
+  noFill();
+  rect(bubbleX, bubbleY, bubbleW + 8, bubbleH + 8, 25);
+
+  // 💫 tail (small and cute)
+  noStroke();
+  fill(255, 230, 250, pulseAlpha);
   beginShape();
-  vertex(bubbleX + 30, bubbleY + bubbleH / 2 - 10);
-  vertex(bubbleX + 55, bubbleY + bubbleH / 2 + 25);
-  vertex(bubbleX + 5, bubbleY + bubbleH / 2 - 5);
+  vertex(bubbleX + 20, bubbleY + bubbleH / 2 - 8);
+  vertex(bubbleX + 40, bubbleY + bubbleH / 2 + 15);
+  vertex(bubbleX + 2, bubbleY + bubbleH / 2 - 4);
   endShape(CLOSE);
 
-  // 🌈 glowing text — bright gradient effect
+  // 🌟 glowing text
   let glowR = map(sin(frameCount * 0.05), -1, 1, 200, 255);
   let glowG = map(cos(frameCount * 0.08), -1, 1, 100, 220);
   let glowB = map(sin(frameCount * 0.1), -1, 1, 180, 255);
   fill(glowR, glowG, glowB, alpha);
   textAlign(CENTER, CENTER);
-  textSize(22);
+  textSize(20);
   textStyle(BOLD);
   text(jokeText, bubbleX, bubbleY, bubbleW - 20, bubbleH - 20);
 
@@ -609,6 +615,7 @@ function setupDanceButtonFix() {
   danceLink.attribute("target", "_blank");
   danceLink.style("display", "none");
 }
+
 
 
 
