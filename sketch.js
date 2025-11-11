@@ -119,10 +119,16 @@ function drawEggzeeScene() {
 function drawFeedScene() {
   if (!eggzee.visible) eggzee.visible = true;
 
-  // 🐣 Eggzee
+  // 🐣 Draw Eggzee
   push();
   translate(eggzee.x, eggzee.y);
-  image(eggzeeAwakeImg, 0, 0, eggzeeAwakeImg.width * 0.12, eggzeeAwakeImg.height * 0.12);
+  image(
+    eggzeeAwakeImg,
+    0,
+    0,
+    eggzeeAwakeImg.width * 0.12,
+    eggzeeAwakeImg.height * 0.12
+  );
   pop();
 
   // 🍎 Spawn random foods
@@ -144,36 +150,17 @@ function drawFeedScene() {
     }
     textSize(40);
     text(f.emoji, f.x, f.y);
-if (dist(f.x, f.y, eggzee.x, eggzee.y) < 80) {
-  f.toRemove = true;
 
-  // 🧩 Prevent duplicate or empty Yum bubbles (mobile-safe)
-  if (!showYum) {
-    showYum = true;
-    yumTimer = millis();
-    drawYumBubble.currentPhrase = null; // reset old phrase
-  }
+    // 🩷 Detect “eating”
+    if (dist(f.x, f.y, eggzee.x, eggzee.y) < 80) {
+      f.toRemove = true;
 
-  // ✨ Sparkles
-  for (let i = 0; i < 10; i++) {
-    sparkles.push({
-      x: eggzee.x + random(-30, 30),
-      y: eggzee.y + random(-30, 30),
-      size: random(4, 10),
-      speedY: random(-2, -5),
-      alpha: 255
-    });
-  }
-
-  // ❤️ Heart float
-  hearts.push({
-    x: eggzee.x + random(-20, 20),
-    y: eggzee.y - 60,
-    vy: -2,
-    alpha: 255
-  });
-}
-
+      // ✅ Prevent duplicate or empty Yum bubbles (mobile-safe)
+      if (!showYum) {
+        showYum = true;
+        yumTimer = millis();
+        drawYumBubble.currentPhrase = null;
+      }
 
       // ✨ Sparkles
       for (let i = 0; i < 10; i++) {
@@ -196,6 +183,7 @@ if (dist(f.x, f.y, eggzee.x, eggzee.y) < 80) {
     }
   }
 
+  // Remove eaten foods
   foods = foods.filter(f => !f.toRemove);
 
   // ✨ Sparkles anim
@@ -218,6 +206,7 @@ if (dist(f.x, f.y, eggzee.x, eggzee.y) < 80) {
     h.alpha -= 3;
     if (h.alpha <= 0) hearts.splice(i, 1);
   }
+}
 
   // 💬 Yum bubble
 
@@ -518,6 +507,7 @@ function setupDanceButtonFix() {
   danceLink.attribute("target", "_blank");
   danceLink.style("display", "none");
 }
+
 
 
 
