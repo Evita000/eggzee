@@ -5,13 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>🐣 Eggzee Interactive</title>
 
-    <!-- p5.js -->
+    <!-- ✅ Load p5.js first -->
     <script src="https://cdn.jsdelivr.net/npm/p5@1.6.0/lib/p5.min.js"></script>
 
     <script>
+      // --- Mini p5.play fallback ---
       function addMiniP5Play(p) {
         if (p.prototype.createSprite) return;
-        console.log("🐣 injecting createSprite fallback...");
+        console.log("🐣 Injecting fallback createSprite()...");
         p.prototype.Sprite = function (x, y, w, h) {
           this.position = p.prototype.createVector(x || 0, y || 0);
           this.width = w || 50;
@@ -46,25 +47,31 @@
         };
       }
 
-      async function waitForP5() {
+      // --- Sequential loader ---
+      async function loadSketch() {
         // Wait until p5 is defined
         while (typeof window.p5 === "undefined") {
           await new Promise(r => setTimeout(r, 100));
         }
+
+        // Inject fallback
         addMiniP5Play(window.p5);
 
-        // Wait until createSprite really exists
-        while (typeof window.p5.prototype.createSprite === "undefined") {
-          await new Promise(r => setTimeout(r, 100));
+        // Confirm createSprite now exists
+        if (typeof window.p5.prototype.createSprite === "undefined") {
+          console.warn("⚠️ createSprite still missing after fallback injection");
+        } else {
+          console.log("✅ createSprite() is ready!");
         }
 
-        console.log("✅ p5 + createSprite ready, now loading sketch.js...");
+        // Dynamically load your sketch AFTER everything else
         const script = document.createElement("script");
         script.src = "sketch.js";
+        script.onload = () => console.log("✅ sketch.js loaded and running");
         document.body.appendChild(script);
       }
 
-      window.addEventListener("load", waitForP5);
+      window.addEventListener("load", loadSketch);
     </script>
 
     <style>
@@ -79,3 +86,5 @@
   </head>
   <body></body>
 </html>
+
+
