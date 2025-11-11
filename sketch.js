@@ -461,9 +461,6 @@ function drawJoke() {
   // 🧩 Temporarily hide overlay text
   hasWelcomed = true; // ensures only joke shows during display
 
-  // (keep the rest of your existing drawJoke() code here)
-}
-
   const duration = 4000;
   const elapsed = millis() - jokeTimer;
   let alpha = 255;
@@ -519,7 +516,6 @@ function drawJoke() {
 
   if (elapsed > duration) showJoke = false;
 }
-
 
 
 
@@ -731,6 +727,9 @@ function setupDanceButtonFix() {
   danceLink.attribute("target", "_blank");
   danceLink.style("display", "none");
 }
+
+// ✅ End of Eggzee Script — all good!
+
 
 
 
