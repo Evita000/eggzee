@@ -114,7 +114,8 @@ function drawEggzeeScene() {
 
   // 🥚 Normal gentle motion or laugh wiggle when telling a joke
   if (showJoke) {
-    eggzee.rotation = sin(frameCount * 0.5) * 8; // stronger laugh wiggle
+    eggzee.rotation = sin(frameCount * 0.8) * 15;
+
   } else {
     eggzee.rotation = sin(frameCount * 0.05) * 5; // normal idle motion
   }
@@ -589,6 +590,7 @@ function setupDanceButtonFix() {
   danceLink.attribute("target", "_blank");
   danceLink.style("display", "none");
 }
+
 
 
 
