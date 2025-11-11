@@ -8,15 +8,15 @@
     <!-- ✅ Local p5.js -->
     <script src="p5.min.js"></script>
 
-    <!-- 🧩 Safe minimal p5.play replacement -->
+    <!-- 🧩 Ultra-safe p5.play fallback -->
     <script>
-      console.log("🐣 Injecting createSprite fallback (final fix)...");
+      console.log("🐣 Injecting createSprite fallback (final-final fix)...");
 
       (function (p5) {
-        // ✅ Make sure we have a global sprite list
+        // ✅ Global sprite list
         if (!window.allSprites) window.allSprites = [];
 
-        // --- Sprite constructor ---
+        // 🟡 Sprite class
         p5.prototype.Sprite = function (x, y, w, h) {
           this.position = p5.prototype.createVector(x || 0, y || 0);
           this.width = w || 50;
@@ -29,35 +29,35 @@
           this.changeImage = () => {};
         };
 
-        // --- createSprite() ---
+        // 🟢 createSprite()
         p5.prototype.createSprite = function (x, y, w, h) {
           const s = new p5.prototype.Sprite(x, y, w, h);
           window.allSprites.push(s);
           return s;
         };
 
-        // --- drawSprites() ---
+        // 🟣 drawSprites()
         p5.prototype.drawSprites = function () {
           if (!window.allSprites.length) return;
           for (let s of window.allSprites) {
             if (!s.visible) continue;
-            // ✅ Explicitly use p5 context methods — not prototype-level
-            push();
-            translate(s.position.x, s.position.y);
-            rotate(radians(s.rotation));
-            noStroke();
-            fill(255);
-            rectMode(CENTER);
-            rect(0, 0, s.width * s.scale, s.height * s.scale);
-            pop();
+            // ✅ Fully qualified global context calls
+            window.push();
+            window.translate(s.position.x, s.position.y);
+            window.rotate(window.radians(s.rotation));
+            window.noStroke();
+            window.fill(255);
+            window.rectMode(window.CENTER);
+            window.rect(0, 0, s.width * s.scale, s.height * s.scale);
+            window.pop();
           }
         };
       })(p5);
 
-      console.log("✅ Fallback ready — safe draw context active.");
+      console.log("✅ p5 + createSprite fallback ready!");
     </script>
 
-    <!-- 🐣 Main game -->
+    <!-- 🐣 Main sketch -->
     <script src="sketch.js"></script>
 
     <style>
@@ -74,7 +74,3 @@
   </head>
   <body></body>
 </html>
-
-  <body></body>
-</html>
-
