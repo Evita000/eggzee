@@ -36,6 +36,7 @@ function preload() {
 
 // ---------- SETUP ----------
 function setup() {
+   pixelDensity(1);   // 🧩 fixes black-screen on Retina / mobile displays
   createCanvas(windowWidth, windowHeight);
   background(0); // gives you a visible base background
 
@@ -62,6 +63,13 @@ function setup() {
 
 // ---------- DRAW LOOP ----------
 function draw() {
+   // 🩵 Safety: if images didn’t load yet, show text instead of black screen
+  if (!eggImg || !cityImg) {
+    fill(255);
+    textAlign(CENTER, CENTER);
+    text("Loading Eggzee… 🥚", width / 2, height / 2);
+    return; // skip drawing until images are ready
+  }
   // Background
   const isNight = (energy <= 15 && startTime) || state === "sleep";
   if (isNight && cityNightImg) image(cityNightImg, width / 2, height / 2, width, height);
@@ -81,9 +89,7 @@ function draw() {
   else if (state === "sleep") drawSleepScene();
 
   // 🩶 DEBUG LINE (remove later)
-  fill(255);
-  textSize(14);
-  text("State: " + state, 60, 20);
+
 
   // Draw UI + extras
   drawFoods();
@@ -637,6 +643,7 @@ function setupDanceButtonFix() {
   danceLink.attribute("target", "_blank");
   danceLink.style("display", "none");
 }
+
 
 
 
