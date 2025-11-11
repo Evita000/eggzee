@@ -340,25 +340,28 @@ function drawYumBubble() {
     let fadeAmt = map(elapsed, 0, 1200, 255, 0);
     fadeAmt = constrain(fadeAmt, 0, 255);
 
-    // ✅ one gentle pop that eases out
-    let scaleUp = 1 + 0.15 * sin(map(elapsed, 0, 300, 0, PI)); 
+    // 🍬 smooth one-time ease-out pop (no looping bounce)
+    let t = constrain(elapsed / 300, 0, 1);
+    let scaleUp = 1 + 0.2 * sin(t * HALF_PI); // only grows once, then settles
 
     push();
-    translate(width / 2, height / 2 - 120); // recentered slightly lower
+    translate(width / 2, height / 2 - 110); // perfectly centered over Eggzee
     scale(scaleUp);
     fill(255, 240, 250, fadeAmt);
     stroke(200, 100, 200, fadeAmt);
-    rect(-60, -25, 120, 50, 20, 20);
+    rectMode(CENTER);
+    rect(0, 0, 130, 60, 20, 20); // slightly bigger bubble
     noStroke();
     fill(0, 0, 0, fadeAmt);
     textSize(22);
     textAlign(CENTER, CENTER);
-    text("Yum! 💕", 0, 0);
+    text("Yum! 💕", 0, 2); // centered text
     pop();
 
     if (elapsed > 1200) showYum = false;
   }
 }
+
 
 
 
@@ -494,6 +497,7 @@ function setupDanceButtonFix() {
   danceLink.attribute("target", "_blank");
   danceLink.style("display", "none");
 }
+
 
 
 
