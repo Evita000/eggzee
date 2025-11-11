@@ -89,7 +89,7 @@ drawJoke();
 drawEnergyBar();
 drawOverlayText();
 
-
+}
 // ---------- SCENES ----------
 function drawEggScene() {
   image(eggImg, width / 2, height / 2 + 40, 200, 200);
@@ -473,6 +473,7 @@ function setupDanceButtonFix() {
   danceLink.attribute("target", "_blank");
   danceLink.style("display", "none");
 }
+
 
 
 
