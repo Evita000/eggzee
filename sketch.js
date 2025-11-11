@@ -159,10 +159,17 @@ function drawSleepScene() {
 }
 
 function drawMiniGame() {
-  // show Eggzee following the finger/mouse
+  // 🧠 Make Eggzee follow the finger/mouse
   eggzee.visible = true;
-  eggzee.x = mouseX || width / 2;
-  eggzee.y = height / 2;
+
+  // if user is touching the screen, use touches[0]
+  if (touches.length > 0) {
+    eggzee.x = touches[0].x;
+    eggzee.y = touches[0].y;
+  } else {
+    eggzee.x = mouseX || width / 2;
+    eggzee.y = height / 2;
+  }
 
   push();
   translate(eggzee.x, eggzee.y);
@@ -187,7 +194,7 @@ function drawMiniGame() {
     });
   }
 
-  // update sparkles and check collision
+  // 🌟 update + collision check
   for (let i = sparkles.length - 1; i >= 0; i--) {
     const s = sparkles[i];
     noStroke();
@@ -196,8 +203,8 @@ function drawMiniGame() {
     s.y += s.speed;
     s.alpha -= 2;
 
-    // 🩷 catch sparkle = heart burst
-    if (dist(s.x, s.y, eggzee.x, eggzee.y) < 60) {
+    // 💥 Catch sparkle → heart burst
+    if (dist(s.x, s.y, eggzee.x, eggzee.y) < 70) {
       hearts.push({
         x: eggzee.x + random(-30, 30),
         y: eggzee.y - random(20, 60),
@@ -211,7 +218,7 @@ function drawMiniGame() {
     if (s.alpha <= 0 || s.y > height + 20) sparkles.splice(i, 1);
   }
 
-  // 🩷 draw floating hearts
+  // ❤️ floating hearts
   for (let i = hearts.length - 1; i >= 0; i--) {
     const h = hearts[i];
     textSize(40);
@@ -223,13 +230,13 @@ function drawMiniGame() {
     if (h.alpha <= 0) hearts.splice(i, 1);
   }
 
-  // score
+  // 🧮 Score
   fill(255);
   textSize(22);
   textAlign(CENTER, TOP);
   text("Hearts caught: " + heartsCaught, width / 2, 55);
 
-  // end mini-game after 25s
+  // ⏳ End after 25s
   if (millis() - gameStartTime > gameDuration) {
     sparkles = [];
     hearts = [];
@@ -237,6 +244,14 @@ function drawMiniGame() {
   }
 }
 
+// 🖐️ Touch handler for smooth tracking
+function touchMoved() {
+  if (state === "miniGame" && touches.length > 0) {
+    eggzee.x = touches[0].x;
+    eggzee.y = touches[0].y;
+  }
+  return false;
+}
 
 // ---------- UI ----------
 function drawButtons() {
@@ -386,11 +401,8 @@ function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
 
-function touchMoved() {
-  eggzee.x = mouseX;
-  eggzee.y = mouseY;
-  return false;
-}
+
+
 
 
 
