@@ -336,12 +336,15 @@ function drawHearts() {
 
 function drawYumBubble() {
   if (showYum) {
-    let fadeAmt = map(millis() - yumTimer, 0, 1200, 255, 0);
+    let elapsed = millis() - yumTimer;
+    let fadeAmt = map(elapsed, 0, 1200, 255, 0);
     fadeAmt = constrain(fadeAmt, 0, 255);
-    let scaleUp = 1 + sin((millis() - yumTimer) / 150) * 0.05; // 💫 little bounce effect
+
+    // ✅ one gentle pop that eases out
+    let scaleUp = 1 + 0.15 * sin(map(elapsed, 0, 300, 0, PI)); 
 
     push();
-    translate(width / 2, height / 2 - 150);
+    translate(width / 2, height / 2 - 120); // recentered slightly lower
     scale(scaleUp);
     fill(255, 240, 250, fadeAmt);
     stroke(200, 100, 200, fadeAmt);
@@ -353,9 +356,10 @@ function drawYumBubble() {
     text("Yum! 💕", 0, 0);
     pop();
 
-    if (millis() - yumTimer > 1200) showYum = false;
+    if (elapsed > 1200) showYum = false;
   }
 }
+
 
 
 
@@ -490,6 +494,7 @@ function setupDanceButtonFix() {
   danceLink.attribute("target", "_blank");
   danceLink.style("display", "none");
 }
+
 
 
 
