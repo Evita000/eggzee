@@ -63,13 +63,6 @@ function setup() {
 
 // ---------- DRAW LOOP ----------
 function draw() {
-   // 🩵 Safety: if images didn’t load yet, show text instead of black screen
-  if (!eggImg || !cityImg) {
-    fill(255);
-    textAlign(CENTER, CENTER);
-    text("Loading Eggzee… 🥚", width / 2, height / 2);
-    return; // skip drawing until images are ready
-  }
   // Background
   const isNight = (energy <= 15 && startTime) || state === "sleep";
   if (isNight && cityNightImg) image(cityNightImg, width / 2, height / 2, width, height);
@@ -88,18 +81,16 @@ function draw() {
   else if (state === "miniGame") drawMiniGame();
   else if (state === "sleep") drawSleepScene();
 
-  // 🩶 DEBUG LINE (remove later)
-
-
-  // Draw UI + extras
+  // Draw UI + extras (🌟 no debug text anymore)
   drawFoods();
   drawHearts();
   drawButtons();
   drawYumBubble();
   drawEnergyBar();
   drawOverlayText();
-  drawJoke(); // 🩷 put this LAST so it's always drawn on top
+  drawJoke(); // keep this last
 }
+
 
 // ---------- SCENES ----------
 function drawEggScene() {
@@ -500,28 +491,28 @@ function drawJoke() {
 function drawOverlayText() {
   if (state === "awake") {
     textAlign(CENTER, CENTER);
-    textSize(24);
+    textSize(26);
     textStyle(BOLD);
 
     const message = !hasWelcomed
       ? "💛 Hi, I’m Eggzee! What breaks me, makes me."
       : "Choose an activity below!";
 
-    // 🔥 Vibrant gradient glow (layers)
-    for (let i = 0; i < 8; i++) {
-      let glowAlpha = 100 - i * 12;
-      fill(255, 160 + i * 10, 0, glowAlpha); // orange to yellow gradient
+    // 🌈 Vibrant glowing gold effect
+    for (let i = 0; i < 6; i++) {
+      fill(255, 150 - i * 20, 0, 120 - i * 15); // orange to gold glow
       text(message, width / 2, 100 + i * 0.5);
     }
 
-    // ✨ Main bright gold text
-    fill(255, 230, 70);
+    // ✨ Bright highlight text
+    fill(255, 220, 70);
     stroke(255, 180, 0);
     strokeWeight(2);
     text(message, width / 2, 100);
     noStroke();
   }
 }
+
 
 function drawEnergyBar() {
   if (state === "egg") return;
@@ -660,6 +651,7 @@ function setupDanceButtonFix() {
   danceLink.attribute("target", "_blank");
   danceLink.style("display", "none");
 }
+
 
 
 
