@@ -368,17 +368,24 @@ function drawOverlayText() {
 
 function drawEnergyBar() {
   if (state === "egg") return;
+
   const barWidth = 300;
   const pct = constrain(energy / 120, 0, 1);
+
+  // Draw bar
   fill(255, 200, 0);
   rect(width / 2 - barWidth / 2, 30, barWidth * pct, 15, 10);
   stroke(255);
   noFill();
   rect(width / 2 - barWidth / 2, 30, barWidth, 15, 10);
+
+  // ✅ Reset text formatting before drawing
   noStroke();
   fill(255);
+  textSize(20); // force consistent size every frame
   text("Time left: " + ceil(energy) + "s", width / 2, 10);
 }
+
 
 // ---------- INPUT ----------
 function mousePressed() {
@@ -473,6 +480,7 @@ function setupDanceButtonFix() {
   danceLink.attribute("target", "_blank");
   danceLink.style("display", "none");
 }
+
 
 
 
