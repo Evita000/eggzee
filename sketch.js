@@ -200,6 +200,13 @@ function drawFeedScene() {
   }
 } // ← this closing curly was missing!
 
+// 🧩 Fix: restore missing drawFoods()
+function drawFoods() {
+  for (let f of foods) {
+    textSize(40);
+    text(f.emoji, f.x, f.y);
+  }
+}
 
 
 // ---------- ANIMATION HELPERS ----------
@@ -613,6 +620,7 @@ function resetToMainMenu() {
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
+
 
 
 
