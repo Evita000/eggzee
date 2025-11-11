@@ -68,62 +68,50 @@ canvas {
     loader.loadManifest(lib.properties.manifest);
   }
 
-  function handleComplete() {
-    exportRoot = new lib.eggzeedanceworks();
-    stage = new lib.Stage(canvas);
+ function handleComplete() {
+  exportRoot = new lib.eggzeedanceworks();
+  stage = new lib.Stage(canvas);
 
-    // 🪩 Load dancefloor background
-    const bgImage = new Image();
-    bgImage.src = "assets/dancefloor1.png";
-    bgImage.onload = function () {
-      const bg = new createjs.Bitmap(bgImage);
-      stage.addChild(bg);
-      stage.addChild(exportRoot);
+  // 🪩 Load the dancefloor background
+  const bgImage = new Image();
+  bgImage.src = "assets/dancefloor1.png";
+  bgImage.onload = function () {
+    const bg = new createjs.Bitmap(bgImage);
+    stage.addChild(bg);
+    stage.addChild(exportRoot);
 
-      // 🧩 Unified full-screen "cover" scaling
-      function resizeCanvas() {
-  const w = window.innerWidth;
-  const h = window.innerHeight;
-  const designW = lib.properties.width;
-  const designH = lib.properties.height;
+    // ✅ Always show the *full* background (contain to screen)
+    function resizeCanvas() {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
 
-  // 🩰 Keep Eggzee animation fully visible (contain)
-  const scale = Math.min(w / designW, h / designH);
-  canvas.width = w;
-  canvas.height = h;
+      canvas.width = w;
+      canvas.height = h;
 
-  stage.scaleX = stage.scaleY = scale;
-  stage.x = (w - designW * scale) / 2;
-  stage.y = (h - designH * scale) / 2;
+      // Scale Eggzee animation (contain)
+      const scale = Math.min(w / lib.properties.width, h / lib.properties.height);
+      stage.scaleX = stage.scaleY = scale;
+      stage.x = (w - lib.properties.width * scale) / 2;
+      stage.y = (h - lib.properties.height * scale) / 2;
 
-  // 🎨 Background scaling (show entire image, no cropping)
-  const bgAspect = bgImage.width / bgImage.height;
-  const screenAspect = w / h;
+      // Scale the background to *fit the entire screen exactly*
+      const bgScale = Math.min(w / bgImage.width, h / bgImage.height);
+      bg.scaleX = bg.scaleY = bgScale;
+      bg.x = (w - bgImage.width * bgScale) / 2;
+      bg.y = (h - bgImage.height * bgScale) / 2;
+    }
 
-  let bgScale;
-  if (screenAspect > bgAspect) {
-    // Screen is wider — fit height
-    bgScale = h / bgImage.height;
-  } else {
-    // Screen is taller — fit width
-    bgScale = w / bgImage.width;
-  }
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+  };
 
-  bg.scaleX = bg.scaleY = bgScale;
-  bg.x = (w - bgImage.width * bgScale) / 2;
-  bg.y = (h - bgImage.height * bgScale) / 2;
+  AdobeAn.compositionLoaded(lib.properties.id);
+  createjs.Ticker.framerate = lib.properties.fps;
+  createjs.Ticker.addEventListener("tick", stage);
+
+  console.log("💃 Full background now showing everywhere!");
 }
 
-      window.addEventListener("resize", resizeCanvas);
-      resizeCanvas();
-    };
-
-    AdobeAn.compositionLoaded(lib.properties.id);
-    createjs.Ticker.framerate = lib.properties.fps;
-    createjs.Ticker.addEventListener("tick", stage);
-
-    console.log("💃 Eggzee fills the full screen perfectly now!");
-  }
 </script>
 
 
@@ -143,6 +131,7 @@ canvas {
   </script>
 </body>
 </html>
+
 
 
 
