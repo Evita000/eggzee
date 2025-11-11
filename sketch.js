@@ -1,5 +1,8 @@
 // 🐣 Eggzee — Full Working GitHub Version (v12)
-
+let hatchStart = 0;
+let showIntro = false;
+let introAlpha = 0;
+let didHatch = false;
 let state = "egg";
 let eggImg, eggzeeAwakeImg, eggzeeSleepImg, cityImg, cityNightImg;
 let eggzee = {};
@@ -65,7 +68,52 @@ function draw() {
   energy = startTime ? max(0, 120 - elapsed) : 120;
 
   // Scenes
-  if (state === "egg") drawEggScene();
+  if (state === "egg") {
+  // Gentle shake that scales with screen size
+  let shakeX = sin(frameCount * 0.3) * (width * 0.005);
+  let shakeY = cos(frameCount * 0.4) * (height * 0.005);
+  image(eggImg, width/2 + shakeX, height/2 + shakeY, width/2.5, width/2.5);
+
+  // When tapped, begin hatch
+  if (didHatch && millis() - crackTime > 1500) {
+    state = "awake";
+    showIntro = true;
+    hatchStart = millis();
+
+    // sparkle burst
+    for (let i = 0; i < 20; i++) {
+      sparkles.push({
+        x: width/2,
+        y: height/2,
+        vx: random(-2, 2),
+        vy: random(-2, -5),
+        life: random(60, 120)
+      });
+    }
+  }
+}
+// ✨ "Meet Eggzee!" intro text fade
+if (showIntro) {
+  let t = millis() - hatchStart;
+  if (t < 3000) {
+    introAlpha = map(t, 0, 2000, 0, 255, true);
+    fill(255, introAlpha);
+    textAlign(CENTER, CENTER);
+    textSize(width / 12);
+    text("✨ Meet Eggzee! ✨", width / 2, height / 2 + height / 5);
+  } else {
+    showIntro = false;
+    function touchStarted() {
+  if (state === "egg" && !didHatch) {
+    crackTime = millis();
+    didHatch = true;
+  }
+  return false; // prevent screen scrolling
+}
+
+  }
+}
+
   else if (state === "hatching") drawHatchingScene();
   else if (state === "awake") drawEggzeeScene();
   else if (state === "feed") drawFeedScene();
@@ -319,5 +367,6 @@ function tellJoke() {
 }
 
 function windowResized() { resizeCanvas(windowWidth, windowHeight); }
+
 
 
