@@ -21,7 +21,6 @@ let jokeTimer = 0;
 let sparkles = [];
 let heartsCaught = 0;
 let gameStartTime = null;
-
 let gameDuration = 25000;
 
 // ---------- PRELOAD ----------
@@ -54,20 +53,24 @@ function setup() {
   gameBtn = { x: spacing * 3, y: height - 90 };
   jokeBtn = { x: spacing * 4, y: height - 90 };
 
-  setupDanceButtonFix();
+  setupDanceButtonFix(); // mobile-safe
 }
 
-// ---------- DRAW ----------
+// ---------- DRAW LOOP ----------
 function draw() {
-  background(0);
+  resetTextStyle();
+
+  // Background
   const isNight = (energy <= 15 && startTime) || state === "sleep";
   if (isNight && cityNightImg) image(cityNightImg, width / 2, height / 2, width, height);
   else if (cityImg) image(cityImg, width / 2, height / 2, width, height);
+  else background(200);
 
+  // Update energy
   const elapsed = startTime ? (millis() - startTime) / 1000 : 0;
   energy = startTime ? max(0, 120 - elapsed) : 120;
-  if (energy < 15 && state !== "sleep") state = "sleep";
 
+  // Scenes
   if (state === "egg") drawEggScene();
   else if (state === "hatching") drawHatchingScene();
   else if (state === "awake") drawEggzeeScene();
@@ -83,6 +86,15 @@ function draw() {
   drawOverlayText();
 }
 
+// ---------- STYLE RESET ----------
+function resetTextStyle() {
+  textSize(20);
+  textAlign(CENTER, CENTER);
+  fill(255);
+  noStroke();
+}
+
+// ---------- SCENES ----------
 function drawEggScene() {
   image(eggImg, width / 2, height / 2 + 40, 200, 200);
   fill(255);
@@ -114,6 +126,7 @@ function drawEggzeeScene() {
 
 // ---------- FEED ----------
 function drawFeedScene() {
+  if (!eggzee.visible) eggzee.visible = true;
   push();
   translate(eggzee.x, eggzee.y);
   image(eggzeeAwakeImg, 0, 0, eggzeeAwakeImg.width * 0.12, eggzeeAwakeImg.height * 0.12);
@@ -145,6 +158,7 @@ function drawFeedScene() {
       hearts.push({ x: eggzee.x, y: eggzee.y - 60, vy: -2, alpha: 255 });
     }
   }
+
   foods = foods.filter(f => !f.toRemove);
   drawYumBubble();
 
@@ -158,8 +172,10 @@ function drawFeedScene() {
   }
 }
 
+// ---------- SLEEP ----------
 function drawSleepScene() {
-  image(cityNightImg, width / 2, height / 2, width, height);
+  if (cityNightImg) image(cityNightImg, width / 2, height / 2, width, height);
+  else background(15, 10, 40);
   push();
   translate(eggzee.x, eggzee.y + sin(frameCount * 0.05) * 8);
   image(eggzeeSleepImg, 0, 0, eggzeeSleepImg.width * 0.1, eggzeeSleepImg.height * 0.1);
@@ -170,7 +186,10 @@ function drawSleepScene() {
 
 // ---------- MINI GAME ----------
 function drawMiniGame() {
+  if (state !== "miniGame") return;
+  eggzee.visible = true;
   if (gameStartTime === null) gameStartTime = millis();
+
   if (touches && touches.length > 0) {
     eggzee.x = touches[0].x;
     eggzee.y = touches[0].y;
@@ -178,12 +197,17 @@ function drawMiniGame() {
     eggzee.x = mouseX;
     eggzee.y = mouseY;
   }
+
   push();
   translate(eggzee.x, eggzee.y);
+  rotate(radians(sin(frameCount * 0.05) * 5));
   image(eggzeeAwakeImg, 0, 0, eggzeeAwakeImg.width * eggzee.scale, eggzeeAwakeImg.height * eggzee.scale);
   pop();
+
   fill(255);
+  textSize(22);
   text("Hearts caught: " + heartsCaught, width / 2, 50);
+
   if (millis() - gameStartTime > 20000) {
     hearts = [];
     heartsCaught = 0;
@@ -194,55 +218,109 @@ function drawMiniGame() {
 
 // ---------- UI ----------
 function drawButtons() {
-  drawButton(feedBtn, "🍎", "Feed");
+  if (state !== "awake") return;
+  drawButton(feedBtn, "🍩", "Feed");
   drawButton(danceBtn, "💃", "Dance");
-  drawButton(gameBtn, "💖", "Game");
-  drawButton(jokeBtn, "😆", "Joke");
+  drawButton(gameBtn, "✨", "Game");
+  drawButton(jokeBtn, "😂", "Joke");
 }
 
 function drawButton(btn, emoji, label) {
-  fill(255);
-  rect(btn.x - 50, btn.y - 40, 100, 80, 15);
+  fill(255, 255, 255, 180);
+  rect(btn.x - 50, btn.y - 40, 100, 80, 20);
   fill(0);
+  textSize(20);
   text(emoji, btn.x, btn.y - 10);
   textSize(14);
   text(label, btn.x, btn.y + 25);
 }
 
-function drawOverlayText() {
-  if (state === "awake") {
-    fill(255, 220, 240);
-    textSize(18);
-    if (!hasWelcomed)
-      text("💛 Hi, I’m Eggzee! Tap a button below!", width / 2, height - 180);
-    else text("✨ Choose an activity below! ✨", width / 2, height - 150);
+// ---------- HELPERS ----------
+function drawFoods() {
+  for (let f of foods) {
+    if (f.beingDragged) {
+      f.x = mouseX;
+      f.y = mouseY;
+    }
+    textSize(40);
+    text(f.emoji, f.x, f.y);
   }
 }
 
-// ---------- HELPERS ----------
-function drawFoods() {
-  for (let f of foods) textSize(40), text(f.emoji, f.x, f.y);
-}
-
 function drawHearts() {
-  for (let h of hearts) {
+  for (let i = hearts.length - 1; i >= 0; i--) {
+    const h = hearts[i];
     textSize(50);
     text("❤️", h.x, h.y);
     h.y += h.vy || -1;
+    h.alpha = h.alpha || 255;
+    h.alpha -= 2;
+    if (h.alpha <= 0) hearts.splice(i, 1);
   }
 }
 
 function drawYumBubble() {
   if (!showYum) return;
   let elapsed = millis() - yumTimer;
-  if (elapsed > 1000) {
-    showYum = false;
-    return;
+  let fadeAmt = map(elapsed, 0, 1000, 255, 0);
+  fadeAmt = constrain(fadeAmt, 0, 255);
+  push();
+  rectMode(CENTER);
+  textAlign(CENTER, CENTER);
+  const bubbleX = width / 2;
+  const bubbleY = height / 2 - height * 0.28;
+  const bubbleW = 150;
+  const bubbleH = 65;
+  fill(255, 240, 250, fadeAmt);
+  stroke(200, 100, 200, fadeAmt);
+  rect(bubbleX, bubbleY, bubbleW, bubbleH, 25);
+  noStroke();
+  fill(0, 0, 0, fadeAmt);
+  textSize(22);
+  text("Yum! 💕", bubbleX, bubbleY + 2);
+  pop();
+  if (elapsed > 1000) showYum = false;
+}
+
+// ---------- TEXT & ENERGY ----------
+function drawJoke() {
+  if (!showJoke) return;
+  let elapsed = millis() - jokeTimer;
+  let alpha = map(elapsed, 0, 3000, 255, 0);
+  alpha = constrain(alpha, 0, 255);
+  const bubbleX = width / 2;
+  const bubbleY = height / 2 - 200;
+  const bubbleW = min(width * 0.7, 420);
+  const bubbleH = 110;
+  push();
+  fill(255, 245, 255, alpha);
+  stroke(255, 180, 250, alpha);
+  strokeWeight(4);
+  rectMode(CENTER);
+  rect(bubbleX, bubbleY, bubbleW, bubbleH, 30);
+  noStroke();
+  fill(255, 245, 255, alpha);
+  beginShape();
+  vertex(bubbleX + 30, bubbleY + bubbleH / 2 - 10);
+  vertex(bubbleX + 55, bubbleY + bubbleH / 2 + 25);
+  vertex(bubbleX + 5, bubbleY + bubbleH / 2 - 5);
+  endShape(CLOSE);
+  fill(random(230, 255), random(100, 200), random(220, 255), alpha);
+  textAlign(CENTER, CENTER);
+  textSize(22);
+  text(jokeText, bubbleX, bubbleY, bubbleW - 20, bubbleH - 20);
+  pop();
+  if (elapsed > 3000) showJoke = false;
+}
+
+function drawOverlayText() {
+  fill(255);
+  textSize(20);
+  if (state === "awake") {
+    if (!hasWelcomed)
+      text("💛 Hi, I’m Eggzee! Tap a button below!", width / 2, 50);
+    else text("Choose an activity below!", width / 2, 50);
   }
-  fill(255, 240, 250);
-  rect(width / 2 - 100, height / 2 - 160, 200, 60, 20);
-  fill(0);
-  text("Yum! 💕", width / 2, height / 2 - 160);
 }
 
 function drawEnergyBar() {
@@ -254,8 +332,9 @@ function drawEnergyBar() {
   stroke(255);
   noFill();
   rect(width / 2 - barWidth / 2, 30, barWidth, 15, 10);
+  noStroke();
   fill(255);
-  textSize(18);
+  textSize(20);
   text("Time left: " + ceil(energy) + "s", width / 2, 10);
 }
 
@@ -272,8 +351,20 @@ function mousePressed() {
     else if (insideButton(gameBtn)) {
       state = "miniGame";
       gameStartTime = millis();
+      heartsCaught = 0;
     }
   } else if (state === "sleep") state = "awake";
+  for (let f of foods)
+    if (dist(mouseX, mouseY, f.x, f.y) < 30) f.beingDragged = true;
+}
+
+function mouseReleased() {
+  for (let f of foods) f.beingDragged = false;
+}
+
+function touchStarted() {
+  mousePressed();
+  return false;
 }
 
 function insideButton(btn) {
@@ -287,33 +378,43 @@ function insideButton(btn) {
 
 function tellJoke() {
   const jokes = [
-    "How did the egg get up the mountain? It scrambled up! 🏔️",
-    "This is so eggstroidinary! 🤩",
-    "Stop yolking around! 😜",
+    "You crack me up 🥚😂",
     "Keep calm and egg on 🧘‍♀️",
-    "Shell yeah! 💛"
+    "Eggstroidinary! 🤩",
+    "Sunny-side up ☀️"
   ];
   jokeText = random(jokes);
   showJoke = true;
   jokeTimer = millis();
 }
 
-function drawJoke() {
-  if (!showJoke) return;
-  let elapsed = millis() - jokeTimer;
-  if (elapsed > 3000) showJoke = false;
-  fill(255, 230, 250);
-  rect(width / 2 - 150, height / 2 - 150, 300, 60, 20);
-  fill(0);
-  text(jokeText, width / 2, height / 2 - 150);
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
 }
 
-// ---------- MOBILE ----------
-function touchStarted() {
-  mousePressed();
+function touchMoved() {
+  if (state === "feed" && touches.length > 0) {
+    for (let f of foods) {
+      if (dist(touches[0].x, touches[0].y, f.x, f.y) < 40) {
+        f.beingDragged = true;
+        f.x = touches[0].x;
+        f.y = touches[0].y;
+      }
+    }
+  }
+  if (state === "miniGame" && touches.length > 0) {
+    eggzee.x = touches[0].x;
+    eggzee.y = touches[0].y;
+  }
   return false;
 }
 
+function touchEnded() {
+  for (let f of foods) f.beingDragged = false;
+  return false;
+}
+
+// ---------- DANCE ----------
 function openDancePage() {
   try {
     const newWin = window.open("eggzeedance.html", "_blank");
@@ -325,6 +426,7 @@ function openDancePage() {
 
 function setupDanceButtonFix() {
   let danceLink = createA("eggzeedance.html", "hiddenDanceLink");
+  danceLink.id("hiddenDanceLink");
   danceLink.attribute("target", "_blank");
   danceLink.style("display", "none");
 }
