@@ -5,6 +5,8 @@ let crackTime = 0;
 let energy = 120;
 let startTime = null;
 let hasWelcomed = false;
+let lastTouchTime = 0; // 🧩 prevent double bubble on mobile
+
 
 // Buttons + UI
 let feedBtn, danceBtn, gameBtn, jokeBtn;
@@ -506,6 +508,7 @@ function setupDanceButtonFix() {
   danceLink.attribute("target", "_blank");
   danceLink.style("display", "none");
 }
+
 
 
 
