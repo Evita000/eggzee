@@ -233,30 +233,33 @@ function drawFeedScene() {
 
 
 function drawSleepScene() {
-  // 🌙 Smooth fade from awake to sleep
-  if (sleepFade < 255) sleepFade += 3;
+  // 🌌 Soft fade to night background
+  background(15, 10, 40);
+  if (cityNightImg) {
+    image(cityNightImg, width / 2, height / 2, width, height);
+  }
 
-  // City night background
-  if (cityNightImg) image(cityNightImg, width / 2, height / 2, width, height);
-  else background(15, 10, 40);
+  // 💤 Gentle floating sleep motion (no side drift)
+  const floatY = sin(frameCount * 0.03) * 6;
 
-  // Dim overlay
-  fill(0, sleepFade * 0.7);
-  rect(0, 0, width, height);
-
-  // Eggzee floating gently while sleeping
   push();
-  translate(eggzee.x, eggzee.y + sin(frameCount * 0.05) * 8);
-  tint(255, map(255 - sleepFade, 0, 255, 80, 255)); // fade brightness
-  image(eggzeeSleepImg, 0, 0, eggzeeSleepImg.width * 0.1, eggzeeSleepImg.height * 0.1);
+  translate(width / 2, eggzee.y + floatY);
+  image(
+    eggzeeSleepImg,
+    0,
+    0,
+    eggzeeSleepImg.width * 0.1,
+    eggzeeSleepImg.height * 0.1
+  );
   pop();
-  noTint();
 
-  // Sleep text
-  fill(255, 220, 255, map(sleepFade, 0, 255, 0, 255));
-  textSize(22);
+  // 🌙 Calm “sleeping” text
+  textAlign(CENTER, CENTER);
+  textSize(width < 600 ? 18 : 22);
+  fill(255, 230, 255);
   text("💤 Eggzee is sleeping... Tap to wake! 💫", width / 2, height - 100);
 }
+
 
 
 function drawMiniGame() {
@@ -728,6 +731,7 @@ function setupDanceButtonFix() {
   danceLink.attribute("target", "_blank");
   danceLink.style("display", "none");
 }
+
 
 
 
