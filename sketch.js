@@ -36,6 +36,8 @@ function preload() {
 // ---------- SETUP ----------
 function setup() {
   createCanvas(windowWidth, windowHeight);
+  background(0); // gives you a visible base background
+
   imageMode(CENTER);
   textAlign(CENTER, CENTER);
   textSize(20);
@@ -634,6 +636,7 @@ function setupDanceButtonFix() {
   danceLink.attribute("target", "_blank");
   danceLink.style("display", "none");
 }
+
 
 
 
