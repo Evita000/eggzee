@@ -47,9 +47,9 @@ function setup() {
   jokeBtn = { x: spacing * 4, y: height - 90, label: "😂 Joke" };
 }
 
-function draw() {
-  // 🌇 Background — only once per frame
-  clear();
+background(0); // clears stray transparent pixels before drawing
+clear();        // wipes frame fully
+
   const isNight = (energy <= 15 && startTime) || state === "sleep";
   if (isNight && cityNightImg) {
     image(cityNightImg, width / 2, height / 2, width, height);
@@ -82,20 +82,35 @@ function draw() {
 
 // ---------- Scenes ----------
 function drawEggScene() {
-  image(eggImg, width / 2, height / 2 + 40, eggImg.width * 0.1, eggImg.height * 0.1);
+  image(eggImg, width/2, height/2 + 40, 200, 200);
   fill(255);
-  text("Tap the egg to hatch Eggzee 🥚", width / 2, height - 40);
+  text("Tap the egg to hatch Eggzee 🥚", width/2, height - 40);
+  eggzee.visible = false;
 }
 
 function drawHatchingScene() {
-  image(eggImg, width / 2, height / 2 + 40, eggImg.width * 0.1, eggImg.height * 0.1);
+  background(0, 0, 0, 80);
+  image(eggImg, width/2, height/2 + 40 + sin(frameCount*0.3)*5, 200, 200);
+
+  // tiny crack animation
+  if (frameCount % 10 < 5) {
+    fill(255);
+    textSize(30);
+    text("⚡", width/2 + random(-30,30), height/2 + 60 + random(-20,20));
+  }
+
+  // hatch after 1 second
   if (millis() - crackTime > 1000) {
     state = "awake";
     eggzee.visible = true;
+    eggzee.x = width/2;
+    eggzee.y = height/2;
     startTime = millis();
     hasWelcomed = false;
   }
 }
+
+
 
 function drawEggzeeScene() {
   if (!eggzee.visible) return;
@@ -222,24 +237,35 @@ function mousePressed() {
   if (state === "egg") {
     state = "hatching";
     crackTime = millis();
-  } else if (state === "awake") {
+    return;
+  }
+
+  if (state === "awake") {
     hasWelcomed = true;
+
     if (insideButton(feedBtn)) {
       state = "feed";
       yumTimer = millis();
       showYum = true;
+      eggzee.visible = true;
     } else if (insideButton(danceBtn)) {
       state = "dance";
       crackTime = millis();
+      eggzee.visible = true;
     } else if (insideButton(jokeBtn)) {
       tellJoke();
+      eggzee.visible = true;
     } else if (insideButton(gameBtn)) {
-      state = "awake";
+      state = "awake"; // placeholder for mini-game
+      eggzee.visible = true;
     }
-  } else if (state === "sleep") {
+  }
+
+  if (state === "sleep") {
     state = "awake";
   }
 }
+
 function insideButton(btn) {
   return mouseX > btn.x - 50 && mouseX < btn.x + 50 && mouseY > btn.y - 40 && mouseY < btn.y + 40;
 }
@@ -255,3 +281,4 @@ function tellJoke() {
   jokeTimer = millis();
 }
 function windowResized() { resizeCanvas(windowWidth, windowHeight); }
+
