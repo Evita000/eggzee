@@ -71,6 +71,11 @@ function draw() {
   // Update energy
   const elapsed = startTime ? (millis() - startTime) / 1000 : 0;
   energy = startTime ? max(0, 120 - elapsed) : 120;
+  // 💤 Auto sleep when time is almost over
+if (energy < 15 && state !== "sleep") {
+  state = "sleep";
+}
+
 
   // Scenes
   if (state === "egg") drawEggScene();
@@ -226,13 +231,29 @@ drawYumBubble();
 // ---------- OTHER SCENES ----------
 function drawSleepScene() {
   background(15, 10, 40);
+
+  // 💤 soft fade-in night overlay
+  fill(0, 0, 30, 100);
+  rect(0, 0, width, height);
+
+  // 🐣 Eggzee rocking gently in sleep
   push();
   translate(eggzee.x, eggzee.y + sin(frameCount * 0.05) * 8);
   image(eggzeeSleepImg, 0, 0, eggzeeSleepImg.width * 0.1, eggzeeSleepImg.height * 0.1);
   pop();
+
+  // 🌙 little floating Zzz’s
+  textSize(28);
+  fill(255, 255, 255, 200);
+  text("💤", width / 2 - 50 + sin(frameCount * 0.05) * 20, height / 2 - 150);
+  text("💤", width / 2 + 10 + sin(frameCount * 0.07) * 15, height / 2 - 200);
+  text("💤", width / 2 + 60 + sin(frameCount * 0.09) * 10, height / 2 - 250);
+
   fill(255);
-  text("💤 Eggzee is sleeping... Tap to wake! 💫", width / 2, height - 100);
+  textSize(18);
+  text("Eggzee is sleeping... Tap to wake 🌙", width / 2, height - 80);
 }
+
 
 function drawMiniGame() {
   if (state !== "miniGame") return;
@@ -400,11 +421,57 @@ function drawYumBubble() {
 
 
 // ---------- TEXT & ENERGY ----------
+let bubbleScale = 1; // new global variable near top of your file
+
 function drawJoke() {
   if (!showJoke) return;
-  fill(255);
-  text(jokeText, width / 2, height / 2 - 200);
+
+  let elapsed = millis() - jokeTimer;
+  let alpha = map(elapsed, 0, 3000, 255, 0);
+  alpha = constrain(alpha, 0, 255);
+
+  // 🫧 Smooth pop-in animation
+  bubbleScale = lerp(bubbleScale, 1, 0.15);
+
+  const bubbleX = width / 2;
+  const bubbleY = height / 2 - 200;
+  const bubbleW = min(width * 0.7, 420);
+  const bubbleH = 110;
+
+  push();
+  translate(bubbleX, bubbleY);
+  scale(bubbleScale);
+  translate(-bubbleX, -bubbleY);
+
+  // 💭 bubble base
+  fill(255, 245, 255, alpha);
+  stroke(255, 180, 250, alpha);
+  strokeWeight(4);
+  rectMode(CENTER);
+  rect(bubbleX, bubbleY, bubbleW, bubbleH, 30);
+
+  // 💫 tail
+  noStroke();
+  fill(255, 245, 255, alpha);
+  beginShape();
+  vertex(bubbleX + 30, bubbleY + bubbleH / 2 - 10);
+  vertex(bubbleX + 55, bubbleY + bubbleH / 2 + 25);
+  vertex(bubbleX + 5, bubbleY + bubbleH / 2 - 5);
+  endShape(CLOSE);
+
+  // 🌈 glowing text
+  fill(random(230, 255), random(100, 200), random(220, 255), alpha);
+  textAlign(CENTER, CENTER);
+  textSize(22);
+  text(jokeText, bubbleX, bubbleY, bubbleW - 20, bubbleH - 20);
+
+  pop();
+
+  // ⏰ hide after 3s
+  if (elapsed > 3000) showJoke = false;
 }
+
+
 
 function drawOverlayText() {
   fill(255);
@@ -477,15 +544,28 @@ function insideButton(btn) {
 
 function tellJoke() {
   const jokes = [
-    "You crack me up 🥚😂",
+    "How did the egg get up the mountain? It scrambled up! 🏔️",
+    "This is so eggstroidinary! 🤩",
+    "I’m on a roll — no need to eggsplain! 🥖",
+    "How do comedians like their eggs? Funny side-up! 😂",
+    "I’m feeling a bit fried today 🍳",
+    "Don’t egg-nore me! 🙃",
+    "Stop yolking around! 😜",
+    "You crack me up every time 🥚😆",
+    "I’m living sunny-side up ☀️",
     "Keep calm and egg on 🧘‍♀️",
-    "Eggstroidinary! 🤩",
-    "Sunny-side up ☀️"
+    "What do you call an egg who tells jokes? A pun-scrambler! 🤓",
+    "I shell-ter my feelings sometimes… 🐚",
+    "An egg-cellent day to hatch plans! 🐣",
+    "Oops, my shell-fi camera cracked 📸🥚",
+    "Shell yeah! 💛"
   ];
+
   jokeText = random(jokes);
   showJoke = true;
   jokeTimer = millis();
 }
+
 
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
@@ -529,6 +609,7 @@ function setupDanceButtonFix() {
   danceLink.attribute("target", "_blank");
   danceLink.style("display", "none");
 }
+
 
 
 
