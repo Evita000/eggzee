@@ -338,37 +338,37 @@ function drawYumBubble() {
   if (!showYum) return;
 
   let elapsed = millis() - yumTimer;
-  let fadeAmt = map(elapsed, 0, 1200, 255, 0);
+  let fadeAmt = map(elapsed, 0, 1000, 255, 0);
   fadeAmt = constrain(fadeAmt, 0, 255);
 
   push();
   rectMode(CENTER);
   textAlign(CENTER, CENTER);
 
-  // 💭 bubble position — consistent across screen sizes
-  translate(width / 2, height / 2 - height * 0.25);
+  // 💭 bubble position — consistent on all devices
+  const bubbleX = width / 2;
+  const bubbleY = height / 2 - height * 0.28;
 
-  // 💫 single smooth scale-in (no pulse)
-  let t = constrain(elapsed / 150, 0, 1);
-  let scaleUp = lerp(0.9, 1, t); // grows once, then stays still
-  scale(scaleUp);
+  const bubbleW = 150;
+  const bubbleH = 65;
 
-  // 🫧 bubble shape
+  // 💭 draw bubble
   fill(255, 240, 250, fadeAmt);
   stroke(200, 100, 200, fadeAmt);
-  rect(0, 0, 150, 65, 20, 20);
+  rect(bubbleX, bubbleY, bubbleW, bubbleH, 25);
 
-  // 🖋 text perfectly centered inside bubble
+  // 🖋 text centered inside bubble
   noStroke();
   fill(0, 0, 0, fadeAmt);
   textSize(22);
-  text("Yum! 💕", 0, 4); // +4 shifts text into true middle on all fonts
+  text("Yum! 💕", bubbleX, bubbleY + 2); // +2 tiny optical correction
 
   pop();
 
-  // ⏰ remove after fade
-  if (elapsed > 1200) showYum = false;
+  // ⏰ fade out cleanly
+  if (elapsed > 1000) showYum = false;
 }
+
 
 
 
@@ -507,6 +507,7 @@ function setupDanceButtonFix() {
   danceLink.attribute("target", "_blank");
   danceLink.style("display", "none");
 }
+
 
 
 
