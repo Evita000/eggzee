@@ -99,7 +99,14 @@ function drawEggScene() {
 function drawHatchingScene() {
   fill(0, 50);
   rect(0, 0, width, height);
-  image(eggImg, width / 2, height / 2 + 40 + sin(frameCount * 0.3) * 5, 200, 200);
+
+  // 🥚 Tremble animation only during hatching
+  const trembleX = random(-3, 3);
+  const trembleY = sin(frameCount * 0.3) * 5;
+  push();
+  translate(width / 2 + trembleX, height / 2 + 40 + trembleY);
+  image(eggImg, 0, 0, 200, 200);
+  pop();
 
   if (millis() - crackTime > 1000) {
     state = "awake";
@@ -108,6 +115,7 @@ function drawHatchingScene() {
     hasWelcomed = false;
   }
 }
+
 
 function drawEggzeeScene() {
   if (!eggzee.visible) return;
@@ -244,7 +252,12 @@ function drawSleepScene() {
 
 function drawMiniGame() {
   if (state !== "miniGame") return;
+  
+  // 🧹 Safety clear in case any food emojis remain
+  foods = [];
+
   eggzee.visible = true;
+
 
   // Follow mouse or touch
   if (touches && touches.length > 0) {
@@ -606,6 +619,7 @@ function setupDanceButtonFix() {
   danceLink.attribute("target", "_blank");
   danceLink.style("display", "none");
 }
+
 
 
 
