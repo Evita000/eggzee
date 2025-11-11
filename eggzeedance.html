@@ -26,20 +26,6 @@
       display: block;
       background-color: black;
     }
-
-    #returnBtn {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      padding: 12px 18px;
-      font-size: 18px;
-      border: none;
-      border-radius: 10px;
-      background: #ffd6e0;
-      color: #333;
-      cursor: pointer;
-      z-index: 999;
-    }
   </style>
 </head>
 
@@ -47,8 +33,6 @@
   <div id="animation_container">
     <canvas id="canvas"></canvas>
   </div>
-
-  <button id="returnBtn">⬅️ Return to Eggzee</button>
 
   <script>
     var canvas, stage, exportRoot, comp, lib;
@@ -70,32 +54,48 @@
     }
 
     function handleComplete() {
-      exportRoot = new lib.eggzeedanceworks();
-      stage = new lib.Stage(canvas);
+  exportRoot = new lib.eggzeedanceworks();
+  stage = new lib.Stage(canvas);
 
-      // 🪩 Load your dancefloor background image
-      var bgImage = new Image();
-      bgImage.src = "assets/dancefloor1.png";
-      bgImage.onload = function() {
-        var bg = new createjs.Bitmap(bgImage);
-        bg.scaleX = canvas.width / bgImage.width;
-        bg.scaleY = canvas.height / bgImage.height;
-        stage.addChild(bg);
-        stage.addChild(exportRoot);
-      };
+  // 🪩 Load your dancefloor background image
+  var bgImage = new Image();
+  bgImage.src = "assets/dancefloor1.png"; // make sure this matches your filename exactly
+  bgImage.onload = function() {
+    var bg = new createjs.Bitmap(bgImage);
+    bg.scaleX = canvas.width / bgImage.width;
+    bg.scaleY = canvas.height / bgImage.height;
+    stage.addChild(bg); // add background first
+    stage.addChild(exportRoot); // add Eggzee animation above it
+  };
 
-      AdobeAn.compositionLoaded(lib.properties.id);
-      AdobeAn.makeResponsive(true, "both", false, 1, [canvas]);
+  AdobeAn.compositionLoaded(lib.properties.id);
+  AdobeAn.makeResponsive(true, "both", false, 1, [canvas]);
 
-      createjs.Ticker.framerate = lib.properties.fps;
-      createjs.Ticker.addEventListener("tick", stage);
-      console.log("💃 Eggzee is dancing on her dancefloor!");
-    }
+  createjs.Ticker.framerate = lib.properties.fps;
+  createjs.Ticker.addEventListener("tick", stage);
 
-    // ✅ Return button — mobile and desktop safe
-    document.getElementById("returnBtn").addEventListener("click", () => {
-      window.open("index.html", "_self");
-    });
+  console.log("💃 Eggzee is dancing on her dancefloor!");
+}
+
   </script>
+  <button id="returnBtn"
+style="position:fixed; bottom:20px; right:20px; padding:12px 18px; font-size:18px;
+border:none; border-radius:10px; background:#ffd6e0; color:#333; cursor:pointer;">
+⬅️ Return to Eggzee
+</button>
+
+<script>
+document.getElementById("returnBtn").addEventListener("click", () => {
+  window.close(); // closes this tab
+});
+</script>
+
 </body>
 </html>
+
+</body>
+</html>
+
+
+
+
