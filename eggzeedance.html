@@ -17,6 +17,7 @@
       height: 100vh;
       overflow: hidden;
       background-color: black;
+      touch-action: none; /* 🚫 disables pinch-zoom and drag */
     }
 
     #animation_container, #canvas {
@@ -37,7 +38,7 @@
   </div>
 
   <script>
-    var canvas, stage, exportRoot, comp, lib;
+    let canvas, stage, exportRoot, comp, lib;
 
     function init() {
       console.log("🎬 Starting Eggzee Dance...");
@@ -45,8 +46,8 @@
       comp = AdobeAn.getComposition("1204F486BCA4BF4E9AA6F7C9DE17DD26");
       lib = comp.getLibrary();
 
-      var loader = new createjs.LoadQueue(false);
-      loader.addEventListener("fileload", function(evt) {
+      const loader = new createjs.LoadQueue(false);
+      loader.addEventListener("fileload", (evt) => {
         if (evt.item.type === "image") {
           comp.getImages()[evt.item.id] = evt.result;
         }
@@ -60,34 +61,33 @@
       stage = new lib.Stage(canvas);
 
       // 🪩 Load dancefloor background
-      var bgImage = new Image();
+      const bgImage = new Image();
       bgImage.src = "assets/dancefloor1.png";
       bgImage.onload = function () {
-        var bg = new createjs.Bitmap(bgImage);
+        const bg = new createjs.Bitmap(bgImage);
         stage.addChild(bg);
         stage.addChild(exportRoot);
 
-        // 💡 Responsive full-screen scaling
+        // 💡 Clean, unified scaling
         function resizeCanvas() {
           const w = window.innerWidth;
           const h = window.innerHeight;
-          const scaleX = w / lib.properties.width;
-          const scaleY = h / lib.properties.height;
-          const scale = Math.max(scaleX, scaleY); // fill screen completely
+          const scale = Math.max(
+            w / lib.properties.width,
+            h / lib.properties.height
+          );
 
           canvas.width = w;
           canvas.height = h;
-          stage.scaleX = stage.scaleY = scale;
-          stage.x = (w - lib.properties.width * scale) / 2;
-          stage.y = (h - lib.properties.height * scale) / 2;
 
+          // background fills entire screen
           bg.scaleX = w / bgImage.width;
           bg.scaleY = h / bgImage.height;
 
-          // 💫 Make Eggzee fill the full screen
-          exportRoot.scaleX = exportRoot.scaleY = scale;
-          exportRoot.x = (w - lib.properties.width * scale) / 2;
-          exportRoot.y = (h - lib.properties.height * scale) / 2;
+          // scale the whole animation proportionally
+          stage.scaleX = stage.scaleY = scale;
+          stage.x = (w - lib.properties.width * scale) / 2;
+          stage.y = (h - lib.properties.height * scale) / 2;
         }
 
         window.addEventListener("resize", resizeCanvas);
@@ -98,7 +98,7 @@
       createjs.Ticker.framerate = lib.properties.fps;
       createjs.Ticker.addEventListener("tick", stage);
 
-      console.log("💃 Eggzee now fills the screen!");
+      console.log("💃 Eggzee dance now fits perfectly!");
     }
   </script>
 
@@ -110,16 +110,10 @@
 
   <script>
     document.getElementById("returnBtn").addEventListener("click", () => {
-      try {
-        window.close();
-      } catch (e) {
-        console.warn("Close blocked, redirecting...");
-      }
-      setTimeout(() => {
-        window.open("index.html", "_self");
-      }, 300);
+      try { window.close(); } 
+      catch (e) { console.warn("Close blocked, redirecting..."); }
+      setTimeout(() => window.open("index.html", "_self"), 300);
     });
   </script>
-
 </body>
 </html>
