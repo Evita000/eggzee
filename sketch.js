@@ -58,26 +58,23 @@ function setup() {
 }
 
 // ---------- DRAW LOOP ----------
-// ---------- DRAW LOOP ----------
 function draw() {
-  resetTextStyle(); // 💡 always start clean every frame
+  resetTextStyle();
 
-  // Background
+  // 🌆 Background
   const isNight = (energy <= 15 && startTime) || state === "sleep";
-  if (isNight && cityNightImg) image(cityNightImg, width / 2, height / 2, width, height);
-  else if (cityImg) image(cityImg, width / 2, height / 2, width, height);
+  if (isNight && cityNightImg)
+    image(cityNightImg, width / 2, height / 2, width, height);
+  else if (cityImg)
+    image(cityImg, width / 2, height / 2, width, height);
   else background(200);
 
-  // Update energy
+  // ⏳ Energy countdown
   const elapsed = startTime ? (millis() - startTime) / 1000 : 0;
   energy = startTime ? max(0, 120 - elapsed) : 120;
-  // 💤 Auto sleep when time is almost over
-if (energy < 15 && state !== "sleep") {
-  state = "sleep";
-}
+  if (energy < 15 && state !== "sleep") state = "sleep";
 
-
-  // Scenes
+  // 🎬 Scene control
   if (state === "egg") drawEggScene();
   else if (state === "hatching") drawHatchingScene();
   else if (state === "awake") drawEggzeeScene();
@@ -93,7 +90,7 @@ if (energy < 15 && state !== "sleep") {
   drawOverlayText();
 }
 
-// ✅ Only ONE version of this
+// ---------- RESET STYLE ----------
 function resetTextStyle() {
   textSize(20);
   textAlign(CENTER, CENTER);
@@ -136,13 +133,11 @@ function drawEggzeeScene() {
 function drawFeedScene() {
   if (!eggzee.visible) eggzee.visible = true;
 
-  // 🐣 Eggzee
   push();
   translate(eggzee.x, eggzee.y);
   image(eggzeeAwakeImg, 0, 0, eggzeeAwakeImg.width * 0.12, eggzeeAwakeImg.height * 0.12);
   pop();
 
-  // 🍎 Spawn random foods
   if (frameCount % 120 === 0 && foods.length < 5) {
     let emojiList = ["🍩", "🍎", "🍓", "🍪", "🍕"];
     foods.push({
@@ -153,7 +148,6 @@ function drawFeedScene() {
     });
   }
 
-  // 🍪 Draw & drag foods
   for (let f of foods) {
     if (f.beingDragged) {
       f.x = mouseX;
@@ -162,13 +156,11 @@ function drawFeedScene() {
     textSize(40);
     text(f.emoji, f.x, f.y);
 
-    // 🩷 Eat
     if (dist(f.x, f.y, eggzee.x, eggzee.y) < 80) {
       f.toRemove = true;
       showYum = true;
       yumTimer = millis();
 
-      // ✨ Sparkles
       for (let i = 0; i < 10; i++) {
         sparkles.push({
           x: eggzee.x + random(-30, 30),
@@ -179,7 +171,6 @@ function drawFeedScene() {
         });
       }
 
-      // ❤️ Heart
       hearts.push({
         x: eggzee.x + random(-20, 20),
         y: eggzee.y - 60,
@@ -191,7 +182,7 @@ function drawFeedScene() {
 
   foods = foods.filter(f => !f.toRemove);
 
-  // ✨ Sparkle animation
+  // ✨ Sparkles
   for (let i = sparkles.length - 1; i >= 0; i--) {
     const s = sparkles[i];
     fill(255, 255, 200, s.alpha);
@@ -202,7 +193,7 @@ function drawFeedScene() {
     if (s.alpha <= 0) sparkles.splice(i, 1);
   }
 
-  // ❤️ Hearts animation
+  // ❤️ Hearts
   for (let i = hearts.length - 1; i >= 0; i--) {
     const h = hearts[i];
     textSize(40);
@@ -212,11 +203,8 @@ function drawFeedScene() {
     if (h.alpha <= 0) hearts.splice(i, 1);
   }
 
-drawYumBubble();
+  drawYumBubble();
 
-
-
-  // 🕒 Auto-return
   if (!feedStartTime) feedStartTime = millis();
   if (millis() - feedStartTime > 25000) {
     foods = [];
@@ -228,37 +216,25 @@ drawYumBubble();
   }
 }
 
-// ---------- OTHER SCENES ----------
+// ---------- SLEEP ----------
 function drawSleepScene() {
-  // 🌃 Show the city night background
-  if (cityNightImg) {
-    image(cityNightImg, width / 2, height / 2, width, height);
-  } else {
-    background(15, 10, 40); // fallback if image missing
-  }
+  if (cityNightImg) image(cityNightImg, width / 2, height / 2, width, height);
+  else background(15, 10, 40);
 
-  // 😴 Floating Eggzee sleeping animation
   push();
   translate(eggzee.x, eggzee.y + sin(frameCount * 0.05) * 8);
   image(eggzeeSleepImg, 0, 0, eggzeeSleepImg.width * 0.1, eggzeeSleepImg.height * 0.1);
   pop();
 
-  // 💬 Text overlay
   fill(255);
   textSize(20);
   text("💤 Eggzee is sleeping... Tap to wake! 💫", width / 2, height - 100);
 }
 
-
-
+// ---------- MINI GAME ----------
 function drawMiniGame() {
-  if (state !== "miniGame") return;
-  eggzee.visible = true;
-
-  // 🕒 Start timer once per session
   if (gameStartTime === null) gameStartTime = millis();
 
-  // 🐣 Control Eggzee movement
   if (touches && touches.length > 0) {
     eggzee.x = touches[0].x;
     eggzee.y = touches[0].y;
@@ -267,14 +243,12 @@ function drawMiniGame() {
     eggzee.y = mouseY;
   }
 
-  // 🐣 Draw Eggzee
   push();
   translate(eggzee.x, eggzee.y);
   rotate(radians(sin(frameCount * 0.05) * 5));
   image(eggzeeAwakeImg, 0, 0, eggzeeAwakeImg.width * eggzee.scale, eggzeeAwakeImg.height * eggzee.scale);
   pop();
 
-  // ✨ Spawn sparkles
   if (frameCount % 10 === 0) {
     sparkles.push({
       x: random(50, width - 50),
@@ -285,11 +259,9 @@ function drawMiniGame() {
     });
   }
 
-  // ✨ Move sparkles + detect catches
   for (let i = sparkles.length - 1; i >= 0; i--) {
     const s = sparkles[i];
     fill(255, 255, 150, s.alpha);
-    noStroke();
     ellipse(s.x, s.y, s.size);
     s.y += s.speed;
     s.alpha -= 2;
@@ -303,7 +275,6 @@ function drawMiniGame() {
     }
   }
 
-  // ❤️ Hearts float up
   for (let i = hearts.length - 1; i >= 0; i--) {
     const h = hearts[i];
     textSize(60);
@@ -313,52 +284,92 @@ function drawMiniGame() {
     if (h.alpha < 0) hearts.splice(i, 1);
   }
 
-  // 🧮 Display score
   fill(255);
   textSize(22);
   text("Hearts caught: " + heartsCaught, width / 2, 50);
 
-  // 🕒 Return to menu after 20 seconds
   if (millis() - gameStartTime > 20000) {
     hearts = [];
     sparkles = [];
     heartsCaught = 0;
-    gameStartTime = null; // reset cleanly
+    gameStartTime = null;
     state = "awake";
   }
 }
 
-
-
 // ---------- UI ----------
-function drawButtons() {
-  if (state !== "awake") return;
-  drawButton(feedBtn, "🍩", "Feed");
-  drawButton(danceBtn, "💃", "Dance");
-  drawButton(gameBtn, "✨", "Game");
-  drawButton(jokeBtn, "😂", "Joke");
-}
+let buttonScales = {
+  Feed: 1,
+  Dance: 1,
+  Game: 1,
+  Joke: 1
+};
+let buttonBounceTimers = {};
 
 function drawButton(btn, emoji, label) {
-  fill(255, 255, 255, 180);
-  rect(btn.x - 50, btn.y - 40, 100, 80, 20);
-  fill(0);
+  let baseColor;
+  if (label === "Feed") baseColor = color(255, 200, 220);
+  else if (label === "Dance") baseColor = color(200, 220, 255);
+  else if (label === "Game") baseColor = color(220, 255, 200);
+  else if (label === "Joke") baseColor = color(255, 230, 180);
+  else baseColor = color(255);
+
+  const hover = dist(mouseX, mouseY, btn.x, btn.y) < 60 && state === "awake" ? 50 : 0;
+
+  if (buttonBounceTimers[label]) {
+    let elapsed = millis() - buttonBounceTimers[label];
+    if (elapsed < 250) {
+      let progress = elapsed / 250;
+      buttonScales[label] = 1 + sin(progress * PI) * 0.15;
+    } else {
+      buttonScales[label] = 1;
+      delete buttonBounceTimers[label];
+    }
+  }
+
+  push();
+  translate(btn.x, btn.y);
+  scale(buttonScales[label]);
+  translate(-btn.x, -btn.y);
+
+  noStroke();
+  fill(red(baseColor), green(baseColor), blue(baseColor), 190);
+  rect(btn.x - 55, btn.y - 45, 110, 90, 25);
+
+  stroke(red(baseColor), green(baseColor), blue(baseColor), 80 + hover);
+  strokeWeight(4);
+  noFill();
+  rect(btn.x - 55, btn.y - 45, 110, 90, 25);
+
+  noStroke();
+  textSize(28);
+  fill(50);
+  text(emoji, btn.x, btn.y - 8);
+
+  textSize(15);
+  fill(80, 50, 80);
+  text(label, btn.x, btn.y + 28);
+  pop();
+}
+
+function bounceButton(label) {
+  buttonBounceTimers[label] = millis();
+}
+
+function drawOverlayText() {
+  if (state !== "awake") return;
+  let alpha = map(sin(frameCount * 0.05), -1, 1, 180, 255);
+  fill(200, 180, 255, alpha);
+  noStroke();
   textSize(20);
-  text(emoji, btn.x, btn.y - 10);
-  textSize(14);
-  text(label, btn.x, btn.y + 25);
+  if (!hasWelcomed)
+    text("💛 Hi, I’m Eggzee! Tap a button below!", width / 2, height - 180);
+  else text("✨ Choose an activity below! ✨", width / 2, height - 150);
 }
 
 // ---------- HELPERS ----------
 function drawFoods() {
-  for (let f of foods) {
-    if (f.beingDragged) {
-      f.x = mouseX;
-      f.y = mouseY;
-    }
-    textSize(40);
-    text(f.emoji, f.x, f.y);
-  }
+  for (let f of foods) textSize(40), text(f.emoji, f.x, f.y);
 }
 
 function drawHearts() {
@@ -367,7 +378,6 @@ function drawHearts() {
     textSize(50);
     text("❤️", h.x, h.y);
     h.y += h.vy || -1;
-    h.alpha = h.alpha || 255;
     h.alpha -= 2;
     if (h.alpha <= 0) hearts.splice(i, 1);
   }
@@ -375,84 +385,50 @@ function drawHearts() {
 
 function drawYumBubble() {
   if (!showYum) return;
-
   let elapsed = millis() - yumTimer;
   let fadeAmt = map(elapsed, 0, 1000, 255, 0);
   fadeAmt = constrain(fadeAmt, 0, 255);
-
   push();
   rectMode(CENTER);
   textAlign(CENTER, CENTER);
-
-  // 💭 bubble position — consistent on all devices
-const bubbleX = width / 2;
-const bubbleY = height / 2 - 160;
-const bubbleW = min(width * 0.55, 350);
-const bubbleH = 80;
-
-
-  // 💭 draw bubble
+  const bubbleX = width / 2;
+  const bubbleY = height / 2 - 160;
+  const bubbleW = min(width * 0.55, 350);
+  const bubbleH = 80;
   fill(255, 240, 250, fadeAmt);
   stroke(200, 100, 200, fadeAmt);
   rect(bubbleX, bubbleY, bubbleW, bubbleH, 25);
-
-  // 🖋 text centered inside bubble
   noStroke();
   fill(0, 0, 0, fadeAmt);
   textSize(22);
-  text("Yum! 💕", bubbleX, bubbleY + 2); // +2 tiny optical correction
-
+  text("Yum! 💕", bubbleX, bubbleY + 2);
   pop();
-
-  // ⏰ fade out cleanly
   if (elapsed > 1000) showYum = false;
 }
 
-
-
-
-
-
-
-
-
-// ---------- TEXT & ENERGY ----------
-let bubbleScale = 1; // new global variable near top of your file
-
+// ---------- JOKES ----------
 function drawJoke() {
   if (!showJoke) return;
-
   let elapsed = millis() - jokeTimer;
   let alpha = map(elapsed, 0, 3000, 255, 0);
-  alpha = constrain(alpha, 0, 255);
-
-  // 🌈 Soft pulsing effect (breathing motion)
-  const pulse = 1 + sin(frameCount * 0.08) * 0.05; // gentle in/out
-  const pulseAlpha = 180 + sin(frameCount * 0.1) * 60; // glow fade
-
+  const pulse = 1 + sin(frameCount * 0.08) * 0.05;
+  const pulseAlpha = 180 + sin(frameCount * 0.1) * 60;
   const bubbleX = width / 2;
-  const bubbleY = height / 2 - 150; // closer to Eggzee
+  const bubbleY = height / 2 - 150;
   const bubbleW = min(width * 0.5, 320);
   const bubbleH = 70;
-
   push();
   translate(bubbleX, bubbleY);
-  scale(pulse); // small scale pulse
+  scale(pulse);
   translate(-bubbleX, -bubbleY);
-
-  // 💭 glowing bubble background
   noStroke();
-  fill(255, 230, 250, pulseAlpha); // soft pink
+  fill(255, 230, 250, pulseAlpha);
   rectMode(CENTER);
   rect(bubbleX, bubbleY, bubbleW, bubbleH, 20);
-
-  // ✨ subtle outer glow
   stroke(255, 150, 220, alpha * 0.7);
   strokeWeight(3);
   noFill();
   rect(bubbleX, bubbleY, bubbleW + 8, bubbleH + 8, 25);
-
-  // 💫 tail (small and cute)
   noStroke();
   fill(255, 230, 250, pulseAlpha);
   beginShape();
@@ -460,54 +436,29 @@ function drawJoke() {
   vertex(bubbleX + 40, bubbleY + bubbleH / 2 + 15);
   vertex(bubbleX + 2, bubbleY + bubbleH / 2 - 4);
   endShape(CLOSE);
-
-  // 🌟 glowing text
-  let glowR = map(sin(frameCount * 0.05), -1, 1, 200, 255);
-  let glowG = map(cos(frameCount * 0.08), -1, 1, 100, 220);
-  let glowB = map(sin(frameCount * 0.1), -1, 1, 180, 255);
-  fill(glowR, glowG, glowB, alpha);
+  fill(230, 100, 220, alpha);
   textAlign(CENTER, CENTER);
   textSize(20);
   textStyle(BOLD);
   text(jokeText, bubbleX, bubbleY, bubbleW - 20, bubbleH - 20);
-
   pop();
-
-  // ⏰ hide after ~3s
   if (elapsed > 3000) showJoke = false;
-}
-
-
-
-function drawOverlayText() {
-  fill(255);
-  textSize(20);
-  if (state === "awake") {
-    if (!hasWelcomed) text("💛 Hi, I’m Eggzee! Tap a button below!", width / 2, 50);
-    else text("Choose an activity below!", width / 2, 50);
-  }
 }
 
 function drawEnergyBar() {
   if (state === "egg") return;
-
   const barWidth = 300;
   const pct = constrain(energy / 120, 0, 1);
-
-  // Draw bar
   fill(255, 200, 0);
   rect(width / 2 - barWidth / 2, 30, barWidth * pct, 15, 10);
   stroke(255);
   noFill();
   rect(width / 2 - barWidth / 2, 30, barWidth, 15, 10);
-
-  // ✅ Reset text formatting before drawing
   noStroke();
   fill(255);
-  textSize(20); // force consistent size every frame
+  textSize(20);
   text("Time left: " + ceil(energy) + "s", width / 2, 10);
 }
-
 
 // ---------- INPUT ----------
 function mousePressed() {
@@ -516,124 +467,8 @@ function mousePressed() {
     crackTime = millis();
   } else if (state === "awake") {
     hasWelcomed = true;
-    if (insideButton(feedBtn)) state = "feed";
-    else if (insideButton(danceBtn)) openDancePage();
-    else if (insideButton(jokeBtn)) tellJoke();
-    else if (insideButton(gameBtn)) {
-      state = "miniGame";
-      gameStartTime = millis();
-      heartsCaught = 0;
-    }
-  } else if (state === "sleep") state = "awake";
-
-  for (let f of foods)
-    if (dist(mouseX, mouseY, f.x, f.y) < 30) f.beingDragged = true;
-}
-
-function mouseReleased() {
-  for (let f of foods) f.beingDragged = false;
-}
-
-function touchStarted() {
-  mousePressed();
-  return false;
-}
-
-function insideButton(btn) {
-  return (
-    mouseX > btn.x - 50 &&
-    mouseX < btn.x + 50 &&
-    mouseY > btn.y - 40 &&
-    mouseY < btn.y + 40
-  );
-}
-
-function tellJoke() {
-  const jokes = [
-    "How did the egg get up the mountain? It scrambled up! 🏔️",
-    "This is so eggstroidinary! 🤩",
-    "I’m on a roll — no need to eggsplain! 🥖",
-    "How do comedians like their eggs? Funny side-up! 😂",
-    "I’m feeling a bit fried today 🍳",
-    "Don’t egg-nore me! 🙃",
-    "Stop yolking around! 😜",
-    "You crack me up every time 🥚😆",
-    "I’m living sunny-side up ☀️",
-    "Keep calm and egg on 🧘‍♀️",
-    "What do you call an egg who tells jokes? A pun-scrambler! 🤓",
-    "I shell-ter my feelings sometimes… 🐚",
-    "An egg-cellent day to hatch plans! 🐣",
-    "Oops, my shell-fi camera cracked 📸🥚",
-    "Shell yeah! 💛"
-  ];
-
-  jokeText = random(jokes);
-  showJoke = true;
-  jokeTimer = millis();
-}
-
-
-function windowResized() {
-  resizeCanvas(windowWidth, windowHeight);
-}
-
-function touchMoved() {
-  if (state === "feed" && touches.length > 0) {
-    for (let f of foods) {
-      if (dist(touches[0].x, touches[0].y, f.x, f.y) < 40) {
-        f.beingDragged = true;
-        f.x = touches[0].x;
-        f.y = touches[0].y;
-      }
-    }
-  }
-  if (state === "miniGame" && touches.length > 0) {
-    eggzee.x = touches[0].x;
-    eggzee.y = touches[0].y;
-  }
-  return false;
-}
-
-function touchEnded() {
-  for (let f of foods) f.beingDragged = false;
-  return false;
-}
-
-// ---------- DANCE ----------
-function openDancePage() {
-  try {
-    const newWin = window.open("eggzeedance.html", "_blank");
-    if (!newWin) window.location.href = "eggzeedance.html";
-  } catch (e) {
-    window.location.href = "eggzeedance.html";
-  }
-}
-
-function setupDanceButtonFix() {
-  let danceLink = createA("eggzeedance.html", "hiddenDanceLink");
-  danceLink.id("hiddenDanceLink");
-  danceLink.attribute("target", "_blank");
-  danceLink.style("display", "none");
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    if (insideButton(feedBtn)) {
+      bounceButton("Feed");
+      state = "feed";
+    } else if (insideButton(danceBtn)) {
+      bounce
