@@ -506,11 +506,16 @@ function mousePressed() {
     if (insideButton(feedBtn)) state = "feed";
     else if (insideButton(danceBtn)) openDancePage();
     else if (insideButton(jokeBtn)) tellJoke();
-    else if (insideButton(gameBtn)) {
-      state = "miniGame";
-      gameStartTime = millis();
-      heartsCaught = 0;
-    }
+   else if (insideButton(gameBtn)) {
+  state = "miniGame";
+  gameStartTime = millis();
+  heartsCaught = 0;
+
+  // 🧹 Clear leftover food items from Feed mode
+  foods = [];
+}
+
+
   } else if (state === "sleep") state = "awake";
 
   for (let f of foods)
@@ -601,6 +606,7 @@ function setupDanceButtonFix() {
   danceLink.attribute("target", "_blank");
   danceLink.style("display", "none");
 }
+
 
 
 
