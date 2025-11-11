@@ -68,23 +68,16 @@ function draw() {
   energy = startTime ? max(0, 120 - elapsed) : 120;
 
   // Scenes
-  if (state === "egg") {
-  // Gentle shake that scales with screen size
- let shakeX = sin(frameCount * 0.6) * (width * 0.02);
-let shakeY = cos(frameCount * 0.6) * (height * 0.02);
-
- image(eggImg, width/2 + shakeX, height/2 + shakeY, 200, 200);
-
-
-  // When tapped, begin hatch
  if (state === "egg") {
+  // Gentle shake that scales with screen size
   let shakeX = sin(frameCount * 0.6) * (width * 0.02);
   let shakeY = cos(frameCount * 0.6) * (height * 0.02);
 
-  // fixed or adaptive egg size
+  // consistent egg size
   let eggSize = min(width, height) * 0.25;
   image(eggImg, width / 2 + shakeX, height / 2 + shakeY, eggSize, eggSize);
 
+  // When tapped, begin hatch
   if (didHatch && millis() - crackTime > 1500) {
     state = "awake";
     showIntro = true;
@@ -375,6 +368,7 @@ function tellJoke() {
 }
 
 function windowResized() { resizeCanvas(windowWidth, windowHeight); }
+
 
 
 
