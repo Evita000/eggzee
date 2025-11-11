@@ -159,12 +159,11 @@ function drawSleepScene() {
 }
 
 function drawMiniGame() {
-  // make sure we're in game state
   if (state !== "miniGame") return;
 
   eggzee.visible = true;
 
-  // follow mouse or finger
+  // Follow mouse or touch
   if (touches.length > 0) {
     eggzee.x = touches[0].x;
     eggzee.y = touches[0].y;
@@ -173,7 +172,7 @@ function drawMiniGame() {
     eggzee.y = height / 2;
   }
 
-  // draw Eggzee
+  // 🐣 Draw Eggzee
   push();
   translate(eggzee.x, eggzee.y);
   rotate(radians(sin(frameCount * 0.05) * 5));
@@ -184,15 +183,9 @@ function drawMiniGame() {
     eggzeeAwakeImg.width * eggzee.scale,
     eggzeeAwakeImg.height * eggzee.scale
   );
-
-  // 🟢 collision zone for test
-  noFill();
-  stroke(0, 255, 0);
-  strokeWeight(4);
-  ellipse(0, 0, 150, 150);
   pop();
 
-  // create sparkles
+  // ✨ Drop sparkles
   if (frameCount % 10 === 0) {
     sparkles.push({
       x: random(50, width - 50),
@@ -203,23 +196,19 @@ function drawMiniGame() {
     });
   }
 
-  // move sparkles
-  for (let i = 0; i < sparkles.length; i++) {
+  // 🌟 Move + check sparkles
+  for (let i = sparkles.length - 1; i >= 0; i--) {
     const s = sparkles[i];
-    fill(255, 255, 100, s.alpha);
+    fill(255, 255, 150, s.alpha);
     noStroke();
     ellipse(s.x, s.y, s.size);
     s.y += s.speed;
     s.alpha -= 2;
 
-    // force-visible debug point
-    fill(0, 255, 255);
-    ellipse(s.x, s.y, 5);
-
-    // collision trigger
+    // 🩷 catch sparkle = heart burst
     if (dist(s.x, s.y, eggzee.x, eggzee.y) < 80) {
       hearts.push({
-        x: eggzee.x,
+        x: eggzee.x + random(-20, 20),
         y: eggzee.y - 40,
         vy: -2,
         alpha: 255
@@ -228,10 +217,12 @@ function drawMiniGame() {
       sparkles.splice(i, 1);
       i--;
     }
+
+    if (s.y > height || s.alpha < 0) sparkles.splice(i, 1);
   }
 
-  // draw hearts above everything
-  for (let i = 0; i < hearts.length; i++) {
+  // ❤️ Floating hearts
+  for (let i = hearts.length - 1; i >= 0; i--) {
     const h = hearts[i];
     textSize(60);
     noStroke();
@@ -242,14 +233,11 @@ function drawMiniGame() {
     if (h.alpha < 0) hearts.splice(i, 1);
   }
 
-  // score text
+  // 💬 Score display
   fill(255);
-  noStroke();
   textSize(22);
   textAlign(CENTER, TOP);
   text("Hearts caught: " + heartsCaught, width / 2, 50);
-
-  // keep game running for now (don’t exit automatically)
 }
 
 
@@ -414,6 +402,7 @@ function touchMoved() {
 function touchEnded() {
   return false;
 }
+
 
 
 
