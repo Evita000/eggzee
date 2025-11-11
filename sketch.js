@@ -77,7 +77,11 @@ function draw() {
   else if (state === "miniGame") drawMiniGame();
   else if (state === "sleep") drawSleepScene();
 
-  // Draw UI + extras
+  // 🩶 DEBUG LINE (remove later)
+  fill(255);
+  textSize(14);
+  text("State: " + state, 60, 20);
+
   // Draw UI + extras
   drawFoods();
   drawHearts();
@@ -86,7 +90,6 @@ function draw() {
   drawEnergyBar();
   drawOverlayText();
   drawJoke(); // 🩷 put this LAST so it's always drawn on top
-}
 
 // ---------- SCENES ----------
 function drawEggScene() {
@@ -622,6 +625,7 @@ function setupDanceButtonFix() {
   danceLink.attribute("target", "_blank");
   danceLink.style("display", "none");
 }
+
 
 
 
