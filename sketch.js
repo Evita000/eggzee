@@ -389,10 +389,11 @@ function drawYumBubble() {
 function drawJoke() {
   if (!showJoke) return;
 
-  const duration = 3000;
+  const duration = 4000;
   const elapsed = millis() - jokeTimer;
   let alpha = 255;
 
+  // Fade in/out
   if (elapsed < 400) alpha = map(elapsed, 0, 400, 0, 255);
   else if (elapsed > duration - 400) alpha = map(elapsed, duration - 400, duration, 255, 0);
 
@@ -403,8 +404,8 @@ function drawJoke() {
   textAlign(CENTER, CENTER);
   textStyle(BOLD);
 
-  // 🧠 Word wrap (max line width)
-  const maxWidth = 280;
+  // 🧠 Auto line wrap so jokes stay in the bubble
+  const maxWidth = min(320, width * 0.8);
   const words = jokeText.split(" ");
   let lines = [""];
   for (let w of words) {
@@ -422,27 +423,28 @@ function drawJoke() {
 
   // 🎨 Bubble background
   noStroke();
-  fill(255, 220, 255);
+  fill(255, 220, 255, alpha);
   rect(bx - bubbleW / 2, by - bubbleH / 2, bubbleW, bubbleH, 25);
-  fill(255, 180, 255, 220);
+  fill(255, 180, 255, alpha * 0.9);
   rect(bx - bubbleW / 2 + 3, by - bubbleH / 2 + 3, bubbleW - 6, bubbleH - 6, 25);
 
-  // Tail
-  fill(255, 200, 255, 230);
+  // 🫧 Tail
+  fill(255, 200, 255, alpha);
   triangle(
     bx - 15, by + bubbleH / 2,
     bx + 15, by + bubbleH / 2,
     bx, by + bubbleH / 2 + 18
   );
 
-  // ✨ Text
-  fill(80, 0, 120);
+  // 💬 Text
+  fill(80, 0, 120, alpha);
   for (let i = 0; i < lines.length; i++) {
     text(lines[i].trim(), bx, by - (lines.length - 1) * lineHeight / 2 + i * lineHeight);
   }
 
   if (elapsed > duration) showJoke = false;
 }
+
 
 
 
@@ -575,6 +577,7 @@ function setupDanceButtonFix() {
   danceLink.attribute("target", "_blank");
   danceLink.style("display", "none");
 }
+
 
 
 
