@@ -88,7 +88,8 @@ canvas {
         const designH = lib.properties.height;
 
         // use cover scaling — fills screen fully (may crop slightly)
-        const scale = Math.max(w / designW, h / designH);
+      const scale = Math.min(w / designW, h / designH);
+
 
         canvas.width = w;
         canvas.height = h;
@@ -132,4 +133,5 @@ canvas {
   </script>
 </body>
 </html>
+
 
