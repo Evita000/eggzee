@@ -2,61 +2,63 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>🐣 Eggzee Interactive</title>
 
-    <!-- ✅ Core p5.js -->
+    <!-- ✅ Load p5 -->
     <script src="https://cdn.jsdelivr.net/npm/p5@1.6.0/lib/p5.min.js"></script>
 
-    <!-- 🧩 Embedded p5.play Fallback (no external requests) -->
+    <!-- ✅ Safe p5.play fallback loader -->
     <script>
-      (function (p5) {
-        if (p5.prototype.createSprite) return; // already loaded
+      window.addEventListener("load", () => {
+        if (typeof window.p5 === "undefined") {
+          console.error("❌ p5 failed to load.");
+          return;
+        }
+        const p5ref = window.p5;
+        console.log("⚙️ p5 loaded, adding mini p5.play...");
 
-        console.log("⚙️ Using embedded p5.play fallback...");
-
-        p5.prototype.Sprite = function (x, y, w, h) {
-          this.position = p5.prototype.createVector(x || 0, y || 0);
+        p5ref.prototype.Sprite = function (x, y, w, h) {
+          this.position = p5ref.prototype.createVector(x || 0, y || 0);
           this.width = w || 50;
           this.height = h || 50;
           this.rotation = 0;
           this.visible = true;
           this.scale = 1;
-          this.velocity = p5.prototype.createVector(0, 0);
+          this.velocity = p5ref.prototype.createVector(0, 0);
           this.addImage = () => {};
           this.changeImage = () => {};
         };
 
-        p5.prototype.createSprite = function (x, y, w, h) {
-          const s = new p5.prototype.Sprite(x, y, w, h);
+        p5ref.prototype.createSprite = function (x, y, w, h) {
+          const s = new p5ref.prototype.Sprite(x, y, w, h);
           if (!this.allSprites) this.allSprites = [];
           this.allSprites.push(s);
           return s;
         };
 
-        p5.prototype.drawSprites = function () {
+        p5ref.prototype.drawSprites = function () {
           if (!this.allSprites) return;
           for (let s of this.allSprites) {
             if (s.visible) {
-              p5.prototype.push();
-              p5.prototype.translate(s.position.x, s.position.y);
-              p5.prototype.rotate(p5.prototype.radians(s.rotation));
-              p5.prototype.noStroke();
-              p5.prototype.fill(255);
-              p5.prototype.rectMode(p5.prototype.CENTER);
-              p5.prototype.rect(0, 0, s.width * s.scale, s.height * s.scale);
-              p5.prototype.pop();
+              p5ref.prototype.push();
+              p5ref.prototype.translate(s.position.x, s.position.y);
+              p5ref.prototype.rotate(p5ref.prototype.radians(s.rotation));
+              p5ref.prototype.noStroke();
+              p5ref.prototype.fill(255);
+              p5ref.prototype.rectMode(p5ref.prototype.CENTER);
+              p5ref.prototype.rect(0, 0, s.width * s.scale, s.height * s.scale);
+              p5ref.prototype.pop();
             }
           }
         };
-      })(p5);
-    </script>
 
-    <!-- 🐣 Main game -->
-    <script src="sketch.js" defer></script>
+        // ✅ now that sprites exist, load your sketch
+        const script = document.createElement("script");
+        script.src = "sketch.js";
+        document.body.appendChild(script);
+      });
+    </script>
 
     <style>
       html, body {
@@ -70,9 +72,5 @@
       }
     </style>
   </head>
-
   <body></body>
 </html>
-
-
-
