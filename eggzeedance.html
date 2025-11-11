@@ -86,15 +86,27 @@ border:none; border-radius:10px; background:#ffd6e0; color:#333; cursor:pointer;
 
 <script>
 document.getElementById("returnBtn").addEventListener("click", () => {
-  window.close(); // closes this tab
+  try {
+    // First try closing (works on desktop if it was opened via script)
+    window.close();
+
+    // If blocked (mobile Safari etc.), just navigate back manually
+    setTimeout(() => {
+      window.open("index.html", "_self");
+    }, 300);
+  } catch (e) {
+    window.open("index.html", "_self");
+  }
 });
 </script>
 
+
 </body>
 </html>
 
 </body>
 </html>
+
 
 
 
