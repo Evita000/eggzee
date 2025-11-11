@@ -74,14 +74,14 @@ function draw() {
 
   // ---------- SCENES ----------
   if (state === "egg") {
-    // Gentle shake
+    // Gentle shake that scales with screen size
     let shakeX = sin(frameCount * 0.6) * (width * 0.02);
     let shakeY = cos(frameCount * 0.6) * (height * 0.02);
 
-    // 🥚 same size as old version
+    // 🥚 consistent egg size
     image(eggImg, width / 2 + shakeX, height / 2 + shakeY, 200, 200);
 
-    // Begin hatch
+    // When tapped, begin hatch
     if (didHatch && millis() - crackTime > 1500) {
       state = "awake";
       showIntro = true;
@@ -112,16 +112,16 @@ function draw() {
     } else {
       showIntro = false;
     }
-  }
+  } // ✅ closes the if(showIntro) block properly here
 
-  // Other states
-  else if (state === "awake") drawEggzeeScene();
+  // ---------- OTHER STATES ----------
+  if (state === "awake") drawEggzeeScene();
   else if (state === "feed") drawFeedScene();
   else if (state === "dance") drawDanceScene();
   else if (state === "miniGame") drawMiniGame();
   else if (state === "sleep") drawSleepScene();
 
-  // UI + overlay
+  // ---------- UI + OVERLAYS ----------
   drawFoods();
   drawHearts();
   drawButtons();
@@ -130,6 +130,7 @@ function draw() {
   drawEnergyBar();
   drawOverlayText();
 }
+
 
 // ---------- SCENES ----------
 function drawEggzeeScene() {
@@ -415,3 +416,4 @@ function tellJoke() {
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
+
