@@ -50,23 +50,23 @@ canvas {
   </div>
 
 <script>
-  let canvas, stage, exportRoot, comp, lib;
+let canvas, stage, exportRoot, comp, lib, bg;
 
-  function init() {
-    console.log("🎬 Starting Eggzee Dance...");
-    canvas = document.getElementById("canvas");
-    comp = AdobeAn.getComposition("1204F486BCA4BF4E9AA6F7C9DE17DD26");
-    lib = comp.getLibrary();
+function init() {
+  console.log("🎬 Starting Eggzee Dance...");
+  canvas = document.getElementById("canvas");
+  comp = AdobeAn.getComposition("1204F486BCA4BF4E9AA6F7C9DE17DD26");
+  lib = comp.getLibrary();
 
-    const loader = new createjs.LoadQueue(false);
-    loader.addEventListener("fileload", (evt) => {
-      if (evt.item.type === "image") {
-        comp.getImages()[evt.item.id] = evt.result;
-      }
-    });
-    loader.addEventListener("complete", handleComplete);
-    loader.loadManifest(lib.properties.manifest);
-  }
+  const loader = new createjs.LoadQueue(false);
+  loader.addEventListener("fileload", (evt) => {
+    if (evt.item.type === "image") {
+      comp.getImages()[evt.item.id] = evt.result;
+    }
+  });
+  loader.addEventListener("complete", handleComplete);
+  loader.loadManifest(lib.properties.manifest);
+}
 
 function handleComplete() {
   exportRoot = new lib.eggzeedanceworks();
@@ -76,46 +76,52 @@ function handleComplete() {
   const bgImage = new Image();
   bgImage.src = "assets/dancefloor1.png";
   bgImage.onload = function () {
-    const bg = new createjs.Bitmap(bgImage);
+    bg = new createjs.Bitmap(bgImage);
     stage.addChild(bg);
     stage.addChild(exportRoot);
 
-    // 💡 Resize everything to fully fill screen
+    resizeCanvas();
+    window.addEventListener("resize", resizeCanvas);
+  };
+
+  AdobeAn.compositionLoaded(lib.properties.id);
+  createjs.Ticker.framerate = lib.properties.fps;
+  createjs.Ticker.addEventListener("tick", stage);
+}
+
 function resizeCanvas() {
   const w = window.innerWidth;
   const h = window.innerHeight;
   canvas.width = w;
   canvas.height = h;
 
-  // 🎨 Scale the background proportionally (no cut, no stretch)
-  const scale = Math.min(w / bgImage.width, h / bgImage.height);
-  bg.scaleX = bg.scaleY = scale;
-  bg.x = (w - bgImage.width * scale) / 2;
-  bg.y = (h - bgImage.height * scale) / 2;
+  // 🎨 Fill the screen with background (no black bars)
+  if (bg) {
+    const scaleFill = Math.max(w / bg.image.width, h / bg.image.height);
+    bg.scaleX = bg.scaleY = scaleFill;
+    bg.x = (w - bg.image.width * scaleFill) / 2;
+    bg.y = (h - bg.image.height * scaleFill) / 2;
+  }
 
-  // 🐣 Keep Eggzee centered and scaled nicely
+  // 🐣 Center Eggzee animation proportionally
   const designW = lib.properties.width;
   const designH = lib.properties.height;
-  const eggzeeScale = Math.min(w / designW, h / designH);
-  stage.scaleX = stage.scaleY = eggzeeScale;
-  stage.x = (w - designW * eggzeeScale) / 2;
-  stage.y = (h - designH * eggzeeScale) / 2;
+  const scale = Math.min(w / designW, h / designH);
+  stage.scaleX = stage.scaleY = scale;
+  stage.x = (w - designW * scale) / 2;
+  stage.y = (h - designH * scale) / 2;
 }
 
-
-    window.addEventListener("resize", resizeCanvas);
-    resizeCanvas();
-  };
-
-  AdobeAn.compositionLoaded(lib.properties.id);
-  createjs.Ticker.framerate = lib.properties.fps;
-  createjs.Ticker.addEventListener("tick", stage);
-
-  console.log("💃 Eggzee now dances with full-screen background!");
-}
-
-
+// ✅ Single-click Return button (works on iPhone + desktop)
+document.addEventListener("DOMContentLoaded", () => {
+  const btn = document.getElementById("returnBtn");
+  btn.addEventListener("click", () => {
+    console.log("⬅️ Returning to Eggzee main menu...");
+    window.location.href = "index.html"; // direct redirect
+  });
+});
 </script>
+
 
 
 
@@ -134,6 +140,7 @@ function resizeCanvas() {
   </script>
 </body>
 </html>
+
 
 
 
