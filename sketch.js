@@ -1,4 +1,5 @@
 let state = "egg";
+console.log("📱 Eggzee script loaded");
 let eggImg, eggzeeAwakeImg, eggzeeSleepImg, cityImg, cityNightImg;
 let eggzee = {};
 let crackTime = 0;
@@ -636,6 +637,7 @@ function setupDanceButtonFix() {
   danceLink.attribute("target", "_blank");
   danceLink.style("display", "none");
 }
+
 
 
 
