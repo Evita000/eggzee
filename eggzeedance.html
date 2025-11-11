@@ -68,11 +68,11 @@ canvas {
     loader.loadManifest(lib.properties.manifest);
   }
 
- function handleComplete() {
+function handleComplete() {
   exportRoot = new lib.eggzeedanceworks();
   stage = new lib.Stage(canvas);
 
-  // 🪩 Load the dancefloor background
+  // 🪩 Load dancefloor background
   const bgImage = new Image();
   bgImage.src = "assets/dancefloor1.png";
   bgImage.onload = function () {
@@ -80,26 +80,28 @@ canvas {
     stage.addChild(bg);
     stage.addChild(exportRoot);
 
-    // ✅ Always show the *full* background (contain to screen)
-    function resizeCanvas() {
-      const w = window.innerWidth;
-      const h = window.innerHeight;
+    // 💡 Resize everything to fully fill screen
+function resizeCanvas() {
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+  canvas.width = w;
+  canvas.height = h;
 
-      canvas.width = w;
-      canvas.height = h;
+  // 🎨 Scale the background proportionally (no cut, no stretch)
+  const scale = Math.min(w / bgImage.width, h / bgImage.height);
+  bg.scaleX = bg.scaleY = scale;
+  bg.x = (w - bgImage.width * scale) / 2;
+  bg.y = (h - bgImage.height * scale) / 2;
 
-      // Scale Eggzee animation (contain)
-      const scale = Math.min(w / lib.properties.width, h / lib.properties.height);
-      stage.scaleX = stage.scaleY = scale;
-      stage.x = (w - lib.properties.width * scale) / 2;
-      stage.y = (h - lib.properties.height * scale) / 2;
+  // 🐣 Keep Eggzee centered and scaled nicely
+  const designW = lib.properties.width;
+  const designH = lib.properties.height;
+  const eggzeeScale = Math.min(w / designW, h / designH);
+  stage.scaleX = stage.scaleY = eggzeeScale;
+  stage.x = (w - designW * eggzeeScale) / 2;
+  stage.y = (h - designH * eggzeeScale) / 2;
+}
 
-      // Scale the background to *fit the entire screen exactly*
-      const bgScale = Math.min(w / bgImage.width, h / bgImage.height);
-      bg.scaleX = bg.scaleY = bgScale;
-      bg.x = (w - bgImage.width * bgScale) / 2;
-      bg.y = (h - bgImage.height * bgScale) / 2;
-    }
 
     window.addEventListener("resize", resizeCanvas);
     resizeCanvas();
@@ -109,8 +111,9 @@ canvas {
   createjs.Ticker.framerate = lib.properties.fps;
   createjs.Ticker.addEventListener("tick", stage);
 
-  console.log("💃 Full background now showing everywhere!");
+  console.log("💃 Eggzee now dances with full-screen background!");
 }
+
 
 </script>
 
@@ -131,6 +134,7 @@ canvas {
   </script>
 </body>
 </html>
+
 
 
 
