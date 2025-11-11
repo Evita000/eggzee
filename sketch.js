@@ -257,8 +257,7 @@ function drawSleepScene() {
 }
 
 // ---------- MINI GAME ----------
-// ---------- MINI GAME ----------
-// ---------- MINI GAME ----------
+
 function drawMiniGame() {
   if (state !== "miniGame") return;
   eggzee.visible = true;
@@ -641,6 +640,7 @@ function resetToMainMenu() {
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
+
 
 
 
