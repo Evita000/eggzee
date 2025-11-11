@@ -84,17 +84,31 @@ border:none; border-radius:10px; background:#ffd6e0; color:#333; cursor:pointer;
 ⬅️ Return to Eggzee
 </button>
 
+<!-- ✅ Works on mobile, desktop, GitHub Pages -->
 <script>
-document.getElementById("returnBtn").addEventListener("click", () => {
-  window.close(); // closes this tab
-});
+  document.getElementById("returnBtn").addEventListener("click", () => {
+    try {
+      // Try to close if this tab was opened by JavaScript
+      window.close();
+    } catch (e) {
+      console.warn("Close blocked, redirecting...");
+    }
+
+    // Always schedule a redirect fallback
+    setTimeout(() => {
+      // Use _self so it replaces this tab on iPhone/Android
+      window.open("index.html", "_self");
+    }, 300);
+  });
 </script>
 
+
 </body>
 </html>
 
 </body>
 </html>
+
 
 
 
