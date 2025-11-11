@@ -430,7 +430,7 @@ function drawJoke() {
   let alpha = map(elapsed, 0, 3000, 255, 0);
   alpha = constrain(alpha, 0, 255);
 
-  // 🫧 Smooth pop-in animation
+  // 🫧 Smooth pop-in
   bubbleScale = lerp(bubbleScale, 1, 0.15);
 
   const bubbleX = width / 2;
@@ -443,31 +443,35 @@ function drawJoke() {
   scale(bubbleScale);
   translate(-bubbleX, -bubbleY);
 
-  // 💭 bubble base
-  fill(255, 245, 255, alpha);
-  stroke(255, 180, 250, alpha);
+  // 💭 bubble background (soft pink glow)
+  fill(255, 230, 250, alpha);
+  stroke(255, 120, 220, alpha);
   strokeWeight(4);
   rectMode(CENTER);
   rect(bubbleX, bubbleY, bubbleW, bubbleH, 30);
 
   // 💫 tail
   noStroke();
-  fill(255, 245, 255, alpha);
+  fill(255, 230, 250, alpha);
   beginShape();
   vertex(bubbleX + 30, bubbleY + bubbleH / 2 - 10);
   vertex(bubbleX + 55, bubbleY + bubbleH / 2 + 25);
   vertex(bubbleX + 5, bubbleY + bubbleH / 2 - 5);
   endShape(CLOSE);
 
-  // 🌈 glowing text
-  fill(random(230, 255), random(100, 200), random(220, 255), alpha);
+  // 🌈 glowing text — bright gradient effect
+  let glowR = map(sin(frameCount * 0.05), -1, 1, 200, 255);
+  let glowG = map(cos(frameCount * 0.08), -1, 1, 100, 220);
+  let glowB = map(sin(frameCount * 0.1), -1, 1, 180, 255);
+  fill(glowR, glowG, glowB, alpha);
   textAlign(CENTER, CENTER);
   textSize(22);
+  textStyle(BOLD);
   text(jokeText, bubbleX, bubbleY, bubbleW - 20, bubbleH - 20);
 
   pop();
 
-  // ⏰ hide after 3s
+  // ⏰ hide after ~3s
   if (elapsed > 3000) showJoke = false;
 }
 
@@ -609,6 +613,7 @@ function setupDanceButtonFix() {
   danceLink.attribute("target", "_blank");
   danceLink.style("display", "none");
 }
+
 
 
 
