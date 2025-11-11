@@ -31,16 +31,16 @@ html, body {
 canvas {
   image-rendering: auto;
 }
+#animation_container, #canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+}
 
-    #animation_container, #canvas {
-      position: absolute;
-      inset: 0;
-      margin: auto;
-      display: block;
-      width: 100vw !important;
-      height: 100vh !important;
-      background-color: black;
-    }
+
   </style>
 </head>
 
@@ -161,6 +161,7 @@ document.addEventListener("DOMContentLoaded", () => {
   </script>
 </body>
 </html>
+
 
 
 
