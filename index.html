@@ -1,26 +1,108 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
   <head>
-    <meta charset="utf-8" />
-    <title>Eggzee</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>💃 Eggzee Dance Scene</title>
 
-    <!-- ✅ p5.js core -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
-
-    <!-- ✅ p5.play stable version (includes createSprite + loadAnimation) -->
-    <script src="https://molleindustria.github.io/p5.play/lib/p5.play.js"></script>
+    <!-- 🧠 CreateJS (Animate) -->
+    <script src="https://code.createjs.com/1.0.0/createjs.min.js"></script>
+    <script src="eggzeedanceworks.js"></script> <!-- Animate export -->
 
     <style>
-      html, body { margin: 0; padding: 0; background: #000; }
-      canvas { display: block; margin: 0 auto; }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        width: 100%;
+        overflow: hidden;
+        background-color: black;
+        touch-action: none; /* disables unwanted mobile gestures */
+      }
+
+      canvas {
+        display: block;
+        width: 100vw;
+        height: 100vh;
+        background: transparent;
+      }
+
+      h1 {
+        color: white;
+        text-align: center;
+        font-family: "Comic Sans MS", cursive, sans-serif;
+        position: absolute;
+        width: 100%;
+        top: 12px;
+        z-index: 10;
+        text-shadow: 2px 2px 8px black;
+      }
+
+      .hint {
+        position: absolute;
+        bottom: 20px;
+        width: 100%;
+        text-align: center;
+        color: #ffccff;
+        font-size: 16px;
+        font-family: sans-serif;
+        text-shadow: 0 0 6px #ff66cc;
+      }
     </style>
   </head>
 
   <body>
-    <script src="sketch.js"></script>
+    <h1>💃 Eggzee’s Dance Party!</h1>
+    <canvas id="animCanvas"></canvas>
+    <div class="hint">✨ Eggzee will return after her dance! ✨</div>
+
+    <script>
+      console.log("🎬 Starting Eggzee Dance...");
+      const canvas = document.getElementById("animCanvas");
+      let stage;
+
+      // 🪩 Load background
+      const bgImage = new Image();
+      bgImage.src = "assets/dancefloor1.png"; // ✅ path relative to main folder
+
+      bgImage.onload = function () {
+        console.log("🪩 Background loaded!");
+
+        const comp = AdobeAn.getComposition("1204F486BCA4BF4E9AA6F7C9DE17DD26");
+        const lib = comp.getLibrary();
+        const exportRoot = new lib.eggzeedanceworks();
+        stage = new lib.Stage(canvas);
+
+        const bg = new createjs.Bitmap(bgImage);
+        stage.addChild(bg);
+        stage.addChild(exportRoot);
+
+        // 🩵 Make it responsive
+        AdobeAn.makeResponsive(true, "both", false, 1, [canvas]);
+        createjs.Ticker.framerate = lib.properties.fps;
+        createjs.Ticker.addEventListener("tick", stage);
+
+        // ✨ Resize background on window resize
+        window.addEventListener("resize", resizeBG);
+        resizeBG();
+
+        function resizeBG() {
+          bg.scaleX = canvas.width / bgImage.width;
+          bg.scaleY = canvas.height / bgImage.height;
+        }
+
+        console.log("💃 Eggzee is dancing on her dancefloor!");
+      };
+    </script>
   </body>
 </html>
+
+
+
 
 
 
