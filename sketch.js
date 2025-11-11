@@ -58,7 +58,6 @@ function setup() {
   jokeBtn = { x: spacing * 4, y: height - 90 };
 }
 
-// ---------- MAIN DRAW ----------
 function draw() {
   // Background
   const isNight = (energy <= 15 && startTime) || state === "sleep";
@@ -74,14 +73,14 @@ function draw() {
 
   // ---------- SCENES ----------
   if (state === "egg") {
-    // Gentle shake that scales with screen size
+    // Gentle shake
     let shakeX = sin(frameCount * 0.6) * (width * 0.02);
     let shakeY = cos(frameCount * 0.6) * (height * 0.02);
 
-    // 🥚 consistent egg size
+    // 🥚 fixed consistent egg size
     image(eggImg, width / 2 + shakeX, height / 2 + shakeY, 200, 200);
 
-    // When tapped, begin hatch
+    // Hatch after tap
     if (didHatch && millis() - crackTime > 1500) {
       state = "awake";
       showIntro = true;
@@ -112,7 +111,7 @@ function draw() {
     } else {
       showIntro = false;
     }
-  } // ✅ closes the if(showIntro) block properly here
+  } // ✅ this is the only closing brace needed here
 
   // ---------- OTHER STATES ----------
   if (state === "awake") drawEggzeeScene();
@@ -416,4 +415,5 @@ function tellJoke() {
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
+
 
