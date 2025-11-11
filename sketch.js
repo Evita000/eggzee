@@ -385,11 +385,11 @@ function drawYumBubble() {
   textAlign(CENTER, CENTER);
 
   // 💭 bubble position — consistent on all devices
-  const bubbleX = width / 2;
-  const bubbleY = height / 2 - height * 0.28;
+const bubbleX = width / 2;
+const bubbleY = height / 2 - 160;
+const bubbleW = min(width * 0.55, 350);
+const bubbleH = 80;
 
-  const bubbleW = 150;
-  const bubbleH = 65;
 
   // 💭 draw bubble
   fill(255, 240, 250, fadeAmt);
@@ -609,6 +609,7 @@ function setupDanceButtonFix() {
   danceLink.attribute("target", "_blank");
   danceLink.style("display", "none");
 }
+
 
 
 
