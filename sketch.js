@@ -274,18 +274,21 @@ function drawJoke() {
   textSize(18);
   textAlign(CENTER, CENTER);
   text(jokeText, width / 2, height / 2 - 200);
-}
+} // ✅ closes drawJoke properly
 
 // ---------- Overlay & Energy ----------
 function drawOverlayText() {
   fill(255);
   textSize(20);
   if (state === "awake") {
-    if (!hasWelcomed)
+    if (!hasWelcomed) {
       text("💛 Hi, I’m Eggzee! Tap a button below!", width / 2, 50);
-    else text("Choose an activity below!", width / 2, 50);
+    } else {
+      text("Choose an activity below!", width / 2, 50);
+    }
   }
 }
+
 
 function drawEnergyBar() {
   if (state === "egg") return;
@@ -364,3 +367,4 @@ function tellJoke() {
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
+
