@@ -117,31 +117,6 @@ function drawHatchingScene() {
 }
 
 
-function drawEggzeeScene() {
-  if (!eggzee.visible) return;
-
-  // 🥚 Normal gentle motion or laugh wiggle when telling a joke
-  if (showJoke) {
-    eggzee.rotation = sin(frameCount * 0.8) * 15;
-
-  } else {
-    eggzee.rotation = sin(frameCount * 0.05) * 5; // normal idle motion
-  }
-
-push();
-translate(eggzee.x, eggzee.y);
-rotate(radians(eggzee.rotation));
-translate(0, sin(frameCount * 2) * 5); // 🩷 gentle bounce when laughing
-image(
-  eggzeeAwakeImg,
-  0, 0,
-  eggzeeAwakeImg.width * eggzee.scale,
-  eggzeeAwakeImg.height * eggzee.scale
-);
-pop();
-
-}
-
 function drawFeedScene() {
   if (!eggzee.visible) eggzee.visible = true;
 
@@ -232,11 +207,13 @@ function drawFeedScene() {
     h.alpha -= 3;
     if (h.alpha <= 0) hearts.splice(i, 1);
   }
-    // 🕒 Return to main menu after 25 seconds of feeding
+
+  // 🕒 Return to main menu after 25 seconds of feeding
   if (startTime && millis() - startTime > 25000) {
     state = "awake";
   }
-} 
+}
+
 
 
 
@@ -619,6 +596,7 @@ function setupDanceButtonFix() {
   danceLink.attribute("target", "_blank");
   danceLink.style("display", "none");
 }
+
 
 
 
