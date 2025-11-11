@@ -1,5 +1,5 @@
-// 🐣 Eggzee — Full Working GitHub Version (v12.1)
-// Fixed egg size + clean hatch logic
+// 🐣 Eggzee — Full Working GitHub Version (v12.2)
+// Fixed egg size + clean syntax + mobile ready
 
 let hatchStart = 0;
 let showIntro = false;
@@ -58,29 +58,24 @@ function setup() {
   jokeBtn = { x: spacing * 4, y: height - 90 };
 }
 
+// ---------- MAIN DRAW ----------
 function draw() {
   // Background
   const isNight = (energy <= 15 && startTime) || state === "sleep";
-  if (isNight && cityNightImg)
-    image(cityNightImg, width / 2, height / 2, width, height);
-  else if (cityImg)
-    image(cityImg, width / 2, height / 2, width, height);
+  if (isNight && cityNightImg) image(cityNightImg, width / 2, height / 2, width, height);
+  else if (cityImg) image(cityImg, width / 2, height / 2, width, height);
   else background(200);
 
   // Update energy
   const elapsed = startTime ? (millis() - startTime) / 1000 : 0;
   energy = startTime ? max(0, 120 - elapsed) : 120;
 
-  // ---------- SCENES ----------
+  // ---------- EGG STATE ----------
   if (state === "egg") {
-    // Gentle shake
     let shakeX = sin(frameCount * 0.6) * (width * 0.02);
     let shakeY = cos(frameCount * 0.6) * (height * 0.02);
-
-    // 🥚 fixed consistent egg size
     image(eggImg, width / 2 + shakeX, height / 2 + shakeY, 200, 200);
 
-    // Hatch after tap
     if (didHatch && millis() - crackTime > 1500) {
       state = "awake";
       showIntro = true;
@@ -99,19 +94,18 @@ function draw() {
     }
   }
 
-  // ✨ "Meet Eggzee!" intro text fade
+  // ---------- INTRO TEXT ----------
   if (showIntro) {
     let t = millis() - hatchStart;
     if (t < 3000) {
       introAlpha = map(t, 0, 2000, 0, 255, true);
       fill(255, introAlpha);
-      textAlign(CENTER, CENTER);
       textSize(width / 12);
       text("✨ Meet Eggzee! ✨", width / 2, height / 2 + height / 5);
     } else {
       showIntro = false;
     }
-  } // ✅ this is the only closing brace needed here
+  }
 
   // ---------- OTHER STATES ----------
   if (state === "awake") drawEggzeeScene();
@@ -130,7 +124,6 @@ function draw() {
   drawOverlayText();
 }
 
-
 // ---------- SCENES ----------
 function drawEggzeeScene() {
   if (!eggzee.visible) eggzee.visible = true;
@@ -138,13 +131,7 @@ function drawEggzeeScene() {
   push();
   translate(eggzee.x, eggzee.y);
   rotate(radians(eggzee.rotation));
-  image(
-    eggzeeAwakeImg,
-    0,
-    0,
-    eggzeeAwakeImg.width * eggzee.scale,
-    eggzeeAwakeImg.height * eggzee.scale
-  );
+  image(eggzeeAwakeImg, 0, 0, eggzeeAwakeImg.width * eggzee.scale, eggzeeAwakeImg.height * eggzee.scale);
   pop();
 }
 
@@ -152,13 +139,7 @@ function drawFeedScene() {
   if (!eggzee.visible) eggzee.visible = true;
   push();
   translate(eggzee.x, eggzee.y);
-  image(
-    eggzeeAwakeImg,
-    0,
-    0,
-    eggzeeAwakeImg.width * 0.12,
-    eggzeeAwakeImg.height * 0.12
-  );
+  image(eggzeeAwakeImg, 0, 0, eggzeeAwakeImg.width * 0.12, eggzeeAwakeImg.height * 0.12);
   pop();
 
   if (frameCount % 120 === 0 && foods.length < 5) {
@@ -185,13 +166,7 @@ function drawDanceScene() {
   if (!eggzee.visible) eggzee.visible = true;
   push();
   translate(eggzee.x, eggzee.y);
-  image(
-    eggzeeAwakeImg,
-    0,
-    0,
-    eggzeeAwakeImg.width * 0.12,
-    eggzeeAwakeImg.height * 0.12
-  );
+  image(eggzeeAwakeImg, 0, 0, eggzeeAwakeImg.width * 0.12, eggzeeAwakeImg.height * 0.12);
   pop();
 }
 
@@ -210,27 +185,14 @@ function drawMiniGame() {
   eggzee.visible = true;
   eggzee.x = mouseX;
   eggzee.y = height / 2;
-
   push();
   translate(eggzee.x, eggzee.y);
   rotate(radians(sin(frameCount * 0.05) * 5));
-  image(
-    eggzeeAwakeImg,
-    0,
-    0,
-    eggzeeAwakeImg.width * eggzee.scale,
-    eggzeeAwakeImg.height * eggzee.scale
-  );
+  image(eggzeeAwakeImg, 0, 0, eggzeeAwakeImg.width * eggzee.scale, eggzeeAwakeImg.height * eggzee.scale);
   pop();
 
   if (frameCount % 15 === 0) {
-    sparkles.push({
-      x: random(50, width - 50),
-      y: -20,
-      size: random(8, 14),
-      speed: random(1.5, 3),
-      alpha: 255
-    });
+    sparkles.push({ x: random(50, width - 50), y: -20, size: random(8, 14), speed: random(1.5, 3), alpha: 255 });
   }
 
   for (let i = sparkles.length - 1; i >= 0; i--) {
@@ -242,12 +204,7 @@ function drawMiniGame() {
     s.alpha -= 3;
 
     if (dist(s.x, s.y, eggzee.x, eggzee.y) < 80) {
-      hearts.push({
-        x: eggzee.x + random(-30, 30),
-        y: eggzee.y - random(20, 60),
-        vy: -1,
-        alpha: 255
-      });
+      hearts.push({ x: eggzee.x + random(-30, 30), y: eggzee.y - random(20, 60), vy: -1, alpha: 255 });
       sparkles.splice(i, 1);
       heartsCaught++;
     }
@@ -317,7 +274,6 @@ function drawYumBubble() {
   rect(width / 2 - 60, height / 2 - 150, 120, 50, 25);
   fill(50);
   noStroke();
-  textAlign(CENTER, CENTER);
   text("Yum! 💕", width / 2, height / 2 - 150);
   if (millis() - yumTimer > 1500) showYum = false;
 }
@@ -326,7 +282,6 @@ function drawJoke() {
   if (!showJoke) return;
   fill(255);
   textSize(18);
-  textAlign(CENTER, CENTER);
   text(jokeText, width / 2, height / 2 - 200);
 }
 
@@ -335,8 +290,7 @@ function drawOverlayText() {
   fill(255);
   textSize(20);
   if (state === "awake") {
-    if (!hasWelcomed)
-      text("💛 Hi, I’m Eggzee! Tap a button below!", width / 2, 50);
+    if (!hasWelcomed) text("💛 Hi, I’m Eggzee! Tap a button below!", width / 2, 50);
     else text("Choose an activity below!", width / 2, 50);
   }
 }
@@ -372,25 +326,26 @@ function mousePressed() {
     }
   } else if (state === "sleep") state = "awake";
 
-  for (let f of foods)
-    if (dist(mouseX, mouseY, f.x, f.y) < 30) f.beingDragged = true;
+  for (let f of foods) if (dist(mouseX, mouseY, f.x, f.y) < 30) f.beingDragged = true;
 }
 
 function mouseReleased() {
   for (let f of foods) f.beingDragged = false;
 }
+
 function touchStarted() {
   mousePressed();
   return false;
 }
+
 function touchMoved() {
-  for (let f of foods)
-    if (f.beingDragged) {
-      f.x = mouseX;
-      f.y = mouseY;
-    }
+  for (let f of foods) if (f.beingDragged) {
+    f.x = mouseX;
+    f.y = mouseY;
+  }
   return false;
 }
+
 function insideButton(btn) {
   return (
     mouseX > btn.x - 50 &&
@@ -415,5 +370,3 @@ function tellJoke() {
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
-
-
