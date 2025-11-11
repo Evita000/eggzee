@@ -32,7 +32,7 @@ function draw() {
   if (cityImg) image(cityImg, 0, 0, width, height);
   else background(120, 180, 255);
 
-  // 🐣 Egg / Eggzee
+  // 🐣 Egg or Eggzee
   imageMode(CENTER);
   if (state === "egg") image(eggImg, width / 2, height / 2, 220, 220);
   else image(eggzeeImg, width / 2, height / 2, 240, 240);
@@ -55,10 +55,9 @@ function draw() {
 }
 
 function mousePressed() {
-  // Tap to hatch
+  // Tap to hatch Eggzee
   if (state === "egg") state = "awake";
   else {
-    // Button interactions
     for (let b of buttons) {
       if (
         mouseX > b.x - 50 &&
@@ -66,7 +65,7 @@ function mousePressed() {
         mouseY > b.y - 35 &&
         mouseY < b.y + 35
       ) {
-        console.log("Button clicked:", b.label);
+        console.log("Clicked:", b.label);
         if (b.label.includes("Dance")) window.open("eggzeedance.html", "_blank");
       }
     }
