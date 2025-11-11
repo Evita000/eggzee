@@ -393,47 +393,48 @@ function drawJoke() {
   const elapsed = millis() - jokeTimer;
   let alpha = 255;
 
+  // Fade in/out timing
   if (elapsed < 400) alpha = map(elapsed, 0, 400, 0, 255);
   else if (elapsed > duration - 400) alpha = map(elapsed, duration - 400, duration, 255, 0);
 
-  // Bubble position (centered above Eggzee if visible)
+  // Bubble position
   const bx = eggzee.visible ? eggzee.x : width / 2;
   const by = eggzee.visible ? eggzee.y - 220 : height / 2 - 200;
 
-  textSize(20);
-  const bubblePadding = 50;
+  textSize(22);
+  const bubblePadding = 60;
   const bubbleW = textWidth(jokeText) + bubblePadding;
   const bubbleH = 80;
 
-  // 🫧 Bubble background (bright lilac)
-  fill(255, 210, 255, alpha);
-  stroke(170, 100, 200, alpha);
-  strokeWeight(3);
-  rect(bx - bubbleW / 2, by - bubbleH / 2, bubbleW, bubbleH, 25);
-
-  // Tail triangle
+  // 🎨 Bright bubble with gradient-style effect (mobile-safe solid)
   noStroke();
-  fill(255, 210, 255, alpha);
+  fill(255, 220, 255, 255); // bright pink-lavender
+  rect(bx - bubbleW / 2, by - bubbleH / 2, bubbleW, bubbleH, 25);
+  fill(255, 180, 255, 200);
+  rect(bx - bubbleW / 2 + 3, by - bubbleH / 2 + 3, bubbleW - 6, bubbleH - 6, 25);
+
+  // Tail (solid fill)
+  fill(255, 200, 255, 230);
   triangle(
     bx - 15, by + bubbleH / 2,
     bx + 15, by + bubbleH / 2,
     bx, by + bubbleH / 2 + 18
   );
 
-  // Text shadow + foreground
+  // ✨ Joke text — bold, readable everywhere
   textAlign(CENTER, CENTER);
-  fill(0, 0, 0, alpha * 0.5); // shadow
-  text(jokeText, bx + 2, by + 2);
-  fill(50, 10, 70, alpha);
+  textStyle(BOLD);
+  fill(80, 0, 120); // deep purple for visibility
   text(jokeText, bx, by);
 
-  // Float animation
+  // Float animation (cute wobble)
   push();
-  translate(0, sin(frameCount * 0.05) * 2);
+  translate(0, sin(frameCount * 0.1) * 2);
   pop();
 
   if (elapsed > duration) showJoke = false;
 }
+
 
 
 
@@ -555,6 +556,7 @@ function setupDanceButtonFix() {
   danceLink.attribute("target", "_blank");
   danceLink.style("display", "none");
 }
+
 
 
 
