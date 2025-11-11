@@ -80,10 +80,7 @@ function draw() {
 drawHearts();
 drawButtons();
 
-// ✅ Draw Yum bubble ONLY outside of feed scene
-if (state !== "feed" && showYum) {
-  drawYumBubble();
-}
+
 
 drawJoke();
 drawEnergyBar();
@@ -480,6 +477,7 @@ function setupDanceButtonFix() {
   danceLink.attribute("target", "_blank");
   danceLink.style("display", "none");
 }
+
 
 
 
