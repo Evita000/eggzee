@@ -97,24 +97,28 @@ function resizeCanvas() {
 
   if (!bg) return;
 
-  // 🖼️ 1️⃣ Scale background with "contain" — show full image, no cropping
-  const scaleContain = Math.min(w / bg.image.width, h / bg.image.height);
-  bg.scaleX = bg.scaleY = scaleContain;
-  bg.x = (w - bg.image.width * scaleContain) / 2;
-  bg.y = (h - bg.image.height * scaleContain) / 2;
+  // 🪩 Center + contain background — show full image perfectly centered
+  const scale = Math.min(w / bg.image.width, h / bg.image.height);
+  bg.scaleX = bg.scaleY = scale;
 
-  // 🐣 2️⃣ Scale Eggzee animation proportionally
+  // align center
+  bg.x = w / 2 - (bg.image.width * scale) / 2;
+  bg.y = h / 2 - (bg.image.height * scale) / 2;
+
+  // 🐣 scale & center Eggzee animation
   const designW = lib.properties.width;
   const designH = lib.properties.height;
-  const scale = Math.min(w / designW, h / designH);
-  exportRoot.scaleX = exportRoot.scaleY = scale;
-  exportRoot.x = (w - designW * scale) / 2;
-  exportRoot.y = (h - designH * scale) / 2;
+  const animScale = Math.min(w / designW, h / designH);
+  exportRoot.scaleX = exportRoot.scaleY = animScale;
+  exportRoot.x = w / 2 - (designW * animScale) / 2;
+  exportRoot.y = h / 2 - (designH * animScale) / 2;
 
-  // 🪩 3️⃣ Keep stage exactly canvas-sized (no double scaling)
+  // Stage matches canvas fully
   stage.scaleX = stage.scaleY = 1;
-  stage.x = stage.y = 0;
+  stage.x = 0;
+  stage.y = 0;
 }
+
 
 
 // ✅ Single-click Return button (works on iPhone + desktop)
@@ -145,6 +149,7 @@ document.addEventListener("DOMContentLoaded", () => {
   </script>
 </body>
 </html>
+
 
 
 
