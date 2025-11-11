@@ -19,6 +19,18 @@
       background-color: black;
       touch-action: none; /* 🚫 disables pinch-zoom and drag */
     }
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background-color: black;
+  touch-action: none; /* prevent pinch-zoom */
+}
+canvas {
+  image-rendering: auto;
+}
 
     #animation_container, #canvas {
       position: absolute;
@@ -37,70 +49,73 @@
     <canvas id="canvas"></canvas>
   </div>
 
-  <script>
-    let canvas, stage, exportRoot, comp, lib;
+<script>
+  let canvas, stage, exportRoot, comp, lib;
 
-    function init() {
-      console.log("🎬 Starting Eggzee Dance...");
-      canvas = document.getElementById("canvas");
-      comp = AdobeAn.getComposition("1204F486BCA4BF4E9AA6F7C9DE17DD26");
-      lib = comp.getLibrary();
+  function init() {
+    console.log("🎬 Starting Eggzee Dance...");
+    canvas = document.getElementById("canvas");
+    comp = AdobeAn.getComposition("1204F486BCA4BF4E9AA6F7C9DE17DD26");
+    lib = comp.getLibrary();
 
-      const loader = new createjs.LoadQueue(false);
-      loader.addEventListener("fileload", (evt) => {
-        if (evt.item.type === "image") {
-          comp.getImages()[evt.item.id] = evt.result;
-        }
-      });
-      loader.addEventListener("complete", handleComplete);
-      loader.loadManifest(lib.properties.manifest);
-    }
+    const loader = new createjs.LoadQueue(false);
+    loader.addEventListener("fileload", (evt) => {
+      if (evt.item.type === "image") {
+        comp.getImages()[evt.item.id] = evt.result;
+      }
+    });
+    loader.addEventListener("complete", handleComplete);
+    loader.loadManifest(lib.properties.manifest);
+  }
 
-    function handleComplete() {
-      exportRoot = new lib.eggzeedanceworks();
-      stage = new lib.Stage(canvas);
+  function handleComplete() {
+    exportRoot = new lib.eggzeedanceworks();
+    stage = new lib.Stage(canvas);
 
-      // 🪩 Load dancefloor background
-      const bgImage = new Image();
-      bgImage.src = "assets/dancefloor1.png";
-      bgImage.onload = function () {
-        const bg = new createjs.Bitmap(bgImage);
-        stage.addChild(bg);
-        stage.addChild(exportRoot);
+    // 🪩 Load dancefloor background
+    const bgImage = new Image();
+    bgImage.src = "assets/dancefloor1.png";
+    bgImage.onload = function () {
+      const bg = new createjs.Bitmap(bgImage);
+      stage.addChild(bg);
+      stage.addChild(exportRoot);
 
-        // 💡 Clean, unified scaling
-        function resizeCanvas() {
-          const w = window.innerWidth;
-          const h = window.innerHeight;
-          const scale = Math.max(
-            w / lib.properties.width,
-            h / lib.properties.height
-          );
+      // 🧩 Unified full-screen "cover" scaling
+      function resizeCanvas() {
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+        const designW = lib.properties.width;
+        const designH = lib.properties.height;
 
-          canvas.width = w;
-          canvas.height = h;
+        // use cover scaling — fills screen fully (may crop slightly)
+        const scale = Math.max(w / designW, h / designH);
 
-          // background fills entire screen
-          bg.scaleX = w / bgImage.width;
-          bg.scaleY = h / bgImage.height;
+        canvas.width = w;
+        canvas.height = h;
 
-          // scale the whole animation proportionally
-          stage.scaleX = stage.scaleY = scale;
-          stage.x = (w - lib.properties.width * scale) / 2;
-          stage.y = (h - lib.properties.height * scale) / 2;
-        }
+        // Apply to both stage and background
+        stage.scaleX = stage.scaleY = scale;
+        stage.x = (w - designW * scale) / 2;
+        stage.y = (h - designH * scale) / 2;
 
-        window.addEventListener("resize", resizeCanvas);
-        resizeCanvas();
-      };
+        bg.scaleX = bg.scaleY = scale;
+        bg.x = (w - bgImage.width * scale) / 2;
+        bg.y = (h - bgImage.height * scale) / 2;
+      }
 
-      AdobeAn.compositionLoaded(lib.properties.id);
-      createjs.Ticker.framerate = lib.properties.fps;
-      createjs.Ticker.addEventListener("tick", stage);
+      window.addEventListener("resize", resizeCanvas);
+      resizeCanvas();
+    };
 
-      console.log("💃 Eggzee dance now fits perfectly!");
-    }
-  </script>
+    AdobeAn.compositionLoaded(lib.properties.id);
+    createjs.Ticker.framerate = lib.properties.fps;
+    createjs.Ticker.addEventListener("tick", stage);
+
+    console.log("💃 Eggzee fills the full screen perfectly now!");
+  }
+</script>
+
+
 
   <button id="returnBtn"
     style="position:fixed; bottom:20px; right:20px; padding:12px 18px; font-size:18px;
@@ -117,3 +132,4 @@
   </script>
 </body>
 </html>
+
