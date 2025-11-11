@@ -498,11 +498,28 @@ function drawJoke() {
 
 
 function drawOverlayText() {
-  fill(255);
-  textSize(20);
   if (state === "awake") {
-    if (!hasWelcomed) text("💛 Hi, I’m Eggzee! Tap a button below!", width / 2, 50);
-    else text("Choose an activity below!", width / 2, 50);
+    textAlign(CENTER, CENTER);
+    textSize(24);
+    textStyle(BOLD);
+
+    const message = !hasWelcomed
+      ? "💛 Hi, I’m Eggzee! What breaks me, makes me."
+      : "Choose an activity below!";
+
+    // 🔥 Vibrant gradient glow (layers)
+    for (let i = 0; i < 8; i++) {
+      let glowAlpha = 100 - i * 12;
+      fill(255, 160 + i * 10, 0, glowAlpha); // orange to yellow gradient
+      text(message, width / 2, 100 + i * 0.5);
+    }
+
+    // ✨ Main bright gold text
+    fill(255, 230, 70);
+    stroke(255, 180, 0);
+    strokeWeight(2);
+    text(message, width / 2, 100);
+    noStroke();
   }
 }
 
@@ -643,6 +660,7 @@ function setupDanceButtonFix() {
   danceLink.attribute("target", "_blank");
   danceLink.style("display", "none");
 }
+
 
 
 
