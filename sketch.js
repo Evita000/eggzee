@@ -393,27 +393,41 @@ function drawJoke() {
   const elapsed = millis() - jokeTimer;
   let alpha = 255;
 
-  // Fade in/out timing
   if (elapsed < 400) alpha = map(elapsed, 0, 400, 0, 255);
   else if (elapsed > duration - 400) alpha = map(elapsed, duration - 400, duration, 255, 0);
 
-  // Bubble position
   const bx = eggzee.visible ? eggzee.x : width / 2;
   const by = eggzee.visible ? eggzee.y - 220 : height / 2 - 200;
 
-  textSize(22);
-  const bubblePadding = 60;
-  const bubbleW = textWidth(jokeText) + bubblePadding;
-  const bubbleH = 80;
+  textSize(20);
+  textAlign(CENTER, CENTER);
+  textStyle(BOLD);
 
-  // 🎨 Bright bubble with gradient-style effect (mobile-safe solid)
+  // 🧠 Word wrap (max line width)
+  const maxWidth = 280;
+  const words = jokeText.split(" ");
+  let lines = [""];
+  for (let w of words) {
+    let currentLine = lines[lines.length - 1];
+    if (textWidth(currentLine + " " + w) < maxWidth) {
+      lines[lines.length - 1] = currentLine + " " + w;
+    } else {
+      lines.push(w);
+    }
+  }
+
+  const lineHeight = 26;
+  const bubbleH = lines.length * lineHeight + 40;
+  const bubbleW = maxWidth + 60;
+
+  // 🎨 Bubble background
   noStroke();
-  fill(255, 220, 255, 255); // bright pink-lavender
+  fill(255, 220, 255);
   rect(bx - bubbleW / 2, by - bubbleH / 2, bubbleW, bubbleH, 25);
-  fill(255, 180, 255, 200);
+  fill(255, 180, 255, 220);
   rect(bx - bubbleW / 2 + 3, by - bubbleH / 2 + 3, bubbleW - 6, bubbleH - 6, 25);
 
-  // Tail (solid fill)
+  // Tail
   fill(255, 200, 255, 230);
   triangle(
     bx - 15, by + bubbleH / 2,
@@ -421,20 +435,14 @@ function drawJoke() {
     bx, by + bubbleH / 2 + 18
   );
 
-  // ✨ Joke text — bold, readable everywhere
-  textAlign(CENTER, CENTER);
-  textStyle(BOLD);
-  fill(80, 0, 120); // deep purple for visibility
-  text(jokeText, bx, by);
-
-  // Float animation (cute wobble)
-  push();
-  translate(0, sin(frameCount * 0.1) * 2);
-  pop();
+  // ✨ Text
+  fill(80, 0, 120);
+  for (let i = 0; i < lines.length; i++) {
+    text(lines[i].trim(), bx, by - (lines.length - 1) * lineHeight / 2 + i * lineHeight);
+  }
 
   if (elapsed > duration) showJoke = false;
 }
-
 
 
 
@@ -500,18 +508,29 @@ function insideButton(btn) {
     mouseY < btn.y + 40
   );
 }
-
 function tellJoke() {
   const jokes = [
-    "You crack me up 🥚😂",
-    "Keep calm and egg on 🧘‍♀️",
-    "Eggstroidinary! 🤩",
-    "Sunny-side up ☀️"
+    "How did the egg get up the mountain? It scrambled up! 🏔️",
+    "This is so eggstroidinary! 🤩",
+    "I’m on a roll — no need to eggsplain! 🥖",
+    "How do comedians like their eggs? Funny side-up! 😂",
+    "I’m feeling a bit fried today 🍳",
+    "Don’t egg-nore me! 🙃",
+    "Stop yolking around! 😜",
+    "You crack me up every time 🥚😆",
+    "I’m living sunny-side up ☀️",
+    "Keep calm and egg on. 🧘‍♀️",
+    "What do you call an egg who tells jokes? A pun-scrambler! 🤓",
+    "I shell-ter my feelings sometimes… 🐚",
+    "An egg-cellent day to hatch plans! 🐣",
+    "Oops, my shell-fi camera cracked 📸🥚",
+    "Shell yeah! 💛"
   ];
   jokeText = random(jokes);
   showJoke = true;
   jokeTimer = millis();
 }
+
 
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
@@ -556,6 +575,7 @@ function setupDanceButtonFix() {
   danceLink.attribute("target", "_blank");
   danceLink.style("display", "none");
 }
+
 
 
 
