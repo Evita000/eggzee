@@ -132,7 +132,7 @@ function drawFeedScene() {
     });
   }
 
-  // 🍪 Draw and drag foods
+  // 🍪 Draw + drag foods
   for (let f of foods) {
     if (f.beingDragged) {
       f.x = mouseX;
@@ -141,14 +141,13 @@ function drawFeedScene() {
     textSize(40);
     text(f.emoji, f.x, f.y);
 
-    // 🩷 If food touches Eggzee
+    // 🩷 When Eggzee "eats" it
     if (dist(f.x, f.y, eggzee.x, eggzee.y) < 80) {
-      // Remove food after "eating"
       f.toRemove = true;
       showYum = true;
       yumTimer = millis();
 
-      // ✨ Create sparkle burst
+      // ✨ Sparkle burst
       for (let i = 0; i < 10; i++) {
         sparkles.push({
           x: eggzee.x + random(-30, 30),
@@ -159,7 +158,7 @@ function drawFeedScene() {
         });
       }
 
-      // ❤️ Create floating heart
+      // ❤️ Floating heart
       hearts.push({
         x: eggzee.x + random(-20, 20),
         y: eggzee.y - 60,
@@ -172,7 +171,7 @@ function drawFeedScene() {
   // 🍕 Remove eaten foods
   foods = foods.filter(f => !f.toRemove);
 
-  // ✨ Animate sparkles
+  // ✨ Sparkles animation
   for (let i = sparkles.length - 1; i >= 0; i--) {
     const s = sparkles[i];
     fill(255, 255, 200, s.alpha);
@@ -183,7 +182,7 @@ function drawFeedScene() {
     if (s.alpha <= 0) sparkles.splice(i, 1);
   }
 
-  // ❤️ Floating hearts animation
+  // ❤️ Hearts animation
   for (let i = hearts.length - 1; i >= 0; i--) {
     const h = hearts[i];
     textSize(40);
@@ -203,6 +202,7 @@ function drawFeedScene() {
     text("Yum! 💕", width / 2, height / 2 - 160);
   }
 }
+
 
 
 function drawDanceScene() {
@@ -472,6 +472,7 @@ function touchMoved() {
 function touchEnded() {
   return false;
 }
+
 
 
 
