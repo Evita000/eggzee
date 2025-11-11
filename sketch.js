@@ -90,6 +90,7 @@ function draw() {
   drawEnergyBar();
   drawOverlayText();
   drawJoke(); // 🩷 put this LAST so it's always drawn on top
+}
 
 // ---------- SCENES ----------
 function drawEggScene() {
@@ -625,6 +626,7 @@ function setupDanceButtonFix() {
   danceLink.attribute("target", "_blank");
   danceLink.style("display", "none");
 }
+
 
 
 
