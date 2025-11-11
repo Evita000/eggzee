@@ -323,6 +323,26 @@ function drawButton(btn, emoji, label) {
   text(label, btn.x, btn.y + 25);
 }
 
+function drawEggzeeScene() {
+  if (!eggzee.visible) return;
+
+  // 🧘 Gentle idle motion for Eggzee
+  let sway = sin(frameCount * 0.03) * 2; // small side sway
+  let bounce = showJoke ? sin(frameCount * 0.2) * 3 : 0; // gentle bounce when laughing
+
+  push();
+  translate(eggzee.x, eggzee.y + bounce);
+  rotate(radians(sway));
+  image(
+    eggzeeAwakeImg,
+    0, 0,
+    eggzeeAwakeImg.width * eggzee.scale,
+    eggzeeAwakeImg.height * eggzee.scale
+  );
+  pop();
+}
+
+
 // ---------- FEED HELPERS ----------
 function drawFoods() {
   for (let f of foods) {
@@ -596,6 +616,7 @@ function setupDanceButtonFix() {
   danceLink.attribute("target", "_blank");
   danceLink.style("display", "none");
 }
+
 
 
 
