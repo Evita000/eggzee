@@ -80,7 +80,7 @@ function handleComplete() {
     stage.addChild(bg);
     stage.addChild(exportRoot);
 
-    resizeCanvas();
+    resizeCanvas(); // ✅ moved here (runs once background is ready)
     window.addEventListener("resize", resizeCanvas);
   };
 
@@ -88,6 +88,9 @@ function handleComplete() {
   createjs.Ticker.framerate = lib.properties.fps;
   createjs.Ticker.addEventListener("tick", stage);
 }
+
+
+
 
 function resizeCanvas() {
   const w = window.innerWidth;
@@ -109,10 +112,11 @@ function resizeCanvas() {
   // 📱 Mobile → contain (show full image)
   // 🖥️ Desktop → cover (fill whole screen, no black)
   if (isMobile) {
-    scale = Math.min(scaleX, scaleY) * 1.12; // zoom a bit on mobile
-  } else {
-    scale = Math.max(scaleX, scaleY); // fill screen on desktop
-  }
+  scale = Math.min(scaleX, scaleY) * 1.12; // zoom a bit on mobile
+} else {
+  scale = Math.min(scaleX, scaleY); // ✅ show full image on desktop
+}
+
 
   bg.scaleX = bg.scaleY = scale;
   bg.x = (w - bg.image.width * scale) / 2;
@@ -133,14 +137,6 @@ function resizeCanvas() {
 
 
 
-// ✅ Single-click Return button (works on iPhone + desktop)
-document.addEventListener("DOMContentLoaded", () => {
-  const btn = document.getElementById("returnBtn");
-  btn.addEventListener("click", () => {
-    console.log("⬅️ Returning to Eggzee main menu...");
-    window.location.href = "index.html"; // direct redirect
-  });
-});
 </script>
 
 
@@ -161,6 +157,7 @@ document.addEventListener("DOMContentLoaded", () => {
   </script>
 </body>
 </html>
+
 
 
 
