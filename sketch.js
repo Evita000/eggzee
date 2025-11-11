@@ -1,10 +1,3 @@
-// 🐣 Eggzee — Full Working GitHub Version (v12.2)
-// Fixed egg size + clean syntax + mobile ready
-
-let hatchStart = 0;
-let showIntro = false;
-let introAlpha = 0;
-let didHatch = false;
 let state = "egg";
 let eggImg, eggzeeAwakeImg, eggzeeSleepImg, cityImg, cityNightImg;
 let eggzee = {};
@@ -58,7 +51,6 @@ function setup() {
   jokeBtn = { x: spacing * 4, y: height - 90 };
 }
 
-// ---------- MAIN DRAW ----------
 function draw() {
   // Background
   const isNight = (energy <= 15 && startTime) || state === "sleep";
@@ -70,51 +62,16 @@ function draw() {
   const elapsed = startTime ? (millis() - startTime) / 1000 : 0;
   energy = startTime ? max(0, 120 - elapsed) : 120;
 
-  // ---------- EGG STATE ----------
-  if (state === "egg") {
-    let shakeX = sin(frameCount * 0.6) * (width * 0.02);
-    let shakeY = cos(frameCount * 0.6) * (height * 0.02);
-    image(eggImg, width / 2 + shakeX, height / 2 + shakeY, 200, 200);
-
-    if (didHatch && millis() - crackTime > 1500) {
-      state = "awake";
-      showIntro = true;
-      hatchStart = millis();
-
-      // sparkle burst
-      for (let i = 0; i < 20; i++) {
-        sparkles.push({
-          x: width / 2,
-          y: height / 2,
-          vx: random(-2, 2),
-          vy: random(-2, -5),
-          life: random(60, 120)
-        });
-      }
-    }
-  }
-
-  // ---------- INTRO TEXT ----------
-  if (showIntro) {
-    let t = millis() - hatchStart;
-    if (t < 3000) {
-      introAlpha = map(t, 0, 2000, 0, 255, true);
-      fill(255, introAlpha);
-      textSize(width / 12);
-      text("✨ Meet Eggzee! ✨", width / 2, height / 2 + height / 5);
-    } else {
-      showIntro = false;
-    }
-  }
-
-  // ---------- OTHER STATES ----------
-  if (state === "awake") drawEggzeeScene();
+  // Scenes
+  if (state === "egg") drawEggScene();
+  else if (state === "hatching") drawHatchingScene();
+  else if (state === "awake") drawEggzeeScene();
   else if (state === "feed") drawFeedScene();
   else if (state === "dance") drawDanceScene();
   else if (state === "miniGame") drawMiniGame();
   else if (state === "sleep") drawSleepScene();
 
-  // ---------- UI + OVERLAYS ----------
+  // Draw elements
   drawFoods();
   drawHearts();
   drawButtons();
@@ -124,9 +81,28 @@ function draw() {
   drawOverlayText();
 }
 
-// ---------- SCENES ----------
+// ---------- Scenes ----------
+function drawEggScene() {
+  image(eggImg, width / 2, height / 2 + 40, 200, 200);
+  fill(255);
+  text("Tap the egg to hatch Eggzee 🥚", width / 2, height - 40);
+  eggzee.visible = false;
+}
+
+function drawHatchingScene() {
+  fill(0, 50);
+  rect(0, 0, width, height);
+  image(eggImg, width / 2, height / 2 + 40 + sin(frameCount * 0.3) * 5, 200, 200);
+  if (millis() - crackTime > 1000) {
+    state = "awake";
+    eggzee.visible = true;
+    startTime = millis();
+    hasWelcomed = false;
+  }
+}
+
 function drawEggzeeScene() {
-  if (!eggzee.visible) eggzee.visible = true;
+  if (!eggzee.visible) return;
   eggzee.rotation = sin(frameCount * 0.05) * 5;
   push();
   translate(eggzee.x, eggzee.y);
@@ -144,12 +120,7 @@ function drawFeedScene() {
 
   if (frameCount % 120 === 0 && foods.length < 5) {
     let emojiList = ["🍩", "🍎", "🍓", "🍪", "🍕"];
-    foods.push({
-      x: random(60, width - 60),
-      y: random(height / 2, height - 100),
-      emoji: random(emojiList),
-      beingDragged: false
-    });
+    foods.push({ x: random(60, width - 60), y: random(height / 2, height - 100), emoji: random(emojiList), beingDragged: false });
   }
 
   for (let f of foods) {
@@ -163,6 +134,7 @@ function drawFeedScene() {
 }
 
 function drawDanceScene() {
+  // Dance handled in external HTML
   if (!eggzee.visible) eggzee.visible = true;
   push();
   translate(eggzee.x, eggzee.y);
@@ -185,6 +157,7 @@ function drawMiniGame() {
   eggzee.visible = true;
   eggzee.x = mouseX;
   eggzee.y = height / 2;
+
   push();
   translate(eggzee.x, eggzee.y);
   rotate(radians(sin(frameCount * 0.05) * 5));
@@ -274,6 +247,7 @@ function drawYumBubble() {
   rect(width / 2 - 60, height / 2 - 150, 120, 50, 25);
   fill(50);
   noStroke();
+  textAlign(CENTER, CENTER);
   text("Yum! 💕", width / 2, height / 2 - 150);
   if (millis() - yumTimer > 1500) showYum = false;
 }
@@ -282,6 +256,7 @@ function drawJoke() {
   if (!showJoke) return;
   fill(255);
   textSize(18);
+  textAlign(CENTER, CENTER);
   text(jokeText, width / 2, height / 2 - 200);
 }
 
@@ -309,11 +284,11 @@ function drawEnergyBar() {
   text("Time left: " + ceil(energy) + "s", width / 2, 10);
 }
 
-// ---------- INPUT ----------
+// ---------- Input ----------
 function mousePressed() {
-  if (state === "egg" && !didHatch) {
+  if (state === "egg") {
+    state = "hatching";
     crackTime = millis();
-    didHatch = true;
   } else if (state === "awake") {
     hasWelcomed = true;
     if (insideButton(feedBtn)) state = "feed";
@@ -326,47 +301,20 @@ function mousePressed() {
     }
   } else if (state === "sleep") state = "awake";
 
+  // Drag foods
   for (let f of foods) if (dist(mouseX, mouseY, f.x, f.y) < 30) f.beingDragged = true;
 }
-
-function mouseReleased() {
-  for (let f of foods) f.beingDragged = false;
-}
-
-function touchStarted() {
-  mousePressed();
-  return false;
-}
-
-function touchMoved() {
-  for (let f of foods) if (f.beingDragged) {
-    f.x = mouseX;
-    f.y = mouseY;
-  }
-  return false;
-}
-
-function insideButton(btn) {
-  return (
-    mouseX > btn.x - 50 &&
-    mouseX < btn.x + 50 &&
-    mouseY > btn.y - 40 &&
-    mouseY < btn.y + 40
-  );
-}
+function mouseReleased() { for (let f of foods) f.beingDragged = false; }
+function touchStarted() { mousePressed(); return false; }
+function touchMoved() { for (let f of foods) if (f.beingDragged) { f.x = mouseX; f.y = mouseY; } return false; }
+function insideButton(btn) { return mouseX > btn.x - 50 && mouseX < btn.x + 50 && mouseY > btn.y - 40 && mouseY < btn.y + 40; }
 
 function tellJoke() {
-  const jokes = [
-    "You crack me up 🥚😂",
-    "Keep calm and egg on 🧘‍♀️",
-    "Eggstroidinary! 🤩",
-    "Sunny-side up ☀️"
-  ];
+  const jokes = ["You crack me up 🥚😂", "Keep calm and egg on 🧘‍♀️", "Eggstroidinary! 🤩", "Sunny-side up ☀️"];
   jokeText = random(jokes);
   showJoke = true;
   jokeTimer = millis();
 }
 
-function windowResized() {
-  resizeCanvas(windowWidth, windowHeight);
-}
+function windowResized() { resizeCanvas(windowWidth, windowHeight); }
+
