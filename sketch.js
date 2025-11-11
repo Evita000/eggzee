@@ -78,13 +78,14 @@ function draw() {
   else if (state === "sleep") drawSleepScene();
 
   // Draw UI + extras
+  // Draw UI + extras
   drawFoods();
   drawHearts();
   drawButtons();
   drawYumBubble();
-  drawJoke();
   drawEnergyBar();
   drawOverlayText();
+  drawJoke(); // 🩷 put this LAST so it's always drawn on top
 }
 
 // ---------- SCENES ----------
@@ -388,53 +389,52 @@ function drawYumBubble() {
 function drawJoke() {
   if (!showJoke) return;
 
-  // 💫 Timing for fade-in / fade-out
   const duration = 3000;
   const elapsed = millis() - jokeTimer;
   let alpha = 255;
 
-  if (elapsed < 400) alpha = map(elapsed, 0, 400, 0, 255); // fade in
-  else if (elapsed > duration - 400) alpha = map(elapsed, duration - 400, duration, 255, 0); // fade out
+  if (elapsed < 400) alpha = map(elapsed, 0, 400, 0, 255);
+  else if (elapsed > duration - 400) alpha = map(elapsed, duration - 400, duration, 255, 0);
 
-  // 🗯 Bubble layout
-  const bubblePadding = 40;
+  // Bubble position (centered above Eggzee if visible)
+  const bx = eggzee.visible ? eggzee.x : width / 2;
+  const by = eggzee.visible ? eggzee.y - 220 : height / 2 - 200;
+
   textSize(20);
+  const bubblePadding = 50;
   const bubbleW = textWidth(jokeText) + bubblePadding;
   const bubbleH = 80;
-  const bx = width / 2;
-  const by = height / 2 - 200;
 
-  // 🎨 Bubble background (soft lilac)
-  fill(255, 230, 255, alpha * 0.95);
-  stroke(160, 100, 200, alpha);
-  strokeWeight(2.5);
+  // 🫧 Bubble background (bright lilac)
+  fill(255, 210, 255, alpha);
+  stroke(170, 100, 200, alpha);
+  strokeWeight(3);
   rect(bx - bubbleW / 2, by - bubbleH / 2, bubbleW, bubbleH, 25);
 
-  // 🫧 Tail
+  // Tail triangle
   noStroke();
-  fill(255, 230, 255, alpha * 0.95);
+  fill(255, 210, 255, alpha);
   triangle(
     bx - 15, by + bubbleH / 2,
     bx + 15, by + bubbleH / 2,
     bx, by + bubbleH / 2 + 18
   );
 
-  // 💬 Joke text with shadow for visibility
+  // Text shadow + foreground
   textAlign(CENTER, CENTER);
-  textSize(20);
-  fill(0, 0, 0, alpha * 0.6);
-  text(jokeText, bx + 2, by + 2); // subtle shadow
-  fill(40, 10, 60, alpha);
+  fill(0, 0, 0, alpha * 0.5); // shadow
+  text(jokeText, bx + 2, by + 2);
+  fill(50, 10, 70, alpha);
   text(jokeText, bx, by);
 
-  // 💫 gentle float
+  // Float animation
   push();
   translate(0, sin(frameCount * 0.05) * 2);
   pop();
 
-  // ⏳ hide after duration
   if (elapsed > duration) showJoke = false;
 }
+
 
 
 
@@ -555,6 +555,7 @@ function setupDanceButtonFix() {
   danceLink.attribute("target", "_blank");
   danceLink.style("display", "none");
 }
+
 
 
 
