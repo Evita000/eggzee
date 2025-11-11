@@ -159,16 +159,24 @@ function drawSleepScene() {
 }
 
 function drawMiniGame() {
+  // show Eggzee following the finger/mouse
   eggzee.visible = true;
-  eggzee.x = mouseX;
+  eggzee.x = mouseX || width / 2;
   eggzee.y = height / 2;
 
   push();
   translate(eggzee.x, eggzee.y);
   rotate(radians(sin(frameCount * 0.05) * 5));
-  image(eggzeeAwakeImg, 0, 0, eggzeeAwakeImg.width * eggzee.scale, eggzeeAwakeImg.height * eggzee.scale);
+  image(
+    eggzeeAwakeImg,
+    0,
+    0,
+    eggzeeAwakeImg.width * eggzee.scale,
+    eggzeeAwakeImg.height * eggzee.scale
+  );
   pop();
 
+  // 🌟 sparkle spawner
   if (frameCount % 15 === 0) {
     sparkles.push({
       x: random(50, width - 50),
@@ -179,19 +187,21 @@ function drawMiniGame() {
     });
   }
 
+  // update sparkles and check collision
   for (let i = sparkles.length - 1; i >= 0; i--) {
     const s = sparkles[i];
     noStroke();
     fill(255, 255, 150, s.alpha);
     ellipse(s.x, s.y, s.size);
     s.y += s.speed;
-    s.alpha -= 3;
+    s.alpha -= 2;
 
-    if (dist(s.x, s.y, eggzee.x, eggzee.y) < 80) {
+    // 🩷 catch sparkle = heart burst
+    if (dist(s.x, s.y, eggzee.x, eggzee.y) < 60) {
       hearts.push({
         x: eggzee.x + random(-30, 30),
         y: eggzee.y - random(20, 60),
-        vy: -1,
+        vy: -1.5,
         alpha: 255
       });
       sparkles.splice(i, 1);
@@ -201,16 +211,32 @@ function drawMiniGame() {
     if (s.alpha <= 0 || s.y > height + 20) sparkles.splice(i, 1);
   }
 
+  // 🩷 draw floating hearts
+  for (let i = hearts.length - 1; i >= 0; i--) {
+    const h = hearts[i];
+    textSize(40);
+    textAlign(CENTER, CENTER);
+    fill(255, 0, 100, h.alpha);
+    text("❤️", h.x, h.y);
+    h.y += h.vy;
+    h.alpha -= 3;
+    if (h.alpha <= 0) hearts.splice(i, 1);
+  }
+
+  // score
   fill(255);
   textSize(22);
   textAlign(CENTER, TOP);
   text("Hearts caught: " + heartsCaught, width / 2, 55);
 
+  // end mini-game after 25s
   if (millis() - gameStartTime > gameDuration) {
     sparkles = [];
+    hearts = [];
     state = "awake";
   }
 }
+
 
 // ---------- UI ----------
 function drawButtons() {
@@ -366,6 +392,7 @@ function tellJoke() {
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
+
 
 
 
