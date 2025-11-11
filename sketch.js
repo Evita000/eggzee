@@ -388,7 +388,15 @@ function drawYumBubble() {
 function drawJoke() {
   if (!showJoke) return;
 
-  // 🗯 Joke bubble style
+  // 💫 Timing for fade-in / fade-out
+  const duration = 3000;
+  const elapsed = millis() - jokeTimer;
+  let alpha = 255;
+
+  if (elapsed < 400) alpha = map(elapsed, 0, 400, 0, 255); // fade in
+  else if (elapsed > duration - 400) alpha = map(elapsed, duration - 400, duration, 255, 0); // fade out
+
+  // 🗯 Bubble layout
   const bubblePadding = 40;
   textSize(20);
   const bubbleW = textWidth(jokeText) + bubblePadding;
@@ -396,37 +404,38 @@ function drawJoke() {
   const bx = width / 2;
   const by = height / 2 - 200;
 
-  // 🎨 Bubble background
-  fill(255, 245, 255, 230); // soft pink-white background
-  stroke(180, 120, 200);
-  strokeWeight(2);
+  // 🎨 Bubble background (soft lilac)
+  fill(255, 230, 255, alpha * 0.95);
+  stroke(160, 100, 200, alpha);
+  strokeWeight(2.5);
   rect(bx - bubbleW / 2, by - bubbleH / 2, bubbleW, bubbleH, 25);
 
-  // 🫧 Tail below the bubble
+  // 🫧 Tail
   noStroke();
-  fill(255, 245, 255, 230);
+  fill(255, 230, 255, alpha * 0.95);
   triangle(
     bx - 15, by + bubbleH / 2,
     bx + 15, by + bubbleH / 2,
-    bx, by + bubbleH / 2 + 20
+    bx, by + bubbleH / 2 + 18
   );
 
-  // 💬 Joke text
-  fill(50);
-  noStroke();
+  // 💬 Joke text with shadow for visibility
   textAlign(CENTER, CENTER);
+  textSize(20);
+  fill(0, 0, 0, alpha * 0.6);
+  text(jokeText, bx + 2, by + 2); // subtle shadow
+  fill(40, 10, 60, alpha);
   text(jokeText, bx, by);
 
-  // 💫 Subtle floating effect
+  // 💫 gentle float
   push();
-  translate(0, sin(frameCount * 0.05) * 3);
+  translate(0, sin(frameCount * 0.05) * 2);
   pop();
 
-  // 🕒 Hide joke after 3 seconds
-  if (millis() - jokeTimer > 3000) {
-    showJoke = false;
-  }
+  // ⏳ hide after duration
+  if (elapsed > duration) showJoke = false;
 }
+
 
 
 function drawOverlayText() {
@@ -546,6 +555,7 @@ function setupDanceButtonFix() {
   danceLink.attribute("target", "_blank");
   danceLink.style("display", "none");
 }
+
 
 
 
