@@ -515,34 +515,32 @@ function drawJoke() {
 
 
 function drawOverlayText() {
-  if (state === "awake" && !showJoke) { // 👈 hides overlay text when joke is active
+  if (state === "awake" && !showJoke) { // ✅ hide when joke bubble is up
     textAlign(CENTER, CENTER);
     textStyle(BOLD);
 
-    // 🧠 Auto-size based on screen width
-    let baseSize = width < 400 ? 16 : width < 800 ? 20 : 26;
+    // Responsive size for mobile
+    const baseSize = width < 450 ? 16 : width < 800 ? 20 : 26;
     textSize(baseSize);
 
     const message = !hasWelcomed
       ? "💛 Hi, I’m Eggzee! What breaks me, makes me."
       : "Choose an activity below!";
 
-    // 🌟 Animated gold shimmer
+    // 🌈 Soft golden glow
     let pulse = sin(frameCount * 0.05) * 50 + 205;
     let goldenColor = color(pulse, 210, 70);
 
-    // Halo
+    textWrap(WORD);
     for (let i = 0; i < 6; i++) {
-      fill(255, 140 - i * 15, 0, 110 - i * 10);
-      text(message, width / 2, height * 0.12 + i * 0.6);
+      fill(255, 140 - i * 15, 0, 100 - i * 10);
+      text(message, width / 2, height * 0.12 + i * 0.5, width * 0.9);
     }
 
-    // Text wrap ensures nothing cuts off
-    textWrap(WORD);
     fill(goldenColor);
     stroke(255, 200, 0);
     strokeWeight(2);
-    text(message, width / 2, height * 0.12, width * 0.9); // 🪄 fits 90% width
+    text(message, width / 2, height * 0.12, width * 0.9);
     noStroke();
   }
 }
@@ -561,37 +559,36 @@ function drawEnergyBar() {
   const x = width / 2 - barWidth / 2;
   const y = 30;
 
-  // 🎨 Dynamic gradient based on energy (gold → orange → red)
+  // 🔋 Color based on remaining energy
   let energyColor;
-  if (pct > 0.6) energyColor = color(255, 220, 80);       // bright gold
+  if (pct > 0.6) energyColor = color(255, 220, 80);       // gold
   else if (pct > 0.3) energyColor = color(255, 160, 60);  // orange
-  else energyColor = color(255, 70, 70);                  // red glow when low
+  else energyColor = color(255, 70, 70);                  // red
 
-  // 💡 Outer glow
+  // ✨ Soft glow
   noStroke();
-  for (let i = 5; i > 0; i--) {
-    fill(red(energyColor), green(energyColor), blue(energyColor), 30 - i * 5);
-    rect(x - i, y - i, barWidth + i * 2, barHeight + i * 2, 12);
-  }
+  fill(red(energyColor), green(energyColor), blue(energyColor), 60);
+  rect(x - 3, y - 3, barWidth + 6, barHeight + 6, 12);
 
-  // 🔋 Inner bar
+  // Main bar
   fill(energyColor);
   rect(x, y, barWidth * pct, barHeight, 10);
 
-  // 🩶 Outline
+  // Outline
   stroke(255);
   noFill();
   rect(x, y, barWidth, barHeight, 10);
   noStroke();
 
-  // ⏳ Stable label text
+  // ⏳ Stable text (mobile-safe)
   push();
   textAlign(CENTER, CENTER);
-  textSize(18);
+  textSize(18); // stays the same on all screens
   fill(255);
   text("Time left: " + ceil(energy) + "s", width / 2, 12);
   pop();
 }
+
 
 
 // ---------- INPUT ----------
@@ -717,6 +714,7 @@ function setupDanceButtonFix() {
   danceLink.attribute("target", "_blank");
   danceLink.style("display", "none");
 }
+
 
 
 
