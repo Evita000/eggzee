@@ -345,6 +345,7 @@ function drawMiniGame() {
   if (millis() - gameStartTime > 20000) {
     resetToMainMenu();
   }
+}
 
 
 
@@ -640,6 +641,7 @@ function resetToMainMenu() {
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
+
 
 
 
