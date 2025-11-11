@@ -8,15 +8,14 @@
     <!-- ✅ Local p5.js -->
     <script src="p5.min.js"></script>
 
-    <!-- 🧩 Permanent p5.play fallback -->
+    <!-- 🧩 Fixed p5.play fallback -->
     <script>
       console.log("🐣 Injecting local createSprite fallback...");
 
       (function (p5) {
-        // ✅ Make sure global list exists inside constructor
         if (!p5.prototype.allSprites) p5.prototype.allSprites = [];
 
-        // Sprite class
+        // Sprite object
         p5.prototype.Sprite = function (x, y, w, h) {
           this.position = p5.prototype.createVector(x || 0, y || 0);
           this.width = w || 50;
@@ -37,19 +36,19 @@
           return s;
         };
 
-        // drawSprites()
+        // ✅ FIX: use window.push()/window.pop() to avoid collision
         p5.prototype.drawSprites = function () {
           if (!p5.prototype.allSprites) return;
           for (let s of p5.prototype.allSprites) {
             if (s.visible) {
-              p5.prototype.push();
+              window.push();
               p5.prototype.translate(s.position.x, s.position.y);
               p5.prototype.rotate(p5.prototype.radians(s.rotation));
               p5.prototype.noStroke();
               p5.prototype.fill(255);
               p5.prototype.rectMode(p5.prototype.CENTER);
               p5.prototype.rect(0, 0, s.width * s.scale, s.height * s.scale);
-              p5.prototype.pop();
+              window.pop();
             }
           }
         };
@@ -58,7 +57,7 @@
       console.log("✅ p5 + createSprite fallback ready!");
     </script>
 
-    <!-- 🐣 Your main sketch -->
+    <!-- 🐣 Main game -->
     <script src="sketch.js"></script>
 
     <style>
