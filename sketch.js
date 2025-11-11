@@ -743,9 +743,12 @@ function drawSleepScene() {
 
   // 💤 Eggzee visible and gently breathing
   eggzee.visible = true;
-  eggzee.changeImage("sleep");
-  eggzee.position.x = width / 2;
-  eggzee.position.y = height / 2 + sin(frameCount * 0.03) * 8; // slow bobbing
+  push();
+translate(width / 2, height / 2 + sin(frameCount * 0.03) * 8);
+imageMode(CENTER);
+image(eggzeeSleepImg, 0, 0, eggzeeSleepImg.width * eggzee.scale, eggzeeSleepImg.height * eggzee.scale);
+pop();
+
   eggzee.scale = 0.1 + sin(frameCount * 0.03) * 0.003;
 
   // 🌟 Twinkling stars
@@ -775,6 +778,7 @@ function touchStarted() {
   mousePressed(); // reuse same logic
   return false;   // prevent mobile double-trigger scrolling
 }
+
 
 
 
