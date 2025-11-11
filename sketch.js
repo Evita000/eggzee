@@ -115,7 +115,7 @@ if (showIntro) {
   }
 }
 
-  else if (state === "hatching") drawHatchingScene();
+ 
   else if (state === "awake") drawEggzeeScene();
   else if (state === "feed") drawFeedScene();
   else if (state === "dance") drawDanceScene();
@@ -337,9 +337,11 @@ function drawEnergyBar() {
 
 // ---------- Input ----------
 function mousePressed() {
-  if (state === "egg") {
-    state = "hatching";
-    crackTime = millis();
+ if (state === "egg" && !didHatch) {
+  crackTime = millis();
+  didHatch = true;
+}
+
   } else if (state === "awake") {
     hasWelcomed = true;
     if (insideButton(feedBtn)) state = "feed";
@@ -368,6 +370,7 @@ function tellJoke() {
 }
 
 function windowResized() { resizeCanvas(windowWidth, windowHeight); }
+
 
 
 
