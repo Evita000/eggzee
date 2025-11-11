@@ -114,11 +114,14 @@ function drawEggzeeScene() {
 
 function drawFeedScene() {
   if (!eggzee.visible) eggzee.visible = true;
+
+  // 🐣 Draw Eggzee
   push();
   translate(eggzee.x, eggzee.y);
   image(eggzeeAwakeImg, 0, 0, eggzeeAwakeImg.width * 0.12, eggzeeAwakeImg.height * 0.12);
   pop();
 
+  // 🍎 Spawn random foods
   if (frameCount % 120 === 0 && foods.length < 5) {
     let emojiList = ["🍩", "🍎", "🍓", "🍪", "🍕"];
     foods.push({
@@ -129,6 +132,7 @@ function drawFeedScene() {
     });
   }
 
+  // 🍪 Draw and drag foods
   for (let f of foods) {
     if (f.beingDragged) {
       f.x = mouseX;
@@ -136,8 +140,70 @@ function drawFeedScene() {
     }
     textSize(40);
     text(f.emoji, f.x, f.y);
+
+    // 🩷 If food touches Eggzee
+    if (dist(f.x, f.y, eggzee.x, eggzee.y) < 80) {
+      // Remove food after "eating"
+      f.toRemove = true;
+      showYum = true;
+      yumTimer = millis();
+
+      // ✨ Create sparkle burst
+      for (let i = 0; i < 10; i++) {
+        sparkles.push({
+          x: eggzee.x + random(-30, 30),
+          y: eggzee.y + random(-30, 30),
+          size: random(4, 10),
+          speedY: random(-2, -5),
+          alpha: 255
+        });
+      }
+
+      // ❤️ Create floating heart
+      hearts.push({
+        x: eggzee.x + random(-20, 20),
+        y: eggzee.y - 60,
+        vy: -2,
+        alpha: 255
+      });
+    }
+  }
+
+  // 🍕 Remove eaten foods
+  foods = foods.filter(f => !f.toRemove);
+
+  // ✨ Animate sparkles
+  for (let i = sparkles.length - 1; i >= 0; i--) {
+    const s = sparkles[i];
+    fill(255, 255, 200, s.alpha);
+    noStroke();
+    ellipse(s.x, s.y, s.size);
+    s.y += s.speedY;
+    s.alpha -= 5;
+    if (s.alpha <= 0) sparkles.splice(i, 1);
+  }
+
+  // ❤️ Floating hearts animation
+  for (let i = hearts.length - 1; i >= 0; i--) {
+    const h = hearts[i];
+    textSize(40);
+    text("❤️", h.x, h.y);
+    h.y += h.vy;
+    h.alpha -= 3;
+    if (h.alpha <= 0) hearts.splice(i, 1);
+  }
+
+  // 💬 Yum bubble
+  if (showYum && millis() - yumTimer < 1500) {
+    fill(255, 240, 250);
+    stroke(200, 100, 200);
+    rect(width / 2 - 60, height / 2 - 160, 120, 50, 20);
+    noStroke();
+    fill(0);
+    text("Yum! 💕", width / 2, height / 2 - 160);
   }
 }
+
 
 function drawDanceScene() {
   if (!eggzee.visible) eggzee.visible = true;
@@ -406,6 +472,7 @@ function touchMoved() {
 function touchEnded() {
   return false;
 }
+
 
 
 
