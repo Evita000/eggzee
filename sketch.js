@@ -473,6 +473,30 @@ function touchEnded() {
   return false;
 }
 
+function touchMoved() {
+  if (state === "feed" && touches.length > 0) {
+    // simulate dragging food with finger
+    for (let f of foods) {
+      if (dist(touches[0].x, touches[0].y, f.x, f.y) < 40) {
+        f.beingDragged = true;
+        f.x = touches[0].x;
+        f.y = touches[0].y;
+      }
+    }
+  }
+
+  if (state === "miniGame" && touches.length > 0) {
+    eggzee.x = touches[0].x;
+    eggzee.y = touches[0].y;
+  }
+  return false;
+}
+
+function touchEnded() {
+  for (let f of foods) f.beingDragged = false;
+  return false;
+}
+
 
 
 
