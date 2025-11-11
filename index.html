@@ -2,76 +2,68 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>🐣 Eggzee Interactive</title>
 
-    <!-- ✅ Embed p5.js (local-safe) -->
+    <!-- ✅ Load p5.js first -->
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.6.0/lib/p5.min.js"></script>
+
+    <!-- ✅ Inline fallback for createSprite -->
     <script>
-      /*! Minimal embedded p5.js loader */
-      const p5script = document.createElement("script");
-      p5script.src = "https://cdn.jsdelivr.net/npm/p5@1.6.0/lib/p5.min.js";
-      document.head.appendChild(p5script);
-    </script>
-
-    <!-- ✅ Failsafe p5.play inline -->
-    <script>
-      window.addEventListener("load", () => {
-        const waitForP5 = setInterval(() => {
-          if (typeof window.p5 === "undefined") return;
-          clearInterval(waitForP5);
-          const p = window.p5;
-          console.log("✅ p5 detected, enabling internal p5.play fallback");
-
-          // ---- Minimal p5.play fallback ----
-          p.prototype.Sprite = function (x, y, w, h) {
-            this.position = p.prototype.createVector(x || 0, y || 0);
-            this.width = w || 50;
-            this.height = h || 50;
-            this.rotation = 0;
-            this.visible = true;
-            this.scale = 1;
-            this.velocity = p.prototype.createVector(0, 0);
-            this.addImage = () => {};
-            this.changeImage = () => {};
-          };
-
-          p.prototype.createSprite = function (x, y, w, h) {
-            const s = new p.prototype.Sprite(x, y, w, h);
-            if (!this.allSprites) this.allSprites = [];
-            this.allSprites.push(s);
-            return s;
-          };
-
-          p.prototype.drawSprites = function () {
-            if (!this.allSprites) return;
-            for (let s of this.allSprites) {
-              if (s.visible) {
-                p.prototype.push();
-                p.prototype.translate(s.position.x, s.position.y);
-                p.prototype.rotate(p.prototype.radians(s.rotation));
-                p.prototype.noStroke();
-                p.prototype.fill(255);
-                p.prototype.rectMode(p.prototype.CENTER);
-                p.prototype.rect(0, 0, s.width * s.scale, s.height * s.scale);
-                p.prototype.pop();
-              }
+      function addMiniP5Play(p) {
+        if (p.prototype.createSprite) return;
+        console.log("🐣 Adding mini p5.play...");
+        p.prototype.Sprite = function (x, y, w, h) {
+          this.position = p.prototype.createVector(x || 0, y || 0);
+          this.width = w || 50;
+          this.height = h || 50;
+          this.rotation = 0;
+          this.visible = true;
+          this.scale = 1;
+          this.velocity = p.prototype.createVector(0, 0);
+          this.addImage = () => {};
+          this.changeImage = () => {};
+        };
+        p.prototype.createSprite = function (x, y, w, h) {
+          const s = new p.prototype.Sprite(x, y, w, h);
+          if (!this.allSprites) this.allSprites = [];
+          this.allSprites.push(s);
+          return s;
+        };
+        p.prototype.drawSprites = function () {
+          if (!this.allSprites) return;
+          for (let s of this.allSprites) {
+            if (s.visible) {
+              p.prototype.push();
+              p.prototype.translate(s.position.x, s.position.y);
+              p.prototype.rotate(p.prototype.radians(s.rotation));
+              p.prototype.noStroke();
+              p.prototype.fill(255);
+              p.prototype.rectMode(p.prototype.CENTER);
+              p.prototype.rect(0, 0, s.width * s.scale, s.height * s.scale);
+              p.prototype.pop();
             }
-          };
+          }
+        };
+      }
 
-          // ---- load main sketch after fallback ready ----
-          const main = document.createElement("script");
-          main.src = "sketch.js";
-          document.body.appendChild(main);
+      // 🧠 Wait for p5 to load, then add fallback, then load sketch
+      window.addEventListener("load", () => {
+        const wait = setInterval(() => {
+          if (window.p5) {
+            clearInterval(wait);
+            addMiniP5Play(window.p5);
+            console.log("✅ Mini p5.play ready — loading sketch.js");
+            const script = document.createElement("script");
+            script.src = "sketch.js";
+            document.body.appendChild(script);
+          }
         }, 100);
       });
     </script>
 
     <style>
-      html,
-      body {
+      html, body {
         margin: 0;
         padding: 0;
         overflow: hidden;
@@ -82,6 +74,5 @@
       }
     </style>
   </head>
-
   <body></body>
 </html>
