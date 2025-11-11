@@ -7,7 +7,6 @@ let startTime = null;
 let hasWelcomed = false;
 let feedStartTime = null;
 
-
 // Buttons + UI
 let feedBtn, danceBtn, gameBtn, jokeBtn;
 let hearts = [];
@@ -54,7 +53,7 @@ function setup() {
   gameBtn = { x: spacing * 3, y: height - 90 };
   jokeBtn = { x: spacing * 4, y: height - 90 };
 
-  setupDanceButtonFix(); // 🟢 ensures mobile works
+  setupDanceButtonFix(); // mobile-safe
 }
 
 // ---------- DRAW LOOP ----------
@@ -77,11 +76,11 @@ function draw() {
   else if (state === "miniGame") drawMiniGame();
   else if (state === "sleep") drawSleepScene();
 
-  // Draw UI + extras
+  // UI + overlays
   drawFoods();
   drawHearts();
   drawButtons();
-  drawYumBubble();
+  if (state !== "feed") drawYumBubble(); // ✅ prevent duplicate bubbles
   drawJoke();
   drawEnergyBar();
   drawOverlayText();
@@ -118,19 +117,14 @@ function drawEggzeeScene() {
   pop();
 }
 
+// ---------- FEED ----------
 function drawFeedScene() {
   if (!eggzee.visible) eggzee.visible = true;
 
-  // 🐣 Draw Eggzee
+  // 🐣 Eggzee
   push();
   translate(eggzee.x, eggzee.y);
-  image(
-    eggzeeAwakeImg,
-    0,
-    0,
-    eggzeeAwakeImg.width * 0.12,
-    eggzeeAwakeImg.height * 0.12
-  );
+  image(eggzeeAwakeImg, 0, 0, eggzeeAwakeImg.width * 0.12, eggzeeAwakeImg.height * 0.12);
   pop();
 
   // 🍎 Spawn random foods
@@ -153,7 +147,7 @@ function drawFeedScene() {
     textSize(40);
     text(f.emoji, f.x, f.y);
 
-    // 🩷 Eggzee eats food
+    // 🩷 Eat
     if (dist(f.x, f.y, eggzee.x, eggzee.y) < 80) {
       f.toRemove = true;
       showYum = true;
@@ -203,7 +197,7 @@ function drawFeedScene() {
     if (h.alpha <= 0) hearts.splice(i, 1);
   }
 
-  // 💬 Yum bubble (only once)
+  // 💬 Yum bubble (feed-only)
   if (showYum) {
     if (millis() - yumTimer < 1500) {
       fill(255, 240, 250);
@@ -217,22 +211,19 @@ function drawFeedScene() {
     }
   }
 
-  // 🕒 Auto-return to main menu
+  // 🕒 Auto-return
   if (!feedStartTime) feedStartTime = millis();
-  const elapsedFeed = millis() - feedStartTime;
-
-  if (elapsedFeed > 25000) {
-    // reset feed state
+  if (millis() - feedStartTime > 25000) {
     foods = [];
     sparkles = [];
     hearts = [];
     showYum = false;
     feedStartTime = null;
-    state = "awake"; // go back to main menu
+    state = "awake";
   }
 }
 
-
+// ---------- OTHER SCENES ----------
 function drawSleepScene() {
   background(15, 10, 40);
   push();
@@ -247,26 +238,20 @@ function drawMiniGame() {
   if (state !== "miniGame") return;
   eggzee.visible = true;
 
-  // Follow mouse or touch
   if (touches && touches.length > 0) {
     eggzee.x = touches[0].x;
     eggzee.y = touches[0].y;
   } else if (mouseX && mouseY) {
     eggzee.x = mouseX;
     eggzee.y = mouseY;
-  } else {
-    eggzee.x = width / 2;
-    eggzee.y = height / 2;
   }
 
-  // 🐣 Eggzee sprite
   push();
   translate(eggzee.x, eggzee.y);
   rotate(radians(sin(frameCount * 0.05) * 5));
   image(eggzeeAwakeImg, 0, 0, eggzeeAwakeImg.width * eggzee.scale, eggzeeAwakeImg.height * eggzee.scale);
   pop();
 
-  // ✨ Drop sparkles
   if (frameCount % 10 === 0) {
     sparkles.push({
       x: random(50, width - 50),
@@ -277,7 +262,6 @@ function drawMiniGame() {
     });
   }
 
-  // Move sparkles + catch hearts
   for (let i = sparkles.length - 1; i >= 0; i--) {
     const s = sparkles[i];
     fill(255, 255, 150, s.alpha);
@@ -290,12 +274,10 @@ function drawMiniGame() {
       hearts.push({ x: eggzee.x, y: eggzee.y - 40, vy: -2, alpha: 255 });
       heartsCaught++;
       sparkles.splice(i, 1);
-      i--;
     }
     if (s.y > height || s.alpha < 0) sparkles.splice(i, 1);
   }
 
-  // ❤️ Hearts float
   for (let i = hearts.length - 1; i >= 0; i--) {
     const h = hearts[i];
     textSize(60);
@@ -329,7 +311,7 @@ function drawButton(btn, emoji, label) {
   text(label, btn.x, btn.y + 25);
 }
 
-// ---------- FEED HELPERS ----------
+// ---------- HELPERS ----------
 function drawFoods() {
   for (let f of foods) {
     if (f.beingDragged) {
@@ -459,7 +441,6 @@ function touchMoved() {
       }
     }
   }
-
   if (state === "miniGame" && touches.length > 0) {
     eggzee.x = touches[0].x;
     eggzee.y = touches[0].y;
@@ -472,7 +453,7 @@ function touchEnded() {
   return false;
 }
 
-// ---------- DANCE BUTTON ----------
+// ---------- DANCE ----------
 function openDancePage() {
   try {
     const newWin = window.open("eggzeedance.html", "_blank");
@@ -488,5 +469,7 @@ function setupDanceButtonFix() {
   danceLink.attribute("target", "_blank");
   danceLink.style("display", "none");
 }
+
+
 
 
