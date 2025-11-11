@@ -2,13 +2,16 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
     <title>🐣 Eggzee Interactive</title>
 
-    <!-- 🧠 Libraries — must be in this exact order -->
+    <!-- ✅ Load order matters -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
-<script src="p5.play.js"></script>
-<script src="sketch.js?v=2"></script>
+    <script src="p5.play.js"></script>
+    <script src="sketch.js"></script>
 
     <style>
       html, body {
@@ -17,13 +20,13 @@
         overflow: hidden;
         background: black;
       }
-      canvas {
-        display: block;
-      }
+      canvas { display: block; }
     </style>
   </head>
   <body></body>
 </html>
+
+
 
 
 
