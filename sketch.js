@@ -73,7 +73,8 @@ function draw() {
  let shakeX = sin(frameCount * 0.6) * (width * 0.02);
 let shakeY = cos(frameCount * 0.6) * (height * 0.02);
 
-  image(eggImg, width/2 + shakeX, height/2 + shakeY, width/2.5, width/2.5);
+ image(eggImg, width/2 + shakeX, height/2 + shakeY, 200, 200);
+
 
   // When tapped, begin hatch
   if (didHatch && millis() - crackTime > 1500) {
@@ -370,6 +371,7 @@ function tellJoke() {
 }
 
 function windowResized() { resizeCanvas(windowWidth, windowHeight); }
+
 
 
 
