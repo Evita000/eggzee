@@ -542,13 +542,21 @@ function mouseReleased() {
 }
 
 function touchStarted() {
-  // 🧩 Prevent double tap on mobile (ignores second trigger for 0.5s)
-  if (millis() - lastTouchTime < 500) return false;
+  // 🧩 Prevent double tap on mobile
+  if (millis() - lastTouchTime < 600) return false;
   lastTouchTime = millis();
 
-  mousePressed(); // call the main press once
+  // 🔧 Sync touch → mouse position before triggering press
+  if (touches.length > 0) {
+    mouseX = touches[0].x;
+    mouseY = touches[0].y;
+  }
+
+  // 🥚 trigger the same press logic
+  mousePressed();
   return false;
 }
+
 
 
 function insideButton(btn) {
@@ -626,6 +634,7 @@ function setupDanceButtonFix() {
   danceLink.attribute("target", "_blank");
   danceLink.style("display", "none");
 }
+
 
 
 
