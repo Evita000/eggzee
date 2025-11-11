@@ -97,23 +97,21 @@ function resizeCanvas() {
 
   if (!bg) return;
 
-  // 🪩 1️⃣ Fill background so it always covers the whole screen
-  const scaleFill = Math.max(w / bg.image.width, h / bg.image.height);
-  bg.scaleX = bg.scaleY = scaleFill;
-  bg.x = (w - bg.image.width * scaleFill) / 2;
-  bg.y = (h - bg.image.height * scaleFill) / 2;
+  // 🖼️ 1️⃣ Scale background with "contain" — show full image, no cropping
+  const scaleContain = Math.min(w / bg.image.width, h / bg.image.height);
+  bg.scaleX = bg.scaleY = scaleContain;
+  bg.x = (w - bg.image.width * scaleContain) / 2;
+  bg.y = (h - bg.image.height * scaleContain) / 2;
 
-  // 🐣 2️⃣ Keep Eggzee animation centered on top of it
+  // 🐣 2️⃣ Scale Eggzee animation proportionally
   const designW = lib.properties.width;
   const designH = lib.properties.height;
   const scale = Math.min(w / designW, h / designH);
   exportRoot.scaleX = exportRoot.scaleY = scale;
+  exportRoot.x = (w - designW * scale) / 2;
+  exportRoot.y = (h - designH * scale) / 2;
 
-  // Center the Animate content exactly
-  exportRoot.x = w / 2 - (designW * scale) / 2;
-  exportRoot.y = h / 2 - (designH * scale) / 2;
-
-  // 3️⃣ Stage covers full canvas, no extra scaling
+  // 🪩 3️⃣ Keep stage exactly canvas-sized (no double scaling)
   stage.scaleX = stage.scaleY = 1;
   stage.x = stage.y = 0;
 }
@@ -147,6 +145,7 @@ document.addEventListener("DOMContentLoaded", () => {
   </script>
 </body>
 </html>
+
 
 
 
