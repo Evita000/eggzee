@@ -9,27 +9,26 @@
   <!-- Animate export -->
   <script src="eggzeedanceworks.js"></script>
 
- <style>
-  html, body {
-    margin: 0;
-    padding: 0;
-    width: 100vw;
-    height: 100vh;
-    overflow: hidden;
-    background-color: black;
-  }
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background-color: black;
+    }
 
-  #animation_container, #canvas {
-    position: absolute;
-    inset: 0;
-    margin: auto;
-    display: block;
-    width: 100vw !important;
-    height: 100vh !important;
-    background-color: black;
-  }
-</style>
-
+    #animation_container, #canvas {
+      position: absolute;
+      inset: 0;
+      margin: auto;
+      display: block;
+      width: 100vw !important;
+      height: 100vh !important;
+      background-color: black;
+    }
+  </style>
 </head>
 
 <body onload="init();">
@@ -56,79 +55,71 @@
       loader.loadManifest(lib.properties.manifest);
     }
 
-function handleComplete() {
-  exportRoot = new lib.eggzeedanceworks();
-  stage = new lib.Stage(canvas);
+    function handleComplete() {
+      exportRoot = new lib.eggzeedanceworks();
+      stage = new lib.Stage(canvas);
 
-  // 🪩 Load dancefloor background
-  var bgImage = new Image();
-  bgImage.src = "assets/dancefloor1.png";
-  bgImage.onload = function () {
-    var bg = new createjs.Bitmap(bgImage);
-    stage.addChild(bg);
-    stage.addChild(exportRoot);
+      // 🪩 Load dancefloor background
+      var bgImage = new Image();
+      bgImage.src = "assets/dancefloor1.png";
+      bgImage.onload = function () {
+        var bg = new createjs.Bitmap(bgImage);
+        stage.addChild(bg);
+        stage.addChild(exportRoot);
 
-    // 💡 Responsive full-screen scaling
-    function resizeCanvas() {
-      const w = window.innerWidth;
-      const h = window.innerHeight;
-      const scaleX = w / lib.properties.width;
-      const scaleY = h / lib.properties.height;
-      const scale = Math.max(scaleX, scaleY); // fill screen completely
+        // 💡 Responsive full-screen scaling
+        function resizeCanvas() {
+          const w = window.innerWidth;
+          const h = window.innerHeight;
+          const scaleX = w / lib.properties.width;
+          const scaleY = h / lib.properties.height;
+          const scale = Math.max(scaleX, scaleY); // fill screen completely
 
-      canvas.width = w;
-      canvas.height = h;
-      stage.scaleX = stage.scaleY = scale;
-      stage.x = (w - lib.properties.width * scale) / 2;
-      stage.y = (h - lib.properties.height * scale) / 2;
+          canvas.width = w;
+          canvas.height = h;
+          stage.scaleX = stage.scaleY = scale;
+          stage.x = (w - lib.properties.width * scale) / 2;
+          stage.y = (h - lib.properties.height * scale) / 2;
 
-      bg.scaleX = w / bgImage.width;
-      bg.scaleY = h / bgImage.height;
+          bg.scaleX = w / bgImage.width;
+          bg.scaleY = h / bgImage.height;
+
+          // 💫 Make Eggzee fill the full screen
+          exportRoot.scaleX = exportRoot.scaleY = scale;
+          exportRoot.x = (w - lib.properties.width * scale) / 2;
+          exportRoot.y = (h - lib.properties.height * scale) / 2;
+        }
+
+        window.addEventListener("resize", resizeCanvas);
+        resizeCanvas();
+      };
+
+      AdobeAn.compositionLoaded(lib.properties.id);
+      createjs.Ticker.framerate = lib.properties.fps;
+      createjs.Ticker.addEventListener("tick", stage);
+
+      console.log("💃 Eggzee now fills the screen!");
     }
-
-    window.addEventListener("resize", resizeCanvas);
-    resizeCanvas();
-  };
-
-  AdobeAn.compositionLoaded(lib.properties.id);
-  createjs.Ticker.framerate = lib.properties.fps;
-  createjs.Ticker.addEventListener("tick", stage);
-
-  console.log("💃 Eggzee now fills the screen!");
-}
-
-
   </script>
-   <button id="returnBtn"
-style="position:fixed; bottom:20px; right:20px; padding:12px 18px; font-size:18px;
-border:none; border-radius:10px; background:#ffd6e0; color:#333; cursor:pointer;">
-⬅️ Return to Eggzee
-</button>
 
-<!-- ✅ Works on mobile, desktop, GitHub Pages -->
-<script>
-  document.getElementById("returnBtn").addEventListener("click", () => {
-    try {
-      // Try to close if this tab was opened by JavaScript
-      window.close();
-    } catch (e) {
-      console.warn("Close blocked, redirecting...");
-    }
+  <button id="returnBtn"
+    style="position:fixed; bottom:20px; right:20px; padding:12px 18px; font-size:18px;
+    border:none; border-radius:10px; background:#ffd6e0; color:#333; cursor:pointer;">
+    ⬅️ Return to Eggzee
+  </button>
 
-    // Always schedule a redirect fallback
-    setTimeout(() => {
-      // Use _self so it replaces this tab on iPhone/Android
-      window.open("index.html", "_self");
-    }, 300);
-  });
-</script>
+  <script>
+    document.getElementById("returnBtn").addEventListener("click", () => {
+      try {
+        window.close();
+      } catch (e) {
+        console.warn("Close blocked, redirecting...");
+      }
+      setTimeout(() => {
+        window.open("index.html", "_self");
+      }, 300);
+    });
+  </script>
 
 </body>
 </html>
-
-
-
-
-
-
-
