@@ -454,6 +454,12 @@ function drawYumBubble() {
 function drawJoke() {
   if (!showJoke) return;
 
+  // 🧩 Temporarily hide overlay text
+  hasWelcomed = true; // ensures only joke shows during display
+
+  // (keep the rest of your existing drawJoke() code here)
+}
+
   const duration = 4000;
   const elapsed = millis() - jokeTimer;
   let alpha = 255;
@@ -515,11 +521,13 @@ function drawJoke() {
 
 
 function drawOverlayText() {
-  if (state === "awake" && !showJoke) { // ✅ hide when joke bubble is up
+  // 👇 only show when awake, and when NO joke is showing
+  if (state === "awake" && !showJoke) {
+    push(); // isolate text style so jokes don’t affect it
     textAlign(CENTER, CENTER);
     textStyle(BOLD);
 
-    // Responsive size for mobile
+    // 🪄 Adjust size for mobile screens
     const baseSize = width < 450 ? 16 : width < 800 ? 20 : 26;
     textSize(baseSize);
 
@@ -527,10 +535,11 @@ function drawOverlayText() {
       ? "💛 Hi, I’m Eggzee! What breaks me, makes me."
       : "Choose an activity below!";
 
-    // 🌈 Soft golden glow
+    // 🌈 Gold shimmer animation
     let pulse = sin(frameCount * 0.05) * 50 + 205;
     let goldenColor = color(pulse, 210, 70);
 
+    // 🔸 Word wrapping for mobile so text never cuts off
     textWrap(WORD);
     for (let i = 0; i < 6; i++) {
       fill(255, 140 - i * 15, 0, 100 - i * 10);
@@ -542,16 +551,15 @@ function drawOverlayText() {
     strokeWeight(2);
     text(message, width / 2, height * 0.12, width * 0.9);
     noStroke();
+    pop();
   }
 }
 
 
-
-
-
-
 function drawEnergyBar() {
   if (state === "egg") return;
+
+  push(); // 🧩 isolates all style changes so nothing leaks out
 
   const barWidth = 300;
   const barHeight = 15;
@@ -559,13 +567,19 @@ function drawEnergyBar() {
   const x = width / 2 - barWidth / 2;
   const y = 30;
 
-  // 🔋 Color based on remaining energy
-  let energyColor;
-  if (pct > 0.6) energyColor = color(255, 220, 80);       // gold
-  else if (pct > 0.3) energyColor = color(255, 160, 60);  // orange
-  else energyColor = color(255, 70, 70);                  // red
+  // 🟡 Reset text + drawing styles (stops inherited scaling)
+  textAlign(CENTER, CENTER);
+  textStyle(NORMAL);
+  textFont('sans-serif'); // forces consistent font baseline
+  textSize(18); // fixed forever, doesn’t grow
 
-  // ✨ Soft glow
+  // 🔋 Color shifts smoothly by energy
+  let energyColor;
+  if (pct > 0.6) energyColor = color(255, 220, 80);
+  else if (pct > 0.3) energyColor = color(255, 160, 60);
+  else energyColor = color(255, 70, 70);
+
+  // ✨ Soft glow behind bar
   noStroke();
   fill(red(energyColor), green(energyColor), blue(energyColor), 60);
   rect(x - 3, y - 3, barWidth + 6, barHeight + 6, 12);
@@ -580,14 +594,13 @@ function drawEnergyBar() {
   rect(x, y, barWidth, barHeight, 10);
   noStroke();
 
-  // ⏳ Stable text (mobile-safe)
-  push();
-  textAlign(CENTER, CENTER);
-  textSize(18); // stays the same on all screens
+  // ⏳ Stable label (never flickers or grows)
   fill(255);
   text("Time left: " + ceil(energy) + "s", width / 2, 12);
-  pop();
+
+  pop(); // 🧩 restore previous text settings
 }
+
 
 
 
@@ -714,6 +727,7 @@ function setupDanceButtonFix() {
   danceLink.attribute("target", "_blank");
   danceLink.style("display", "none");
 }
+
 
 
 
