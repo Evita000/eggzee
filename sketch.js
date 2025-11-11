@@ -102,6 +102,9 @@ function resetTextStyle() {
   textAlign(CENTER, CENTER);
   fill(255);
   noStroke();
+
+  colorMode(RGB);
+
 }
 
 // ---------- SCENES ----------
@@ -204,16 +207,21 @@ function drawFeedScene() {
 
 // ---------- ANIMATION HELPERS ----------
 function animateSparkles() {
+  push();
+  colorMode(HSB);
   for (let i = sparkles.length - 1; i >= 0; i--) {
     const s = sparkles[i];
-    fill(255, 255, 200, s.alpha);
+    const hue = (frameCount * 2 + i * 15) % 360;
+    fill(hue, 80, 100, s.alpha / 255);
     noStroke();
     ellipse(s.x, s.y, s.size);
-    s.y += s.speedY;
+    s.y += s.speedY || -2;
     s.alpha -= 5;
     if (s.alpha <= 0) sparkles.splice(i, 1);
   }
+  pop();
 }
+
 
 function animateHearts() {
   for (let i = hearts.length - 1; i >= 0; i--) {
@@ -241,6 +249,7 @@ function drawSleepScene() {
   text("💤 Eggzee is sleeping... Tap to wake! 💫", width / 2, height - 100);
 }
 
+// ---------- MINI GAME ----------
 // ---------- MINI GAME ----------
 // ---------- MINI GAME ----------
 function drawMiniGame() {
@@ -277,32 +286,41 @@ function drawMiniGame() {
     sparkles.push({
       x: random(50, width - 50),
       y: -10,
-      size: random(8, 16),
+      size: random(8, 18),
       speed: random(2, 4),
       alpha: 255,
+      hue: random(360)
     });
   }
 
   // ✨ Animate sparkles + detect catches
   for (let i = sparkles.length - 1; i >= 0; i--) {
     const s = sparkles[i];
-    fill(255, 255, 150, s.alpha);
+    colorMode(HSB);
+    fill(s.hue, 80, 100, s.alpha / 255);
+    colorMode(RGB);
     noStroke();
     ellipse(s.x, s.y, s.size);
+
     s.y += s.speed;
     s.alpha -= 2;
+    s.hue = (s.hue + 2) % 360;
 
     // ❤️ Collect sparkle → create heart burst
     if (dist(s.x, s.y, eggzee.x, eggzee.y) < 70) {
       hearts.push({
-        x: eggzee.x + random(-10, 10),
+        x: eggzee.x + random(-15, 15),
         y: eggzee.y - 40,
         vy: -2,
-        alpha: 255,
+        alpha: 255
       });
       heartsCaught++;
       sparkles.splice(i, 1);
-    } else if (s.y > height || s.alpha < 0) {
+      continue;
+    }
+
+    // remove faded / offscreen sparkles
+    if (s.y > height || s.alpha < 0) {
       sparkles.splice(i, 1);
     }
   }
@@ -310,7 +328,8 @@ function drawMiniGame() {
   // ❤️ Floating hearts animation
   for (let i = hearts.length - 1; i >= 0; i--) {
     const h = hearts[i];
-    textSize(60);
+    textSize(50);
+    fill(255, 80, 100, h.alpha);
     text("❤️", h.x, h.y);
     h.y += h.vy;
     h.alpha -= 4;
@@ -331,7 +350,6 @@ function drawMiniGame() {
     state = "awake";
   }
 }
-
 
 // ---------- BUTTONS ----------
 function drawButtons() {
@@ -579,8 +597,13 @@ function setupDanceButtonFix() {
   danceLink.attribute("target", "_blank");
   danceLink.style("display", "none");
 }
+// Ensure p5 uses RGB mode again after colorMode(HSB)
+function beforeDraw() {
+  colorMode(RGB);
+}
 
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
+
 
