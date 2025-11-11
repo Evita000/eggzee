@@ -164,13 +164,17 @@ function drawMiniGame() {
   eggzee.visible = true;
 
   // Follow mouse or touch
-  if (touches.length > 0) {
-    eggzee.x = touches[0].x;
-    eggzee.y = touches[0].y;
-  } else {
-    eggzee.x = mouseX || width / 2;
-    eggzee.y = height / 2;
-  }
+  if (touches && touches.length > 0) {
+  eggzee.x = touches[0].x;
+  eggzee.y = touches[0].y;
+} else if (mouseX && mouseY) {
+  eggzee.x = mouseX;
+  eggzee.y = mouseY;
+} else {
+  eggzee.x = width / 2;
+  eggzee.y = height / 2;
+}
+
 
   // 🐣 Draw Eggzee
   push();
@@ -402,6 +406,7 @@ function touchMoved() {
 function touchEnded() {
   return false;
 }
+
 
 
 
