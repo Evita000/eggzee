@@ -220,15 +220,7 @@ if (dist(f.x, f.y, eggzee.x, eggzee.y) < 80) {
   }
 
   // 💬 Yum bubble
-  if (showYum && millis() - yumTimer < 1500) {
-    fill(255, 240, 250);
-    stroke(200, 100, 200);
-    rect(width / 2 - 60, height / 2 - 160, 120, 50, 20);
-    noStroke();
-    fill(0);
-    text("Yum! 💕", width / 2, height / 2 - 160);
-  }
-}
+
 
 function drawSleepScene() {
   background(15, 10, 40);
@@ -526,6 +518,7 @@ function setupDanceButtonFix() {
   danceLink.attribute("target", "_blank");
   danceLink.style("display", "none");
 }
+
 
 
 
