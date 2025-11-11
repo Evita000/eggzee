@@ -99,26 +99,32 @@ function resizeCanvas() {
 
   const designW = lib.properties.width;
   const designH = lib.properties.height;
-
-  // ✅ Base "contain" scale (never crops)
-  let baseScale = Math.min(w / bg.image.width, h / bg.image.height);
-
-  // 📱 Mobile tweak: slight zoom to fill the screen visually
   const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
-  const scale = isMobile ? baseScale * 1.12 : baseScale;
 
-  // 🪩 Background perfectly centered
+  // 🪩 Background scaling
+  let scaleX = w / bg.image.width;
+  let scaleY = h / bg.image.height;
+  let scale;
+
+  // 📱 Mobile → contain (show full image)
+  // 🖥️ Desktop → cover (fill whole screen, no black)
+  if (isMobile) {
+    scale = Math.min(scaleX, scaleY) * 1.12; // zoom a bit on mobile
+  } else {
+    scale = Math.max(scaleX, scaleY); // fill screen on desktop
+  }
+
   bg.scaleX = bg.scaleY = scale;
   bg.x = (w - bg.image.width * scale) / 2;
   bg.y = (h - bg.image.height * scale) / 2;
 
-  // 🐣 Eggzee animation proportionally scaled and centered
+  // 🐣 Center & scale Eggzee animation
   const animScale = Math.min(w / designW, h / designH);
   exportRoot.scaleX = exportRoot.scaleY = animScale;
   exportRoot.x = (w - designW * animScale) / 2;
   exportRoot.y = (h - designH * animScale) / 2;
 
-  // 🎬 Stage always matches full canvas
+  // 🎬 Stage covers the whole canvas
   stage.scaleX = stage.scaleY = 1;
   stage.x = 0;
   stage.y = 0;
@@ -155,6 +161,7 @@ document.addEventListener("DOMContentLoaded", () => {
   </script>
 </body>
 </html>
+
 
 
 
