@@ -289,7 +289,16 @@ function drawMiniGame() {
   fill(255);
   textSize(22);
   text("Hearts caught: " + heartsCaught, width / 2, 50);
+
+  // 🕒 Auto-return to main menu after 20 seconds
+  if (millis() - gameStartTime > 20000) {
+    hearts = [];
+    sparkles = [];
+    heartsCaught = 0;
+    state = "awake";
+  }
 }
+
 
 // ---------- UI ----------
 function drawButtons() {
@@ -507,6 +516,7 @@ function setupDanceButtonFix() {
   danceLink.attribute("target", "_blank");
   danceLink.style("display", "none");
 }
+
 
 
 
