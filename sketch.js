@@ -144,12 +144,36 @@ function drawFeedScene() {
     }
     textSize(40);
     text(f.emoji, f.x, f.y);
+if (dist(f.x, f.y, eggzee.x, eggzee.y) < 80) {
+  f.toRemove = true;
 
-    // 🩷 When Eggzee "eats" it
-    if (dist(f.x, f.y, eggzee.x, eggzee.y) < 80) {
-      f.toRemove = true;
-      showYum = true;
-      yumTimer = millis();
+  // 🧩 Prevent duplicate or empty Yum bubbles (mobile-safe)
+  if (!showYum) {
+    showYum = true;
+    yumTimer = millis();
+    drawYumBubble.currentPhrase = null; // reset old phrase
+  }
+
+  // ✨ Sparkles
+  for (let i = 0; i < 10; i++) {
+    sparkles.push({
+      x: eggzee.x + random(-30, 30),
+      y: eggzee.y + random(-30, 30),
+      size: random(4, 10),
+      speedY: random(-2, -5),
+      alpha: 255
+    });
+  }
+
+  // ❤️ Heart float
+  hearts.push({
+    x: eggzee.x + random(-20, 20),
+    y: eggzee.y - 60,
+    vy: -2,
+    alpha: 255
+  });
+}
+
 
       // ✨ Sparkles
       for (let i = 0; i < 10; i++) {
@@ -502,5 +526,6 @@ function setupDanceButtonFix() {
   danceLink.attribute("target", "_blank");
   danceLink.style("display", "none");
 }
+
 
 
