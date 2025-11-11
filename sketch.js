@@ -224,7 +224,11 @@ function drawFeedScene() {
     h.alpha -= 3;
     if (h.alpha <= 0) hearts.splice(i, 1);
   }
-}
+    // 🕒 Return to main menu after 25 seconds of feeding
+  if (startTime && millis() - startTime > 25000) {
+    state = "awake";
+  }
+} 
 
 
 
@@ -303,6 +307,11 @@ function drawMiniGame() {
   fill(255);
   textSize(22);
   text("Hearts caught: " + heartsCaught, width / 2, 50);
+
+ // 🕒 Return to main menu after 20 seconds of mini-game play
+  if (millis() - gameStartTime > 20000) {
+    state = "awake";
+  }
 }
 
 // ---------- UI ----------
@@ -592,6 +601,7 @@ function setupDanceButtonFix() {
   danceLink.attribute("target", "_blank");
   danceLink.style("display", "none");
 }
+
 
 
 
