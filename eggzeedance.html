@@ -95,22 +95,29 @@ function resizeCanvas() {
   canvas.width = w;
   canvas.height = h;
 
-  // 🎨 Fill the screen with background (no black bars)
-  if (bg) {
-    const scaleFill = Math.max(w / bg.image.width, h / bg.image.height);
-    bg.scaleX = bg.scaleY = scaleFill;
-    bg.x = (w - bg.image.width * scaleFill) / 2;
-    bg.y = (h - bg.image.height * scaleFill) / 2;
-  }
+  if (!bg) return;
 
-  // 🐣 Center Eggzee animation proportionally
+  // 🪩 1️⃣ Fill background so it always covers the whole screen
+  const scaleFill = Math.max(w / bg.image.width, h / bg.image.height);
+  bg.scaleX = bg.scaleY = scaleFill;
+  bg.x = (w - bg.image.width * scaleFill) / 2;
+  bg.y = (h - bg.image.height * scaleFill) / 2;
+
+  // 🐣 2️⃣ Keep Eggzee animation centered on top of it
   const designW = lib.properties.width;
   const designH = lib.properties.height;
   const scale = Math.min(w / designW, h / designH);
-  stage.scaleX = stage.scaleY = scale;
-  stage.x = (w - designW * scale) / 2;
-  stage.y = (h - designH * scale) / 2;
+  exportRoot.scaleX = exportRoot.scaleY = scale;
+
+  // Center the Animate content exactly
+  exportRoot.x = w / 2 - (designW * scale) / 2;
+  exportRoot.y = h / 2 - (designH * scale) / 2;
+
+  // 3️⃣ Stage covers full canvas, no extra scaling
+  stage.scaleX = stage.scaleY = 1;
+  stage.x = stage.y = 0;
 }
+
 
 // ✅ Single-click Return button (works on iPhone + desktop)
 document.addEventListener("DOMContentLoaded", () => {
@@ -140,6 +147,7 @@ document.addEventListener("DOMContentLoaded", () => {
   </script>
 </body>
 </html>
+
 
 
 
