@@ -5,14 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>🐣 Eggzee Interactive</title>
 
-    <!-- ✅ Load p5.js first -->
+    <!-- p5.js -->
     <script src="https://cdn.jsdelivr.net/npm/p5@1.6.0/lib/p5.min.js"></script>
 
-    <!-- ✅ Inline fallback for createSprite -->
     <script>
       function addMiniP5Play(p) {
         if (p.prototype.createSprite) return;
-        console.log("🐣 Adding mini p5.play...");
+        console.log("🐣 injecting createSprite fallback...");
         p.prototype.Sprite = function (x, y, w, h) {
           this.position = p.prototype.createVector(x || 0, y || 0);
           this.width = w || 50;
@@ -47,19 +46,25 @@
         };
       }
 
-      // 🧠 Wait for p5 to load, then add fallback, then load sketch
-      window.addEventListener("load", () => {
-        const wait = setInterval(() => {
-          if (window.p5) {
-            clearInterval(wait);
-            addMiniP5Play(window.p5);
-            console.log("✅ Mini p5.play ready — loading sketch.js");
-            const script = document.createElement("script");
-            script.src = "sketch.js";
-            document.body.appendChild(script);
-          }
-        }, 100);
-      });
+      async function waitForP5() {
+        // Wait until p5 is defined
+        while (typeof window.p5 === "undefined") {
+          await new Promise(r => setTimeout(r, 100));
+        }
+        addMiniP5Play(window.p5);
+
+        // Wait until createSprite really exists
+        while (typeof window.p5.prototype.createSprite === "undefined") {
+          await new Promise(r => setTimeout(r, 100));
+        }
+
+        console.log("✅ p5 + createSprite ready, now loading sketch.js...");
+        const script = document.createElement("script");
+        script.src = "sketch.js";
+        document.body.appendChild(script);
+      }
+
+      window.addEventListener("load", waitForP5);
     </script>
 
     <style>
@@ -69,9 +74,7 @@
         overflow: hidden;
         background: black;
       }
-      canvas {
-        display: block;
-      }
+      canvas { display: block; }
     </style>
   </head>
   <body></body>
