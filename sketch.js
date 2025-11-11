@@ -1,5 +1,5 @@
-let eggImg, eggzeeImg, cityImg;
 let state = "egg";
+let eggImg, eggzeeImg, cityImg;
 let buttons = [];
 
 function preload() {
@@ -30,17 +30,17 @@ function setup() {
 function draw() {
   // 🌇 Background
   if (cityImg) image(cityImg, 0, 0, width, height);
-  else background(180);
+  else background(120, 180, 255);
 
-  // 🐣 Egg or Eggzee
+  // 🐣 Egg / Eggzee
   imageMode(CENTER);
-  if (state === "egg") image(eggImg, width / 2, height / 2, 200, 200);
-  else image(eggzeeImg, width / 2, height / 2, 220, 220);
+  if (state === "egg") image(eggImg, width / 2, height / 2, 220, 220);
+  else image(eggzeeImg, width / 2, height / 2, 240, 240);
 
   // 🩷 Buttons
   textAlign(CENTER, CENTER);
   for (let b of buttons) {
-    fill(255, 230);
+    fill(255, 240);
     rect(b.x - 50, b.y - 35, b.w, b.h, 15);
     fill(0);
     textSize(18);
@@ -50,16 +50,29 @@ function draw() {
   // 💬 Footer text
   fill(255);
   textSize(18);
-  text("Tap the egg to hatch Eggzee 🥚", width / 2, height - 20);
+  if (state === "egg") text("Tap the egg to hatch Eggzee 🥚", width / 2, height - 20);
+  else text("Choose an activity below!", width / 2, height - 20);
 }
 
 function mousePressed() {
-  // Toggle Egg <-> Eggzee
-  state = state === "egg" ? "awake" : "egg";
+  // Tap to hatch
+  if (state === "egg") state = "awake";
+  else {
+    // Button interactions
+    for (let b of buttons) {
+      if (
+        mouseX > b.x - 50 &&
+        mouseX < b.x + 50 &&
+        mouseY > b.y - 35 &&
+        mouseY < b.y + 35
+      ) {
+        console.log("Button clicked:", b.label);
+        if (b.label.includes("Dance")) window.open("eggzeedance.html", "_blank");
+      }
+    }
+  }
 }
 
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
-
-
