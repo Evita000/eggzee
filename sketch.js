@@ -462,18 +462,6 @@ function windowResized() {
 
 
 function touchMoved() {
-  if (state === "miniGame" && touches.length > 0) {
-    eggzee.x = touches[0].x;
-    eggzee.y = touches[0].y;
-  }
-  return false;
-}
-
-function touchEnded() {
-  return false;
-}
-
-function touchMoved() {
   if (state === "feed" && touches.length > 0) {
     // simulate dragging food with finger
     for (let f of foods) {
@@ -496,6 +484,7 @@ function touchEnded() {
   for (let f of foods) f.beingDragged = false;
   return false;
 }
+
 
 
 
