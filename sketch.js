@@ -120,16 +120,18 @@ function drawEggzeeScene() {
     eggzee.rotation = sin(frameCount * 0.05) * 5; // normal idle motion
   }
 
-  push();
-  translate(eggzee.x, eggzee.y);
-  rotate(radians(eggzee.rotation));
-  image(
-    eggzeeAwakeImg,
-    0, 0,
-    eggzeeAwakeImg.width * eggzee.scale,
-    eggzeeAwakeImg.height * eggzee.scale
-  );
-  pop();
+push();
+translate(eggzee.x, eggzee.y);
+rotate(radians(eggzee.rotation));
+translate(0, sin(frameCount * 2) * 5); // 🩷 gentle bounce when laughing
+image(
+  eggzeeAwakeImg,
+  0, 0,
+  eggzeeAwakeImg.width * eggzee.scale,
+  eggzeeAwakeImg.height * eggzee.scale
+);
+pop();
+
 }
 
 function drawFeedScene() {
@@ -590,6 +592,7 @@ function setupDanceButtonFix() {
   danceLink.attribute("target", "_blank");
   danceLink.style("display", "none");
 }
+
 
 
 
