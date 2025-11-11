@@ -208,7 +208,6 @@ function drawFeedScene() {
   }
 }
 
-  // 💬 Yum bubble
 
 
 function drawSleepScene() {
@@ -507,6 +506,7 @@ function setupDanceButtonFix() {
   danceLink.attribute("target", "_blank");
   danceLink.style("display", "none");
 }
+
 
 
 
