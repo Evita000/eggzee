@@ -159,18 +159,18 @@ function drawSleepScene() {
 }
 
 function drawMiniGame() {
-  // 🧠 Make Eggzee follow the finger/mouse
   eggzee.visible = true;
 
-  // if user is touching the screen, use touches[0]
+  // 🖐️ Follow mouse OR finger
   if (touches.length > 0) {
     eggzee.x = touches[0].x;
     eggzee.y = touches[0].y;
   } else {
-    eggzee.x = mouseX || width / 2;
+    eggzee.x = mouseX;
     eggzee.y = height / 2;
   }
 
+  // 🐣 Draw Eggzee
   push();
   translate(eggzee.x, eggzee.y);
   rotate(radians(sin(frameCount * 0.05) * 5));
@@ -183,68 +183,65 @@ function drawMiniGame() {
   );
   pop();
 
-  // 🌟 sparkle spawner
-  if (frameCount % 15 === 0) {
+  // ✨ Drop sparkles
+  if (frameCount % 10 === 0) {
     sparkles.push({
       x: random(50, width - 50),
-      y: -20,
-      size: random(8, 14),
-      speed: random(1.5, 3),
+      y: -10,
+      size: random(10, 18),
+      speed: random(2, 4),
       alpha: 255
     });
   }
 
-  // 🌟 update + collision check
+  // 🌟 Move + check sparkles
   for (let i = sparkles.length - 1; i >= 0; i--) {
     const s = sparkles[i];
-    noStroke();
     fill(255, 255, 150, s.alpha);
+    noStroke();
     ellipse(s.x, s.y, s.size);
     s.y += s.speed;
     s.alpha -= 2;
 
-    // 💥 Catch sparkle → heart burst
-    if (dist(s.x, s.y, eggzee.x, eggzee.y) < 70) {
+    // ✅ Trigger hearts when sparkle overlaps Eggzee
+    if (dist(s.x, s.y, eggzee.x, eggzee.y) < 100) {
       hearts.push({
-        x: eggzee.x + random(-30, 30),
-        y: eggzee.y - random(20, 60),
-        vy: -1.5,
+        x: eggzee.x + random(-20, 20),
+        y: eggzee.y - 40,
+        vy: -2,
         alpha: 255
       });
       sparkles.splice(i, 1);
       heartsCaught++;
     }
 
-    if (s.alpha <= 0 || s.y > height + 20) sparkles.splice(i, 1);
+    if (s.y > height || s.alpha < 0) sparkles.splice(i, 1);
   }
 
-  // ❤️ floating hearts
+  // ❤️ Floating hearts
   for (let i = hearts.length - 1; i >= 0; i--) {
     const h = hearts[i];
-    textSize(40);
-    textAlign(CENTER, CENTER);
+    textSize(50);
     fill(255, 0, 100, h.alpha);
     text("❤️", h.x, h.y);
     h.y += h.vy;
-    h.alpha -= 3;
-    if (h.alpha <= 0) hearts.splice(i, 1);
+    h.alpha -= 4;
+    if (h.alpha < 0) hearts.splice(i, 1);
   }
 
-  // 🧮 Score
+  // 💬 Score display
   fill(255);
   textSize(22);
   textAlign(CENTER, TOP);
-  text("Hearts caught: " + heartsCaught, width / 2, 55);
+  text("Hearts caught: " + heartsCaught, width / 2, 50);
 
-  // ⏳ End after 25s
+  // End game after 25s
   if (millis() - gameStartTime > gameDuration) {
     sparkles = [];
     hearts = [];
     state = "awake";
   }
 }
-
-// 🖐️ Touch handler for smooth tracking
 function touchMoved() {
   if (state === "miniGame" && touches.length > 0) {
     eggzee.x = touches[0].x;
@@ -252,6 +249,7 @@ function touchMoved() {
   }
   return false;
 }
+
 
 // ---------- UI ----------
 function drawButtons() {
@@ -400,6 +398,7 @@ function tellJoke() {
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
+
 
 
 
