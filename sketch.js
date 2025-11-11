@@ -138,17 +138,7 @@ if (showIntro) {
 // ---------- Scenes ----------
 
 
-function drawHatchingScene() {
-  fill(0, 50);
-  rect(0, 0, width, height);
-  image(eggImg, width / 2, height / 2 + 40 + sin(frameCount * 0.3) * 5, 200, 200);
-  if (millis() - crackTime > 1000) {
-    state = "awake";
-    eggzee.visible = true;
-    startTime = millis();
-    hasWelcomed = false;
-  }
-}
+
 
 function drawEggzeeScene() {
   if (!eggzee.visible) return;
@@ -368,6 +358,7 @@ function tellJoke() {
 }
 
 function windowResized() { resizeCanvas(windowWidth, windowHeight); }
+
 
 
 
