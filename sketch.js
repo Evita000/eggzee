@@ -146,14 +146,15 @@ function drawFeedScene() {
   );
   pop();
 
-  // 🍎 Spawn random foods
+  // 🍎 Spawn random foods safely
   if (frameCount % 120 === 0 && foods.length < 5) {
-    let emojiList = ["🍩", "🍎", "🍓", "🍪", "🍕"];
+    const emojiList = ["🍩", "🍎", "🍓", "🍪", "🍕"];
     foods.push({
       x: random(60, width - 60),
       y: random(height / 2, height - 100),
       emoji: random(emojiList),
-      beingDragged: false
+      beingDragged: false,
+      toRemove: false
     });
   }
 
@@ -167,10 +168,9 @@ function drawFeedScene() {
     text(f.emoji, f.x, f.y);
 
     // 🩷 Detect “eating”
-    if (dist(f.x, f.y, eggzee.x, eggzee.y) < 80) {
+    if (dist(f.x, f.y, eggzee.x, eggzee.y) < 80 && !f.toRemove) {
       f.toRemove = true;
 
-      // ✅ Prevent duplicate or empty Yum bubbles (mobile-safe)
       if (!showYum) {
         showYum = true;
         yumTimer = millis();
@@ -198,10 +198,10 @@ function drawFeedScene() {
     }
   }
 
-  // Remove eaten foods
+  // 🚮 Safely remove eaten foods
   foods = foods.filter(f => !f.toRemove);
 
-  // ✨ Sparkles anim
+  // ✨ Animate sparkles
   for (let i = sparkles.length - 1; i >= 0; i--) {
     const s = sparkles[i];
     fill(255, 255, 200, s.alpha);
@@ -212,7 +212,7 @@ function drawFeedScene() {
     if (s.alpha <= 0) sparkles.splice(i, 1);
   }
 
-  // ❤️ Hearts anim
+  // ❤️ Animate hearts
   for (let i = hearts.length - 1; i >= 0; i--) {
     const h = hearts[i];
     textSize(40);
@@ -227,6 +227,7 @@ function drawFeedScene() {
     state = "awake";
   }
 }
+
 
 
 
@@ -727,6 +728,7 @@ function setupDanceButtonFix() {
   danceLink.attribute("target", "_blank");
   danceLink.style("display", "none");
 }
+
 
 
 
