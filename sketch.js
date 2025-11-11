@@ -411,7 +411,15 @@ function mousePressed() {
   } else if (state === "awake") {
     hasWelcomed = true;
     if (insideButton(feedBtn)) state = "feed";
-    else if (insideButton(danceBtn)) window.open("eggzeedance.html", "_blank");
+   else if (insideButton(danceBtn)) {
+  // Try both mobile and desktop safe open
+  const newWin = window.open("eggzeedance.html", "_blank");
+  if (!newWin) {
+    // fallback for mobile browsers that block popups
+    window.location.href = "eggzeedance.html";
+  }
+}
+
     else if (insideButton(jokeBtn)) tellJoke();
     else if (insideButton(gameBtn)) {
       state = "miniGame";
@@ -484,6 +492,7 @@ function touchEnded() {
   for (let f of foods) f.beingDragged = false;
   return false;
 }
+
 
 
 
