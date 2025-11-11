@@ -49,17 +49,26 @@ function setup() {
   else textSize(20);
 
 
-  // 🥚 Egg
-  eggSprite = createSprite(width / 2, height / 2 + 40);
-  eggSprite.addImage("egg", eggImg);
-  eggSprite.scale = 0.1;
+ // 🥚 Egg (drawn manually for fallback)
+eggSprite = { 
+  visible: true,
+  img: eggImg,
+  x: width / 2,
+  y: height / 2 + 40,
+  scale: 0.1,
+  rotation: 0
+};
 
-  // 🐣 Eggzee
-  eggzee = createSprite(width / 2, height / 2);
-  eggzee.addImage("awake", eggzeeAwakeImg);
-  eggzee.addImage("sleep", eggzeeSleepImg);
-  eggzee.scale = 0.1;
-  eggzee.visible = false;
+// 🐣 Eggzee (also manual for fallback)
+eggzee = {
+  visible: false,
+  img: eggzeeAwakeImg,
+  x: width / 2,
+  y: height / 2,
+  scale: 0.1,
+  rotation: 0
+};
+
 
   // 🍩 Buttons
   const spacing = width / 5;
@@ -757,4 +766,5 @@ function touchStarted() {
   mousePressed(); // reuse same logic
   return false;   // prevent mobile double-trigger scrolling
 }
+
 
