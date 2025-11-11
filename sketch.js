@@ -141,8 +141,17 @@ function drawHatchingScene() {
 }
 
 function drawEggzeeScene() {
+  if (!eggzeeAwakeImg) return; // nothing to draw yet
   eggzee.rotation = sin(frameCount * 0.05) * 5;
+
+  push();
+  translate(eggzee.x, eggzee.y);
+  rotate(radians(eggzee.rotation));
+  imageMode(CENTER);
+  image(eggzeeAwakeImg, 0, 0, eggzeeAwakeImg.width * eggzee.scale, eggzeeAwakeImg.height * eggzee.scale);
+  pop();
 }
+
 
 // ✨ Mini-game (catch sparkles)
 function drawMiniGame() {
@@ -766,5 +775,6 @@ function touchStarted() {
   mousePressed(); // reuse same logic
   return false;   // prevent mobile double-trigger scrolling
 }
+
 
 
