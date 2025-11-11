@@ -26,6 +26,20 @@
       display: block;
       background-color: black;
     }
+
+    #returnBtn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      padding: 12px 18px;
+      font-size: 18px;
+      border: none;
+      border-radius: 10px;
+      background: #ffd6e0;
+      color: #333;
+      cursor: pointer;
+      z-index: 999;
+    }
   </style>
 </head>
 
@@ -33,6 +47,8 @@
   <div id="animation_container">
     <canvas id="canvas"></canvas>
   </div>
+
+  <button id="returnBtn">⬅️ Return to Eggzee</button>
 
   <script>
     var canvas, stage, exportRoot, comp, lib;
@@ -59,13 +75,13 @@
 
       // 🪩 Load your dancefloor background image
       var bgImage = new Image();
-      bgImage.src = "assets/dancefloor1.png"; // make sure this matches your filename exactly
+      bgImage.src = "assets/dancefloor1.png";
       bgImage.onload = function() {
         var bg = new createjs.Bitmap(bgImage);
         bg.scaleX = canvas.width / bgImage.width;
         bg.scaleY = canvas.height / bgImage.height;
-        stage.addChild(bg); // add background first
-        stage.addChild(exportRoot); // add Eggzee animation above it
+        stage.addChild(bg);
+        stage.addChild(exportRoot);
       };
 
       AdobeAn.compositionLoaded(lib.properties.id);
@@ -73,27 +89,12 @@
 
       createjs.Ticker.framerate = lib.properties.fps;
       createjs.Ticker.addEventListener("tick", stage);
-
       console.log("💃 Eggzee is dancing on her dancefloor!");
     }
-  </script>
 
-  <!-- ⬅️ Return button -->
-  <button id="returnBtn"
-    style="position:fixed; bottom:20px; right:20px; padding:12px 18px; font-size:18px;
-    border:none; border-radius:10px; background:#ffd6e0; color:#333; cursor:pointer;">
-    ⬅️ Return to Eggzee
-  </button>
-
-  <script>
+    // ✅ Return button — mobile and desktop safe
     document.getElementById("returnBtn").addEventListener("click", () => {
-      // Try to close tab (desktop)
-      window.close();
-
-      // Fallback for mobile
-      setTimeout(() => {
-        window.location.href = "index.html";
-      }, 300);
+      window.open("index.html", "_self");
     });
   </script>
 </body>
