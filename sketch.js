@@ -196,14 +196,11 @@ function drawFeedScene() {
 
   if (!feedStartTime) feedStartTime = millis();
   if (millis() - feedStartTime > 25000) {
-    foods = [];
-    sparkles = [];
-    hearts = [];
-    showYum = false;
-    feedStartTime = null;
-    state = "awake";
+    resetToMainMenu();
   }
-}
+} // ← this closing curly was missing!
+
+
 
 // ---------- ANIMATION HELPERS ----------
 function animateSparkles() {
@@ -334,15 +331,14 @@ function drawMiniGame() {
   textSize(22);
   text("Hearts caught: " + heartsCaught, width / 2, 50);
 
-  // 🕒 end after 20 s
   if (millis() - gameStartTime > 20000) {
-    hearts = [];
-    sparkles = [];
-    heartsCaught = 0;
-    gameStartTime = null;
-    state = "awake";
+    resetToMainMenu();
   }
-}
+
+
+
+
+ 
 
 // ---------- BUTTONS ----------
 function drawButtons() {
@@ -594,10 +590,30 @@ function setupDanceButtonFix() {
 function beforeDraw() {
   colorMode(RGB);
 }
+function resetToMainMenu() {
+  // 🧹 Clear leftover arrays and timers
+  sparkles = [];
+  hearts = [];
+  foods = [];
+  showYum = false;
+  feedStartTime = null;
+  gameStartTime = null;
+  showJoke = false;
+  jokeText = "";
+  colorMode(RGB);
+
+  // 🔁 Restore Eggzee’s visibility and state
+  eggzee.visible = true;
+  eggzee.x = width / 2;
+  eggzee.y = height / 2;
+  eggzee.rotation = 0;
+  state = "awake";
+}
 
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
+
 
 
 
