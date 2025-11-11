@@ -208,11 +208,9 @@ function drawFeedScene() {
 // ---------- ANIMATION HELPERS ----------
 function animateSparkles() {
   push();
-  colorMode(HSB);
   for (let i = sparkles.length - 1; i >= 0; i--) {
     const s = sparkles[i];
-    const hue = (frameCount * 2 + i * 15) % 360;
-    fill(hue, 80, 100, s.alpha / 255);
+    fill(255, 255, 150, s.alpha);
     noStroke();
     ellipse(s.x, s.y, s.size);
     s.y += s.speedY || -2;
@@ -221,6 +219,7 @@ function animateSparkles() {
   }
   pop();
 }
+
 
 
 function animateHearts() {
@@ -256,10 +255,10 @@ function drawMiniGame() {
   if (state !== "miniGame") return;
   eggzee.visible = true;
 
-  // 🕒 Start timer once per session
+  // 🕒 start timer once
   if (gameStartTime === null) gameStartTime = millis();
 
-  // 🐣 Move Eggzee with touch or mouse
+  // 🐣 move Eggzee with touch or mouse
   if (touches && touches.length > 0) {
     eggzee.x = touches[0].x;
     eggzee.y = touches[0].y;
@@ -268,7 +267,7 @@ function drawMiniGame() {
     eggzee.y = mouseY;
   }
 
-  // 🐣 Draw Eggzee
+  // 🐣 draw Eggzee
   push();
   translate(eggzee.x, eggzee.y);
   rotate(radians(sin(frameCount * 0.05) * 5));
@@ -281,67 +280,61 @@ function drawMiniGame() {
   );
   pop();
 
-  // ✨ Spawn sparkles continuously
+  // ✨ spawn sparkles continuously
   if (frameCount % 10 === 0) {
     sparkles.push({
       x: random(50, width - 50),
       y: -10,
-      size: random(8, 18),
+      size: random(10, 18),
       speed: random(2, 4),
       alpha: 255,
       hue: random(360)
     });
   }
 
-  // ✨ Animate sparkles + detect catches
+  // ✨ draw sparkles + detect catches
+  push();
+  colorMode(HSB);
   for (let i = sparkles.length - 1; i >= 0; i--) {
     const s = sparkles[i];
-    colorMode(HSB);
     fill(s.hue, 80, 100, s.alpha / 255);
-    colorMode(RGB);
     noStroke();
     ellipse(s.x, s.y, s.size);
-
     s.y += s.speed;
     s.alpha -= 2;
-    s.hue = (s.hue + 2) % 360;
-
-    // ❤️ Collect sparkle → create heart burst
     if (dist(s.x, s.y, eggzee.x, eggzee.y) < 70) {
       hearts.push({
-        x: eggzee.x + random(-15, 15),
+        x: eggzee.x + random(-10, 10),
         y: eggzee.y - 40,
         vy: -2,
         alpha: 255
       });
       heartsCaught++;
       sparkles.splice(i, 1);
-      continue;
-    }
-
-    // remove faded / offscreen sparkles
-    if (s.y > height || s.alpha < 0) {
+    } else if (s.y > height || s.alpha < 0) {
       sparkles.splice(i, 1);
     }
   }
+  pop();
+  colorMode(RGB); // reset for hearts and UI
 
-  // ❤️ Floating hearts animation
+  // ❤️ hearts float up
   for (let i = hearts.length - 1; i >= 0; i--) {
     const h = hearts[i];
-    textSize(50);
-    fill(255, 80, 100, h.alpha);
+    textSize(60);
+    fill(255, 0, 0, h.alpha);
     text("❤️", h.x, h.y);
     h.y += h.vy;
     h.alpha -= 4;
     if (h.alpha < 0) hearts.splice(i, 1);
   }
 
-  // 🧮 Score display
+  // 🧮 score
   fill(255);
   textSize(22);
   text("Hearts caught: " + heartsCaught, width / 2, 50);
 
-  // 🕒 End after 20s
+  // 🕒 end after 20 s
   if (millis() - gameStartTime > 20000) {
     hearts = [];
     sparkles = [];
@@ -605,5 +598,6 @@ function beforeDraw() {
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
+
 
 
