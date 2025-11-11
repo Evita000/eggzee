@@ -554,17 +554,45 @@ function drawOverlayText() {
 
 function drawEnergyBar() {
   if (state === "egg") return;
+
   const barWidth = 300;
+  const barHeight = 15;
   const pct = constrain(energy / 120, 0, 1);
-  fill(255, 200, 0);
-  rect(width / 2 - barWidth / 2, 30, barWidth * pct, 15, 10);
+  const x = width / 2 - barWidth / 2;
+  const y = 30;
+
+  // 🎨 Dynamic gradient based on energy (gold → orange → red)
+  let energyColor;
+  if (pct > 0.6) energyColor = color(255, 220, 80);       // bright gold
+  else if (pct > 0.3) energyColor = color(255, 160, 60);  // orange
+  else energyColor = color(255, 70, 70);                  // red glow when low
+
+  // 💡 Outer glow
+  noStroke();
+  for (let i = 5; i > 0; i--) {
+    fill(red(energyColor), green(energyColor), blue(energyColor), 30 - i * 5);
+    rect(x - i, y - i, barWidth + i * 2, barHeight + i * 2, 12);
+  }
+
+  // 🔋 Inner bar
+  fill(energyColor);
+  rect(x, y, barWidth * pct, barHeight, 10);
+
+  // 🩶 Outline
   stroke(255);
   noFill();
-  rect(width / 2 - barWidth / 2, 30, barWidth, 15, 10);
+  rect(x, y, barWidth, barHeight, 10);
   noStroke();
+
+  // ⏳ Stable label text
+  push();
+  textAlign(CENTER, CENTER);
+  textSize(18);
   fill(255);
-  text("Time left: " + ceil(energy) + "s", width / 2, 10);
+  text("Time left: " + ceil(energy) + "s", width / 2, 12);
+  pop();
 }
+
 
 // ---------- INPUT ----------
 function mousePressed() {
@@ -689,6 +717,7 @@ function setupDanceButtonFix() {
   danceLink.attribute("target", "_blank");
   danceLink.style("display", "none");
 }
+
 
 
 
