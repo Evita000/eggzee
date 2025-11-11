@@ -77,6 +77,14 @@ let shakeY = cos(frameCount * 0.6) * (height * 0.02);
 
 
   // When tapped, begin hatch
+ if (state === "egg") {
+  let shakeX = sin(frameCount * 0.6) * (width * 0.02);
+  let shakeY = cos(frameCount * 0.6) * (height * 0.02);
+
+  // fixed or adaptive egg size
+  let eggSize = min(width, height) * 0.25;
+  image(eggImg, width / 2 + shakeX, height / 2 + shakeY, eggSize, eggSize);
+
   if (didHatch && millis() - crackTime > 1500) {
     state = "awake";
     showIntro = true;
@@ -85,8 +93,8 @@ let shakeY = cos(frameCount * 0.6) * (height * 0.02);
     // sparkle burst
     for (let i = 0; i < 20; i++) {
       sparkles.push({
-        x: width/2,
-        y: height/2,
+        x: width / 2,
+        y: height / 2,
         vx: random(-2, 2),
         vy: random(-2, -5),
         life: random(60, 120)
@@ -94,6 +102,7 @@ let shakeY = cos(frameCount * 0.6) * (height * 0.02);
     }
   }
 }
+
 // ✨ "Meet Eggzee!" intro text fade
 if (showIntro) {
   let t = millis() - hatchStart;
@@ -134,12 +143,7 @@ if (showIntro) {
 }
 
 // ---------- Scenes ----------
-function drawEggScene() {
-  image(eggImg, width / 2, height / 2 + 40, 200, 200);
-  fill(255);
-  text("Tap the egg to hatch Eggzee 🥚", width / 2, height - 40);
-  eggzee.visible = false;
-}
+
 
 function drawHatchingScene() {
   fill(0, 50);
@@ -371,6 +375,7 @@ function tellJoke() {
 }
 
 function windowResized() { resizeCanvas(windowWidth, windowHeight); }
+
 
 
 
