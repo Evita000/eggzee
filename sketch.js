@@ -643,12 +643,14 @@ function mousePressed() {
   if (state === "egg") {
     state = "hatching";
     crackTime = millis();
-  } else if (state === "awake") {
-    hasWelcomed = true;
+  } 
+ else if (state === "awake") {
+  hasWelcomed = true;
 
-    // 🧹 Clear any lingering joke bubble when switching activities
-    showJoke = false;
-    jokeText = "";
+  // 🧹 Clear any lingering joke bubble when switching activities
+  showJoke = false;
+  jokeText = "";
+
 
     if (mouseInsideRect(feedBtn)) {
       state = "feed";
@@ -656,7 +658,7 @@ function mousePressed() {
     } 
     else if (mouseInsideRect(danceBtn)) {
       // 🪩 Open Animate dance tab
-      window.open("eggzeedance.html?v=3", "_blank");
+      window.open("eggzeedance.html", "_blank");
       state = "dance";
       gameStartTime = millis();
 
@@ -688,31 +690,6 @@ function mousePressed() {
       state = "miniGame";
       gameStartTime = millis();
       heartsCaught = 0;
-
-      // hide buttons during game
-      feedBtn.visible = false;
-      danceBtn.visible = false;
-      gameBtn.visible = false;
-      jokeBtn.visible = false;
-    } 
-    else if (mouseInsideRect(jokeBtn)) {
-      tellJoke();
-    }
-  }
-}
-
-   else if (mouseInsideRect(gameBtn)) {
-  state = "miniGame";
-  gameStartTime = millis();
-  heartsCaught = 0;
-
-  // hide buttons during game
-  feedBtn.visible = false;
-  danceBtn.visible = false;
-  gameBtn.visible = false;
-  jokeBtn.visible = false;
-}
-
     } 
     else if (mouseInsideRect(jokeBtn)) {
       tellJoke();
@@ -745,9 +722,3 @@ function touchStarted() {
   mousePressed(); // reuse same logic
   return false;   // prevent mobile double-trigger scrolling
 }
-
-
-
-
-
-
