@@ -512,7 +512,10 @@ function drawEnergyBar() {
 }
 
 // ---------- INPUT ----------
-function mousePressed() {
+
+  function mousePressed() {
+  console.log("🐣 tap detected, state:", state);   // ✅ ADD THIS LINE
+
   if (state === "egg") {
     state = "hatching";
     crackTime = millis();
@@ -543,9 +546,22 @@ function mouseReleased() {
   for (let f of foods) f.beingDragged = false;
 }
 
+// ✅ Make mobile taps hatch the egg too
 function touchStarted() {
+  console.log("📱 touch detected, state:", state);
   mousePressed();
   return false;
+}
+
+// ✅ Missing helper so feeding doesn’t break anything
+function drawYumBubble() {
+  if (showYum && millis() - yumTimer < 1000) {
+    fill(255, 230, 250, 220);
+    textSize(32);
+    text("Yum! 😋", eggzee.x, eggzee.y - 120);
+  } else {
+    showYum = false;
+  }
 }
 
 function insideButton(btn) {
@@ -622,6 +638,7 @@ function resetToMainMenu() {
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
+
 
 
 
