@@ -7,6 +7,8 @@ let energy = 120;
 let startTime = null;
 let hasWelcomed = false;
 let lastTouchTime = 0; // 🧩 prevent double bubble on mobile
+let sleepFade = 0; // 🌙 controls smooth fade for sleep transition
+
 
 
 // Buttons + UI
@@ -70,14 +72,15 @@ function draw() {
   else background(200);
 
   // Update energy
-// Update energy
 const elapsed = startTime ? (millis() - startTime) / 1000 : 0;
 energy = startTime ? max(0, 120 - elapsed) : 120;
 
 // 🌙 Auto-sleep when energy runs out
 if (energy <= 0 && state !== "sleep") {
+  sleepFade = 0; // reset fade
   state = "sleep";
 }
+
 
 
   // Scenes
@@ -229,14 +232,31 @@ function drawFeedScene() {
 
 
 function drawSleepScene() {
-  background(15, 10, 40);
+  // 🌙 Smooth fade from awake to sleep
+  if (sleepFade < 255) sleepFade += 3;
+
+  // City night background
+  if (cityNightImg) image(cityNightImg, width / 2, height / 2, width, height);
+  else background(15, 10, 40);
+
+  // Dim overlay
+  fill(0, sleepFade * 0.7);
+  rect(0, 0, width, height);
+
+  // Eggzee floating gently while sleeping
   push();
   translate(eggzee.x, eggzee.y + sin(frameCount * 0.05) * 8);
+  tint(255, map(255 - sleepFade, 0, 255, 80, 255)); // fade brightness
   image(eggzeeSleepImg, 0, 0, eggzeeSleepImg.width * 0.1, eggzeeSleepImg.height * 0.1);
   pop();
-  fill(255);
+  noTint();
+
+  // Sleep text
+  fill(255, 220, 255, map(sleepFade, 0, 255, 0, 255));
+  textSize(22);
   text("💤 Eggzee is sleeping... Tap to wake! 💫", width / 2, height - 100);
 }
+
 
 function drawMiniGame() {
   if (state !== "miniGame") return;
@@ -500,32 +520,33 @@ function drawOverlayText() {
     textStyle(BOLD);
 
     // 🧠 Auto-size based on screen width
-    let baseSize = width < 600 ? 18 : 26;
+    let baseSize = width < 400 ? 16 : width < 800 ? 20 : 26;
     textSize(baseSize);
 
     const message = !hasWelcomed
       ? "💛 Hi, I’m Eggzee! What breaks me, makes me."
       : "Choose an activity below!";
 
-    // 🌟 Animated glow pulse
+    // 🌟 Animated gold shimmer
     let pulse = sin(frameCount * 0.05) * 50 + 205;
     let goldenColor = color(pulse, 210, 70);
 
-    // 🧡 Soft orange halo behind text
+    // Halo
     for (let i = 0; i < 6; i++) {
       fill(255, 140 - i * 15, 0, 110 - i * 10);
-      text(message, width / 2, 110 + i * 0.6);
+      text(message, width / 2, height * 0.12 + i * 0.6);
     }
 
-    // ✨ Bright gold text on top
+    // Text wrap ensures nothing cuts off
+    textWrap(WORD);
     fill(goldenColor);
     stroke(255, 200, 0);
     strokeWeight(2);
-    textWrap(WORD);
-    text(message, width / 2, 110, width * 0.9); // 🔧 Wraps at 90% width
+    text(message, width / 2, height * 0.12, width * 0.9); // 🪄 fits 90% width
     noStroke();
   }
 }
+
 
 
 
@@ -667,6 +688,7 @@ function setupDanceButtonFix() {
   danceLink.attribute("target", "_blank");
   danceLink.style("display", "none");
 }
+
 
 
 
