@@ -82,15 +82,14 @@ function draw() {
   else if (state === "sleep") drawSleepScene();
 
   // Draw UI + extras (🌟 no debug text anymore)
-  drawFoods();
-  drawHearts();
-  drawButtons();
-  drawYumBubble();
-  drawEnergyBar();
-  drawOverlayText();
-  drawJoke(); // keep this last
+drawFoods();
+drawHearts();
+drawButtons();
+drawYumBubble();
+drawEnergyBar();
+drawJoke(); // draw joke first
+drawOverlayText(); // then the intro text on top
 }
-
 
 // ---------- SCENES ----------
 function drawEggScene() {
@@ -491,27 +490,32 @@ function drawJoke() {
 function drawOverlayText() {
   if (state === "awake") {
     textAlign(CENTER, CENTER);
-    textSize(26);
+    textSize(28);
     textStyle(BOLD);
 
     const message = !hasWelcomed
       ? "💛 Hi, I’m Eggzee! What breaks me, makes me."
       : "Choose an activity below!";
 
-    // 🌈 Vibrant glowing gold effect
+    // 🌟 Vibrant animated gold shimmer
+    let pulse = sin(frameCount * 0.05) * 50 + 205; // oscillates 155–255
+    let goldenColor = color(pulse, 200, 50);
+
+    // outer glow layers (warm orange halo)
     for (let i = 0; i < 6; i++) {
-      fill(255, 150 - i * 20, 0, 120 - i * 15); // orange to gold glow
-      text(message, width / 2, 100 + i * 0.5);
+      fill(255, 120 - i * 10, 0, 100 - i * 10);
+      text(message, width / 2, 110 + i * 0.6);
     }
 
-    // ✨ Bright highlight text
-    fill(255, 220, 70);
-    stroke(255, 180, 0);
-    strokeWeight(2);
-    text(message, width / 2, 100);
+    // main glowing text
+    fill(goldenColor);
+    stroke(255, 200, 0);
+    strokeWeight(3);
+    text(message, width / 2, 110);
     noStroke();
   }
 }
+
 
 
 function drawEnergyBar() {
@@ -651,6 +655,7 @@ function setupDanceButtonFix() {
   danceLink.attribute("target", "_blank");
   danceLink.style("display", "none");
 }
+
 
 
 
