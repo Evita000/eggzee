@@ -108,7 +108,8 @@ function drawHatchingScene() {
   image(eggImg, 0, 0, 200, 200);
   pop();
 
-  if (millis() - crackTime > 1000) {
+  // ⏳ Wait 2 seconds before hatching Eggzee
+  if (millis() - crackTime > 2000) {
     state = "awake";
     eggzee.visible = true;
     startTime = millis();
@@ -616,6 +617,7 @@ function setupDanceButtonFix() {
   danceLink.attribute("target", "_blank");
   danceLink.style("display", "none");
 }
+
 
 
 
