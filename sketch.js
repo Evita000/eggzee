@@ -327,15 +327,63 @@ function drawHearts() {
 }
 
 function drawYumBubble() {
+  // 🩷 Prevent multiple overlapping bubbles
   if (!showYum) return;
-  fill(255, 220, 240);
-  stroke(200, 150, 200);
-  rect(width / 2 - 60, height / 2 - 150, 120, 50, 25);
+
+  // 💬 Fun random phrases (Eggzee’s reactions)
+  const phrases = [
+    "Yum! 💕",
+    "Delicious! 🍓",
+    "So good! 😋",
+    "Mmm… tasty! 🍪",
+    "That hit the spot! 💫",
+    "Egg-cellent choice! 🥚✨"
+  ];
+
+  // 💬 Only pick a new phrase once per feed event
+  if (!drawYumBubble.currentPhrase || millis() - yumTimer < 100) {
+    drawYumBubble.currentPhrase = random(phrases);
+  }
+  const phrase = drawYumBubble.currentPhrase;
+
+  // 📏 Bubble size auto-adjusted for text width
+  textSize(18);
+  const padding = 40;
+  const bubbleW = textWidth(phrase) + padding;
+  const bubbleH = 60;
+
+  // 📍 Nice position (slightly higher above Eggzee)
+  const bx = eggzee.x + 80;
+  const by = eggzee.y - 160;
+
+  // 🫧 Bubble styling
+  fill(255, 230, 250);
+  stroke(200, 120, 200);
+  strokeWeight(2);
+  rect(bx - bubbleW / 2, by - bubbleH / 2, bubbleW, bubbleH, 25);
+
+  // Tail
+  noStroke();
+  fill(255, 230, 250);
+  triangle(
+    bx - 10, by + bubbleH / 2,
+    bx + 10, by + bubbleH / 2,
+    bx, by + bubbleH / 2 + 15
+  );
+
+  // 🩷 Text inside bubble
   fill(50);
   noStroke();
-  text("Yum! 💕", width / 2, height / 2 - 150);
-  if (millis() - yumTimer > 1500) showYum = false;
+  textAlign(CENTER, CENTER);
+  text(phrase, bx, by);
+
+  // 🕒 Hide after short delay
+  if (millis() - yumTimer > 1500) {
+    showYum = false;
+    drawYumBubble.currentPhrase = null; // reset phrase next time
+  }
 }
+
 
 // ---------- TEXT & ENERGY ----------
 function drawJoke() {
@@ -461,3 +509,4 @@ function setupDanceButtonFix() {
   danceLink.attribute("target", "_blank");
   danceLink.style("display", "none");
 }
+
