@@ -70,8 +70,9 @@ function draw() {
   // Scenes
   if (state === "egg") {
   // Gentle shake that scales with screen size
-  let shakeX = sin(frameCount * 0.3) * (width * 0.005);
-  let shakeY = cos(frameCount * 0.4) * (height * 0.005);
+ let shakeX = sin(frameCount * 0.6) * (width * 0.02);
+let shakeY = cos(frameCount * 0.6) * (height * 0.02);
+
   image(eggImg, width/2 + shakeX, height/2 + shakeY, width/2.5, width/2.5);
 
   // When tapped, begin hatch
@@ -367,6 +368,7 @@ function tellJoke() {
 }
 
 function windowResized() { resizeCanvas(windowWidth, windowHeight); }
+
 
 
 
