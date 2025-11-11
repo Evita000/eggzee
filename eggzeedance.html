@@ -54,60 +54,47 @@
     }
 
     function handleComplete() {
-  exportRoot = new lib.eggzeedanceworks();
-  stage = new lib.Stage(canvas);
+      exportRoot = new lib.eggzeedanceworks();
+      stage = new lib.Stage(canvas);
 
-  // 🪩 Load your dancefloor background image
-  var bgImage = new Image();
-  bgImage.src = "assets/dancefloor1.png"; // make sure this matches your filename exactly
-  bgImage.onload = function() {
-    var bg = new createjs.Bitmap(bgImage);
-    bg.scaleX = canvas.width / bgImage.width;
-    bg.scaleY = canvas.height / bgImage.height;
-    stage.addChild(bg); // add background first
-    stage.addChild(exportRoot); // add Eggzee animation above it
-  };
+      // 🪩 Load your dancefloor background image
+      var bgImage = new Image();
+      bgImage.src = "assets/dancefloor1.png"; // make sure this matches your filename exactly
+      bgImage.onload = function() {
+        var bg = new createjs.Bitmap(bgImage);
+        bg.scaleX = canvas.width / bgImage.width;
+        bg.scaleY = canvas.height / bgImage.height;
+        stage.addChild(bg); // add background first
+        stage.addChild(exportRoot); // add Eggzee animation above it
+      };
 
-  AdobeAn.compositionLoaded(lib.properties.id);
-  AdobeAn.makeResponsive(true, "both", false, 1, [canvas]);
+      AdobeAn.compositionLoaded(lib.properties.id);
+      AdobeAn.makeResponsive(true, "both", false, 1, [canvas]);
 
-  createjs.Ticker.framerate = lib.properties.fps;
-  createjs.Ticker.addEventListener("tick", stage);
+      createjs.Ticker.framerate = lib.properties.fps;
+      createjs.Ticker.addEventListener("tick", stage);
 
-  console.log("💃 Eggzee is dancing on her dancefloor!");
-}
-
+      console.log("💃 Eggzee is dancing on her dancefloor!");
+    }
   </script>
+
+  <!-- ⬅️ Return button -->
   <button id="returnBtn"
-style="position:fixed; bottom:20px; right:20px; padding:12px 18px; font-size:18px;
-border:none; border-radius:10px; background:#ffd6e0; color:#333; cursor:pointer;">
-⬅️ Return to Eggzee
-</button>
+    style="position:fixed; bottom:20px; right:20px; padding:12px 18px; font-size:18px;
+    border:none; border-radius:10px; background:#ffd6e0; color:#333; cursor:pointer;">
+    ⬅️ Return to Eggzee
+  </button>
 
-<script>
-document.getElementById("returnBtn").addEventListener("click", () => {
-  try {
-    // First try closing (works on desktop if it was opened via script)
-    window.close();
+  <script>
+    document.getElementById("returnBtn").addEventListener("click", () => {
+      // Try to close tab (desktop)
+      window.close();
 
-    // If blocked (mobile Safari etc.), just navigate back manually
-    setTimeout(() => {
-      window.open("index.html", "_self");
-    }, 300);
-  } catch (e) {
-    window.open("index.html", "_self");
-  }
-});
-</script>
-
-
+      // Fallback for mobile
+      setTimeout(() => {
+        window.location.href = "index.html";
+      }, 300);
+    });
+  </script>
 </body>
 </html>
-
-</body>
-</html>
-
-
-
-
-
