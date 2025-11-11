@@ -82,27 +82,37 @@ canvas {
 
       // 🧩 Unified full-screen "cover" scaling
       function resizeCanvas() {
-        const w = window.innerWidth;
-        const h = window.innerHeight;
-        const designW = lib.properties.width;
-        const designH = lib.properties.height;
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+  const designW = lib.properties.width;
+  const designH = lib.properties.height;
 
-        // use cover scaling — fills screen fully (may crop slightly)
-      const scale = Math.min(w / designW, h / designH);
+  // 🩰 Keep Eggzee animation fully visible (contain)
+  const scale = Math.min(w / designW, h / designH);
+  canvas.width = w;
+  canvas.height = h;
 
+  stage.scaleX = stage.scaleY = scale;
+  stage.x = (w - designW * scale) / 2;
+  stage.y = (h - designH * scale) / 2;
 
-        canvas.width = w;
-        canvas.height = h;
+  // 🎨 Background scaling (show entire image, no cropping)
+  const bgAspect = bgImage.width / bgImage.height;
+  const screenAspect = w / h;
 
-        // Apply to both stage and background
-        stage.scaleX = stage.scaleY = scale;
-        stage.x = (w - designW * scale) / 2;
-        stage.y = (h - designH * scale) / 2;
+  let bgScale;
+  if (screenAspect > bgAspect) {
+    // Screen is wider — fit height
+    bgScale = h / bgImage.height;
+  } else {
+    // Screen is taller — fit width
+    bgScale = w / bgImage.width;
+  }
 
-        bg.scaleX = bg.scaleY = scale;
-        bg.x = (w - bgImage.width * scale) / 2;
-        bg.y = (h - bgImage.height * scale) / 2;
-      }
+  bg.scaleX = bg.scaleY = bgScale;
+  bg.x = (w - bgImage.width * bgScale) / 2;
+  bg.y = (h - bgImage.height * bgScale) / 2;
+}
 
       window.addEventListener("resize", resizeCanvas);
       resizeCanvas();
@@ -133,5 +143,6 @@ canvas {
   </script>
 </body>
 </html>
+
 
 
