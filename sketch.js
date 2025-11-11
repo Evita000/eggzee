@@ -268,15 +268,15 @@ function drawYumBubble() {
   if (millis() - yumTimer > 1500) showYum = false;
 }
 
+// ---------- Text & Overlay ----------
 function drawJoke() {
   if (!showJoke) return;
   fill(255);
   textSize(18);
   textAlign(CENTER, CENTER);
   text(jokeText, width / 2, height / 2 - 200);
-} // <-- ✅ THIS closes drawJoke properly
+}  // ✅ closes drawJoke properly
 
-// ---------- Overlay & Energy ----------
 function drawOverlayText() {
   fill(255);
   textSize(20);
@@ -287,7 +287,7 @@ function drawOverlayText() {
       text("Choose an activity below!", width / 2, 50);
     }
   }
-} // ✅ closes drawOverlayText correctly
+}  // ✅ closes drawOverlayText properly
 
 function drawEnergyBar() {
   if (state === "egg") return;
@@ -366,5 +366,6 @@ function tellJoke() {
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
+
 
 
