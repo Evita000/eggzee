@@ -86,7 +86,10 @@ function draw() {
   // 💤 Sleep logic
   if (state === "awake" && energy <= 15) eggzee.changeImage("sleep");
   else if (state === "awake") eggzee.changeImage("awake");
-  if (energy <= 0 && state !== "egg" && state !== "hatching") state = "sleep";
+  if (energy <= 15 && state === "awake") {
+  state = "sleep";
+}
+
 
   // Scenes
   if (state === "egg") drawEggScene();
@@ -711,6 +714,38 @@ function mouseInsideRect(btn) {
   );
 }
 
+// ---------- SLEEP SCENE ----------
+function drawSleepScene() {
+  // 🌌 Soft night gradient background
+  for (let y = 0; y < height; y++) {
+    let c = lerpColor(color(10, 10, 30), color(40, 30, 60), y / height);
+    stroke(c);
+    line(0, y, width, y);
+  }
+
+  // 💤 Eggzee visible and gently breathing
+  eggzee.visible = true;
+  eggzee.changeImage("sleep");
+  eggzee.position.x = width / 2;
+  eggzee.position.y = height / 2 + sin(frameCount * 0.03) * 8; // slow bobbing
+  eggzee.scale = 0.1 + sin(frameCount * 0.03) * 0.003;
+
+  // 🌟 Twinkling stars
+  noStroke();
+  for (let i = 0; i < 40; i++) {
+    const x = (i * 100 + frameCount * 0.2) % width;
+    const y = (i * 50 + frameCount * 0.3) % height / 1.5;
+    const brightness = map(sin(frameCount * 0.05 + i), -1, 1, 180, 255);
+    fill(255, 255, 200, brightness);
+    ellipse(x, y, 2, 2);
+  }
+
+  // 🌙 Text
+  fill(255);
+  textAlign(CENTER, CENTER);
+  textSize(26);
+  text("💤 Eggzee is sleeping... Tap to wake! 💫", width / 2, height - 100);
+}
 
 
 // ---------- RESIZE FOR PHONES ----------
@@ -722,3 +757,4 @@ function touchStarted() {
   mousePressed(); // reuse same logic
   return false;   // prevent mobile double-trigger scrolling
 }
+
