@@ -335,32 +335,39 @@ function drawHearts() {
 }
 
 function drawYumBubble() {
-  if (showYum) {
-    let elapsed = millis() - yumTimer;
-    let fadeAmt = map(elapsed, 0, 1200, 255, 0);
-    fadeAmt = constrain(fadeAmt, 0, 255);
+  if (!showYum) return;
 
-    // 🍬 smooth one-time ease-out pop (no looping bounce)
-    let t = constrain(elapsed / 300, 0, 1);
-    let scaleUp = 1 + 0.2 * sin(t * HALF_PI); // only grows once, then settles
+  let elapsed = millis() - yumTimer;
+  let fadeAmt = map(elapsed, 0, 1200, 255, 0);
+  fadeAmt = constrain(fadeAmt, 0, 255);
 
-    push();
-    translate(width / 2, height / 2 - 110); // perfectly centered over Eggzee
-    scale(scaleUp);
-    fill(255, 240, 250, fadeAmt);
-    stroke(200, 100, 200, fadeAmt);
-    rectMode(CENTER);
-    rect(0, 0, 130, 60, 20, 20); // slightly bigger bubble
-    noStroke();
-    fill(0, 0, 0, fadeAmt);
-    textSize(22);
-    textAlign(CENTER, CENTER);
-    text("Yum! 💕", 0, 2); // centered text
-    pop();
+  // 🩷 simple ease-in grow only once
+  let t = constrain(elapsed / 200, 0, 1);
+  let scaleUp = 1 + 0.15 * (1 - pow(1 - t, 3)); // smooth single pop-in
 
-    if (elapsed > 1200) showYum = false;
-  }
+  push();
+  translate(width / 2, height / 2 - height * 0.25); // bubble stays consistent regardless of device
+  scale(scaleUp);
+
+  // 💭 bubble
+  rectMode(CENTER);
+  fill(255, 240, 250, fadeAmt);
+  stroke(200, 100, 200, fadeAmt);
+  rect(0, 0, 140, 60, 20, 20);
+
+  // 🖋 text
+  noStroke();
+  fill(0, 0, 0, fadeAmt);
+  textSize(22);
+  textAlign(CENTER, CENTER);
+  text("Yum! 💕", 0, 2);
+
+  pop();
+
+  // ⏰ auto-hide after fade
+  if (elapsed > 1200) showYum = false;
 }
+
 
 
 
@@ -497,6 +504,7 @@ function setupDanceButtonFix() {
   danceLink.attribute("target", "_blank");
   danceLink.style("display", "none");
 }
+
 
 
 
