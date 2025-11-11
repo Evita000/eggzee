@@ -359,14 +359,7 @@ function touchStarted() {
   return false;
 }
 
-function touchMoved() {
-  for (let f of foods)
-    if (f.beingDragged) {
-      f.x = mouseX;
-      f.y = mouseY;
-    }
-  return false;
-}
+
 
 function insideButton(btn) {
   return (
@@ -398,6 +391,7 @@ function touchMoved() {
   eggzee.y = mouseY;
   return false;
 }
+
 
 
 
