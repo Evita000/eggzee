@@ -9,24 +9,27 @@
   <!-- Animate export -->
   <script src="eggzeedanceworks.js"></script>
 
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      width: 100%;
-      background-color: black;
-      overflow: hidden;
-    }
+ <style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background-color: black;
+  }
 
-    #animation_container, #canvas {
-      position: absolute;
-      margin: auto;
-      inset: 0;
-      display: block;
-      background-color: black;
-    }
-  </style>
+  #animation_container, #canvas {
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    display: block;
+    width: 100vw !important;
+    height: 100vh !important;
+    background-color: black;
+  }
+</style>
+
 </head>
 
 <body onload="init();">
@@ -53,29 +56,47 @@
       loader.loadManifest(lib.properties.manifest);
     }
 
-    function handleComplete() {
+function handleComplete() {
   exportRoot = new lib.eggzeedanceworks();
   stage = new lib.Stage(canvas);
 
-  // 🪩 Load your dancefloor background image
+  // 🪩 Load dancefloor background
   var bgImage = new Image();
-  bgImage.src = "assets/dancefloor1.png"; // make sure this matches your filename exactly
-  bgImage.onload = function() {
+  bgImage.src = "assets/dancefloor1.png";
+  bgImage.onload = function () {
     var bg = new createjs.Bitmap(bgImage);
-    bg.scaleX = canvas.width / bgImage.width;
-    bg.scaleY = canvas.height / bgImage.height;
-    stage.addChild(bg); // add background first
-    stage.addChild(exportRoot); // add Eggzee animation above it
+    stage.addChild(bg);
+    stage.addChild(exportRoot);
+
+    // 💡 Responsive full-screen scaling
+    function resizeCanvas() {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      const scaleX = w / lib.properties.width;
+      const scaleY = h / lib.properties.height;
+      const scale = Math.max(scaleX, scaleY); // fill screen completely
+
+      canvas.width = w;
+      canvas.height = h;
+      stage.scaleX = stage.scaleY = scale;
+      stage.x = (w - lib.properties.width * scale) / 2;
+      stage.y = (h - lib.properties.height * scale) / 2;
+
+      bg.scaleX = w / bgImage.width;
+      bg.scaleY = h / bgImage.height;
+    }
+
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
   };
 
   AdobeAn.compositionLoaded(lib.properties.id);
-  AdobeAn.makeResponsive(true, "both", false, 1, [canvas]);
-
   createjs.Ticker.framerate = lib.properties.fps;
   createjs.Ticker.addEventListener("tick", stage);
 
-  console.log("💃 Eggzee is dancing on her dancefloor!");
+  console.log("💃 Eggzee now fills the screen!");
 }
+
 
   </script>
    <button id="returnBtn"
@@ -104,6 +125,7 @@ border:none; border-radius:10px; background:#ffd6e0; color:#333; cursor:pointer;
 
 </body>
 </html>
+
 
 
 
