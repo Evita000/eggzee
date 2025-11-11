@@ -76,15 +76,19 @@ function draw() {
   else if (state === "miniGame") drawMiniGame();
   else if (state === "sleep") drawSleepScene();
 
-  // UI + overlays
   drawFoods();
-  drawHearts();
-  drawButtons();
-  if (state !== "feed") drawYumBubble(); // ✅ prevent duplicate bubbles
-  drawJoke();
-  drawEnergyBar();
-  drawOverlayText();
+drawHearts();
+drawButtons();
+
+// ✅ Draw Yum bubble ONLY outside of feed scene
+if (state !== "feed" && showYum) {
+  drawYumBubble();
 }
+
+drawJoke();
+drawEnergyBar();
+drawOverlayText();
+
 
 // ---------- SCENES ----------
 function drawEggScene() {
@@ -469,6 +473,7 @@ function setupDanceButtonFix() {
   danceLink.attribute("target", "_blank");
   danceLink.style("display", "none");
 }
+
 
 
 
