@@ -154,26 +154,33 @@ function drawSleepScene() {
 }
 
 function drawMiniGame() {
-  // Ensure Eggzee is visible
+  // Make sure Eggzee is visible
   eggzee.visible = true;
 
-  // Make Eggzee follow the mouse horizontally
+  // Follow mouse horizontally
   eggzee.x = mouseX;
   eggzee.y = height / 2;
 
-  // Draw Eggzee
+  // --- Draw Eggzee ---
   push();
   translate(eggzee.x, eggzee.y);
   rotate(radians(sin(frameCount * 0.05) * 5));
+  imageMode(CENTER);
   image(eggzeeAwakeImg, 0, 0, eggzeeAwakeImg.width * eggzee.scale, eggzeeAwakeImg.height * eggzee.scale);
   pop();
 
-  // Spawn sparkles
+  // --- Sparkles ---
   if (frameCount % 15 === 0) {
-    sparkles.push({ x: random(50, width - 50), y: -20, size: random(8, 14), speed: random(1.5, 3), alpha: 255 });
+    sparkles.push({
+      x: random(50, width - 50),
+      y: -20,
+      size: random(8, 14),
+      speed: random(1.5, 3),
+      alpha: 255
+    });
   }
 
-  // Animate sparkles and check collisions
+  // Animate sparkles and detect collisions
   for (let i = sparkles.length - 1; i >= 0; i--) {
     const s = sparkles[i];
     noStroke();
@@ -182,6 +189,7 @@ function drawMiniGame() {
     s.y += s.speed;
     s.alpha -= 3;
 
+    // Collision with Eggzee
     if (dist(s.x, s.y, eggzee.x, eggzee.y) < 80) {
       hearts.push({ x: eggzee.x + random(-30, 30), y: eggzee.y - random(20, 60), vy: -1, alpha: 255 });
       sparkles.splice(i, 1);
@@ -191,12 +199,13 @@ function drawMiniGame() {
     if (s.alpha <= 0 || s.y > height + 20) sparkles.splice(i, 1);
   }
 
+  // --- UI Text ---
   fill(255);
   textSize(22);
   textAlign(CENTER, TOP);
   text("Hearts caught: " + heartsCaught, width / 2, 55);
 
-  // Auto-return to awake state
+  // --- End mini-game after duration ---
   if (millis() - gameStartTime > gameDuration) {
     sparkles = [];
     state = "awake";
@@ -250,4 +259,5 @@ function tellJoke() {
 }
 
 function windowResized() { resizeCanvas(windowWidth, windowHeight); }
+
 
