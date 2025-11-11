@@ -127,7 +127,20 @@ function drawEggScene() {
   eggSprite.visible = true;
   eggzee.visible = false;
   eggSprite.rotation = sin(frameCount * 0.3) * 10;
+
+  push();
+  translate(eggSprite.x, eggSprite.y);
+  rotate(radians(eggSprite.rotation));
+  imageMode(CENTER);
+  image(
+    eggImg,
+    0, 0,
+    eggImg.width * eggSprite.scale,
+    eggImg.height * eggSprite.scale
+  );
+  pop();
 }
+
 
 function drawHatchingScene() {
   eggSprite.rotation = random(-15, 15);
@@ -778,6 +791,7 @@ function touchStarted() {
   mousePressed(); // reuse same logic
   return false;   // prevent mobile double-trigger scrolling
 }
+
 
 
 
