@@ -20,7 +20,8 @@ let jokeTimer = 0;
 // Mini-game
 let sparkles = [];
 let heartsCaught = 0;
-let gameStartTime = 0;
+let gameStartTime = null;
+
 let gameDuration = 25000;
 
 // ---------- PRELOAD ----------
@@ -237,26 +238,26 @@ function drawMiniGame() {
   if (state !== "miniGame") return;
   eggzee.visible = true;
 
-  // 🕒 initialize timer once
-  if (!gameStartTime) gameStartTime = millis();
+  // 🕒 Start timer once per session
+  if (gameStartTime === null) gameStartTime = millis();
 
-  // 🐣 follow touch or mouse
+  // 🐣 Control Eggzee movement
   if (touches && touches.length > 0) {
     eggzee.x = touches[0].x;
     eggzee.y = touches[0].y;
-  } else if (mouseX && mouseY) {
+  } else if (mouseIsPressed) {
     eggzee.x = mouseX;
     eggzee.y = mouseY;
   }
 
-  // 🐣 draw Eggzee
+  // 🐣 Draw Eggzee
   push();
   translate(eggzee.x, eggzee.y);
   rotate(radians(sin(frameCount * 0.05) * 5));
   image(eggzeeAwakeImg, 0, 0, eggzeeAwakeImg.width * eggzee.scale, eggzeeAwakeImg.height * eggzee.scale);
   pop();
 
-  // ✨ spawn sparkles
+  // ✨ Spawn sparkles
   if (frameCount % 10 === 0) {
     sparkles.push({
       x: random(50, width - 50),
@@ -267,7 +268,7 @@ function drawMiniGame() {
     });
   }
 
-  // ✨ sparkle movement + catching
+  // ✨ Move sparkles + detect catches
   for (let i = sparkles.length - 1; i >= 0; i--) {
     const s = sparkles[i];
     fill(255, 255, 150, s.alpha);
@@ -285,7 +286,7 @@ function drawMiniGame() {
     }
   }
 
-  // ❤️ hearts animation
+  // ❤️ Hearts float up
   for (let i = hearts.length - 1; i >= 0; i--) {
     const h = hearts[i];
     textSize(60);
@@ -295,17 +296,17 @@ function drawMiniGame() {
     if (h.alpha < 0) hearts.splice(i, 1);
   }
 
-  // 🧮 score text
+  // 🧮 Display score
   fill(255);
   textSize(22);
   text("Hearts caught: " + heartsCaught, width / 2, 50);
 
-  // 🕒 auto-return after 20s
+  // 🕒 Return to menu after 20 seconds
   if (millis() - gameStartTime > 20000) {
     hearts = [];
     sparkles = [];
     heartsCaught = 0;
-    gameStartTime = null; // reset cleanly for next time
+    gameStartTime = null; // reset cleanly
     state = "awake";
   }
 }
@@ -528,6 +529,7 @@ function setupDanceButtonFix() {
   danceLink.attribute("target", "_blank");
   danceLink.style("display", "none");
 }
+
 
 
 
