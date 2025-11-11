@@ -59,13 +59,26 @@ function draw() {
   const elapsed = startTime ? (millis() - startTime) / 1000 : 0;
   energy = startTime ? max(0, 120 - elapsed) : 120;
 
-  // 🎭 Scene controller
-  if (state === "egg") drawEggScene();
-  else if (state === "hatching") drawHatchingScene();
-  else if (state === "awake") drawEggzeeScene();
-  else if (state === "feed") drawFeedScene();
-  else if (state === "dance") drawDanceScene();
-  else if (state === "sleep") drawSleepScene();
+ // 🎭 Scene controller — only ONE scene active at a time
+if (state === "egg") {
+  drawEggScene();
+}
+else if (state === "hatching") {
+  drawHatchingScene();
+}
+else if (state === "awake") {
+  drawEggzeeScene();
+}
+else if (state === "feed") {
+  drawFeedScene();
+}
+else if (state === "dance") {
+  drawDanceScene();
+}
+else if (state === "sleep") {
+  drawSleepScene();
+}
+
 
   // 🍩 Floating elements
   drawFoods();
@@ -88,16 +101,18 @@ function drawEggScene() {
 }
 
 function drawHatchingScene() {
-  if (millis() - crackTime > 1200) {
+  background(0, 0, 0, 100);
+  image(eggImg, width / 2, height / 2 + 40, eggImg.width * 0.1, eggImg.height * 0.1);
+  eggzee.visible = false;
+
+  if (millis() - crackTime > 1000) {
     state = "awake";
     eggzee.visible = true;
     startTime = millis();
     hasWelcomed = false;
-  } else {
-    image(eggImg, width / 2, height / 2 + 40, eggImg.width * 0.1, eggImg.height * 0.1);
-    rotate(random(-0.1, 0.1));
   }
 }
+
 
 function drawEggzeeScene() {
   if (!eggzee.visible) return;
@@ -235,18 +250,27 @@ function mousePressed() {
   if (state === "egg") {
     state = "hatching";
     crackTime = millis();
-  } else if (state === "awake") {
+  } 
+  else if (state === "awake") {
     hasWelcomed = true;
     if (insideButton(feedBtn)) {
       state = "feed";
       yumTimer = millis();
-    } else if (insideButton(danceBtn)) {
+    } 
+    else if (insideButton(danceBtn)) {
       state = "dance";
       crackTime = millis();
-    } else if (insideButton(jokeBtn)) {
+    } 
+    else if (insideButton(gameBtn)) {
+      // just return to awake for now (you can add your mini-game later)
+      state = "awake";
+      hasWelcomed = true;
+    }
+    else if (insideButton(jokeBtn)) {
       tellJoke();
     }
-  } else if (state === "sleep") {
+  } 
+  else if (state === "sleep") {
     state = "awake";
   }
 }
@@ -275,3 +299,4 @@ function tellJoke() {
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
+
