@@ -5,6 +5,8 @@ let crackTime = 0;
 let energy = 120;
 let startTime = null;
 let hasWelcomed = false;
+let feedStartTime = null;
+
 
 // Buttons + UI
 let feedBtn, danceBtn, gameBtn, jokeBtn;
@@ -195,16 +197,31 @@ function drawFeedScene() {
     if (h.alpha <= 0) hearts.splice(i, 1);
   }
 
-  // 💬 Yum bubble
-  if (showYum && millis() - yumTimer < 1500) {
-    fill(255, 240, 250);
-    stroke(200, 100, 200);
-    rect(width / 2 - 60, height / 2 - 160, 120, 50, 20);
-    noStroke();
-    fill(0);
-    text("Yum! 💕", width / 2, height / 2 - 160);
+  // 💬 Yum bubble (only one)
+  if (showYum) {
+    if (millis() - yumTimer < 1500) {
+      fill(255, 240, 250);
+      stroke(200, 100, 200);
+      rect(width / 2 - 60, height / 2 - 160, 120, 50, 20);
+      noStroke();
+      fill(0);
+      text("Yum! 💕", width / 2, height / 2 - 160);
+    } else {
+      showYum = false;
+    }
+  }
+
+  // 🕒 Auto-return after 25 seconds
+  if (!feedStartTime) feedStartTime = millis();
+  if (millis() - feedStartTime > 25000) {
+    foods = [];
+    sparkles = [];
+    hearts = [];
+    feedStartTime = null;
+    state = "awake";
   }
 }
+
 
 function drawSleepScene() {
   background(15, 10, 40);
@@ -461,3 +478,4 @@ function setupDanceButtonFix() {
   danceLink.attribute("target", "_blank");
   danceLink.style("display", "none");
 }
+
