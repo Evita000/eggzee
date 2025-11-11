@@ -57,7 +57,10 @@ function setup() {
 }
 
 // ---------- DRAW LOOP ----------
+// ---------- DRAW LOOP ----------
 function draw() {
+  resetTextStyle(); // 💡 always start clean every frame
+
   // Background
   const isNight = (energy <= 15 && startTime) || state === "sleep";
   if (isNight && cityNightImg) image(cityNightImg, width / 2, height / 2, width, height);
@@ -77,16 +80,21 @@ function draw() {
   else if (state === "sleep") drawSleepScene();
 
   drawFoods();
-drawHearts();
-drawButtons();
-
-
-
-drawJoke();
-drawEnergyBar();
-drawOverlayText();
-
+  drawHearts();
+  drawButtons();
+  drawJoke();
+  drawEnergyBar();
+  drawOverlayText();
 }
+
+// ✅ Only ONE version of this
+function resetTextStyle() {
+  textSize(20);
+  textAlign(CENTER, CENTER);
+  fill(255);
+  noStroke();
+}
+
 // ---------- SCENES ----------
 function drawEggScene() {
   image(eggImg, width / 2, height / 2 + 40, 200, 200);
@@ -198,19 +206,9 @@ function drawFeedScene() {
     if (h.alpha <= 0) hearts.splice(i, 1);
   }
 
-  // 💬 Yum bubble (feed-only)
-  if (showYum) {
-    if (millis() - yumTimer < 1500) {
-      fill(255, 240, 250);
-      stroke(200, 100, 200);
-      rect(width / 2 - 60, height / 2 - 160, 120, 50, 20);
-      noStroke();
-      fill(0);
-      text("Yum! 💕", width / 2, height / 2 - 160);
-    } else {
-      showYum = false;
-    }
-  }
+drawYumBubble();
+
+
 
   // 🕒 Auto-return
   if (!feedStartTime) feedStartTime = millis();
@@ -337,15 +335,30 @@ function drawHearts() {
 }
 
 function drawYumBubble() {
-  if (!showYum) return;
-  fill(255, 220, 240);
-  stroke(200, 150, 200);
-  rect(width / 2 - 60, height / 2 - 150, 120, 50, 25);
-  fill(50);
-  noStroke();
-  text("Yum! 💕", width / 2, height / 2 - 150);
-  if (millis() - yumTimer > 1500) showYum = false;
+  if (showYum) {
+    let fadeAmt = map(millis() - yumTimer, 0, 1200, 255, 0);
+    fadeAmt = constrain(fadeAmt, 0, 255);
+    let scaleUp = 1 + sin((millis() - yumTimer) / 150) * 0.05; // 💫 little bounce effect
+
+    push();
+    translate(width / 2, height / 2 - 150);
+    scale(scaleUp);
+    fill(255, 240, 250, fadeAmt);
+    stroke(200, 100, 200, fadeAmt);
+    rect(-60, -25, 120, 50, 20, 20);
+    noStroke();
+    fill(0, 0, 0, fadeAmt);
+    textSize(22);
+    textAlign(CENTER, CENTER);
+    text("Yum! 💕", 0, 0);
+    pop();
+
+    if (millis() - yumTimer > 1200) showYum = false;
+  }
 }
+
+
+
 
 // ---------- TEXT & ENERGY ----------
 function drawJoke() {
@@ -477,6 +490,7 @@ function setupDanceButtonFix() {
   danceLink.attribute("target", "_blank");
   danceLink.style("display", "none");
 }
+
 
 
 
