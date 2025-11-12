@@ -106,35 +106,22 @@ jokeBtn = { x: spacing * 4, y: btnY };
 } // 👈 keep this closing brace at the end of setup()
 
 // ---------- DRAW ----------
+
+// ---------- DRAW ----------
 function draw() {
-  // Background
   const isNight = (energy <= 15 && startTime) || state === "sleep";
   if (isNight && cityNightImg) image(cityNightImg, width / 2, height / 2, width, height);
   else if (cityImg) image(cityImg, width / 2, height / 2, width, height);
   else background(200);
 
-  // Scenes and UI go here...
-}
+  const elapsed = startTime ? (millis() - startTime) / 1000 : 0;
+  energy = startTime ? max(0, 120 - elapsed) : 120;
 
-  // Background
-  const isNight = (energy <= 15 && startTime) || state === "sleep";
-  if (isNight && cityNightImg) image(cityNightImg, width / 2, height / 2, width, height);
-  else if (cityImg) image(cityImg, width / 2, height / 2, width, height);
-  else background(200);
+  if (energy <= 0 && state !== "sleep") {
+    sleepFade = 0;
+    state = "sleep";
+  }
 
-  // Update energy
-const elapsed = startTime ? (millis() - startTime) / 1000 : 0;
-energy = startTime ? max(0, 120 - elapsed) : 120;
-
-// 🌙 Auto-sleep when energy runs out
-if (energy <= 0 && state !== "sleep") {
-  sleepFade = 0; // reset fade
-  state = "sleep";
-}
-
-
-
-  // Scenes
   if (state === "egg") drawEggScene();
   else if (state === "hatching") drawHatchingScene();
   else if (state === "awake") drawEggzeeScene();
@@ -142,16 +129,16 @@ if (energy <= 0 && state !== "sleep") {
   else if (state === "miniGame") drawMiniGame();
   else if (state === "sleep") drawSleepScene();
 
-  // Draw UI + extras (🌟 no debug text anymore)
   drawFoods();
   drawHearts();
   drawButtons();
   drawYumBubble();
   drawEnergyBar();
-  drawJoke(); // draw joke first
-  drawOverlayText(); // then the intro text on top
-  drawInstructions(); // 💬 shows Feed & Game tips for 5 seconds
-}
+  drawJoke();
+  drawOverlayText();
+  drawInstructions();
+} // 👈 end of draw()
+
 
 
 // ---------- SCENES ----------
@@ -930,6 +917,7 @@ function setupDanceButtonFix() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
