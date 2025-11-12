@@ -29,6 +29,9 @@ let gameDuration = 25000;
 
 // ---------- PRELOAD ----------
 function preload() {
+  console.log("🪄 Preloading assets...");
+  
+  // 🖼️ Load all images (unchanged)
   eggImg = loadImage("assets/idelegg.png");
   eggzeeAwakeImg = loadImage("assets/eggzee7.png");
   eggzeeSleepImg = loadImage("assets/eggzee5.png");
@@ -38,13 +41,19 @@ function preload() {
 
 // ---------- SETUP ----------
 function setup() {
-   pixelDensity(1);   // 🧩 fixes black-screen on Retina / mobile displays
+  pixelDensity(1);
   createCanvas(windowWidth, windowHeight);
-  background(0); // gives you a visible base background
+
+  // ✨ temporary loading background
+  background(0);
+  fill(255);
+  textAlign(CENTER, CENTER);
+  text("Loading Eggzee… 🥚", width / 2, height / 2);
 
   imageMode(CENTER);
-  textAlign(CENTER, CENTER);
   textSize(20);
+  textAlign(CENTER, CENTER);
+
 
   eggzee = {
     visible: false,
@@ -729,6 +738,7 @@ function setupDanceButtonFix() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
