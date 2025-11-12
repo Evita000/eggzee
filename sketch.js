@@ -74,6 +74,16 @@ function setup() {
 
 // ---------- DRAW LOOP ----------
 function draw() {
+  // ⏳ If images aren’t ready yet, show loading text instead of black
+  if (!cityImg || !cityImg.width) {
+    background(0);
+    fill(255);
+    textAlign(CENTER, CENTER);
+    text("Loading Eggzee… 🥚", width / 2, height / 2);
+    return;
+  }
+
+  
   // Background
   const isNight = (energy <= 15 && startTime) || state === "sleep";
   if (isNight && cityNightImg) image(cityNightImg, width / 2, height / 2, width, height);
@@ -339,12 +349,14 @@ function drawMiniGame() {
   }
 
  // 💖 Score display (below the energy bar so it doesn’t overlap)
+// 💖 Score display (well below the energy bar)
 textSize(22);
 fill(255, 230, 120);
 stroke(0);
 strokeWeight(3);
-text("Hearts caught: " + heartsCaught, width / 2, 90);
+text("Hearts caught: " + heartsCaught, width / 2, 120);
 noStroke();
+
 
 
  // 🕒 Return to main menu after 20 seconds of mini-game play
@@ -757,6 +769,7 @@ function setupDanceButtonFix() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
