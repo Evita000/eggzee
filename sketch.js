@@ -1,5 +1,6 @@
-let state = "egg";
-console.log("📱 Eggzee script loaded");
+let state = localStorage.getItem("eggzeeForceAwake") === "true" ? "awake" : "egg";
+
+
 let eggImg, eggzeeAwakeImg, eggzeeSleepImg, cityImg, cityNightImg;
 let eggzee = {};
 let crackTime = 0;
@@ -60,8 +61,7 @@ function preload() {
 function setup() {
   pixelDensity(1);
   createCanvas(windowWidth, windowHeight);
-  frameRate(30); // smoother load transition
-
+  frameRate(30);
 
   // ✨ temporary loading background
   background(0);
@@ -72,7 +72,6 @@ function setup() {
   imageMode(CENTER);
   textSize(20);
   textAlign(CENTER, CENTER);
-
 
   eggzee = {
     visible: false,
@@ -89,18 +88,18 @@ function setup() {
   jokeBtn = { x: spacing * 4, y: height - 90 };
 
   setupDanceButtonFix(); // 🟢 ensures mobile works
-}
 
-// ---------- DRAW LOOP ----------
-function draw() {
-  // ⏳ If images aren’t ready yet, show loading text instead of black
-  if (!cityImg || !cityImg.width) {
-    background(0);
-    fill(255);
-    textAlign(CENTER, CENTER);
-    text("Loading Eggzee… 🥚", width / 2, height / 2);
-    return;
+
+   // 🕐 Auto-restore awake state if saved
+  if (localStorage.getItem("eggzeeForceAwake") === "true") {
+    state = "awake";
+    eggzee.visible = true;
+    hasWelcomed = true;
+    startTime = millis();
+    energy = parseFloat(localStorage.getItem("eggzeeEnergy")) || 120;
   }
+} // 👈 keep this closing brace at the end
+
 
   
   // Background
@@ -712,24 +711,31 @@ else if (insideButton(danceBtn)) {
   showDanceInstructions = true;
   danceInstructionTimer = millis();
 
-  // 🩰 Save Eggzee’s state + energy to localStorage (mobile-safe)
-  localStorage.setItem("eggzeeState", "awake");
+  // ✅ Force Eggzee into a safe “awake” state BEFORE opening tab
+  state = "awake";
+  hasWelcomed = true;
+  eggzee.visible = true;
+  startTime = millis();
+  localStorage.setItem("eggzeeForceAwake", "true");
   localStorage.setItem("eggzeeEnergy", energy.toString());
 
-  // 🕺 Open dance page in new tab
+  // 🕺 Open dance page
   openDancePage();
 
-  // ⏳ After 1 second, forcefully restore awake mode
-  setTimeout(() => {
-    state = "awake";
-    eggzee.visible = true;
-    hasWelcomed = true;
-    energy = parseFloat(localStorage.getItem("eggzeeEnergy")) || 120;
-    startTime = millis();
-    foods = [];
-    sparkles = [];
-    hearts = [];
-  }, 1000);
+  // 🧩 Mobile browsers often blur canvas → re-awake on focus
+  window.addEventListener("focus", () => {
+    if (localStorage.getItem("eggzeeForceAwake") === "true") {
+      state = "awake";
+      eggzee.visible = true;
+      hasWelcomed = true;
+      energy = parseFloat(localStorage.getItem("eggzeeEnergy")) || 120;
+      startTime = millis();
+      foods = [];
+      sparkles = [];
+      hearts = [];
+      localStorage.removeItem("eggzeeForceAwake"); // cleanup
+    }
+  });
 }
 
 
@@ -796,13 +802,18 @@ function touchStarted() {
 
 
 function insideButton(btn) {
+  // 🖐️ Larger, more responsive hitbox for mobile screens
+  const btnW = width < 600 ? 140 : 120; // wider on small screens
+  const btnH = width < 600 ? 110 : 80;  // taller on small screens
+
   return (
-    mouseX > btn.x - 50 &&
-    mouseX < btn.x + 50 &&
-    mouseY > btn.y - 40 &&
-    mouseY < btn.y + 40
+    mouseX > btn.x - btnW / 2 &&
+    mouseX < btn.x + btnW / 2 &&
+    mouseY > btn.y - btnH / 2 &&
+    mouseY < btn.y + btnH / 2
   );
 }
+
 function tellJoke() {
   const jokes = [
     "How did the egg get up the mountain? It scrambled up! 🏔️",
@@ -903,6 +914,7 @@ function setupDanceButtonFix() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
