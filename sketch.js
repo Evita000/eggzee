@@ -177,7 +177,9 @@ function drawFeedScene() {
   }
 
   // 🍎 Spawn random foods (spawn immediately + ongoing)
-  if (foods.length === 0 || (frameCount % 120 === 0 && foods.length < 5)) {
+  // 🍎 Timed food spawns — ensures multiple appear smoothly on laptop
+if (!drawFeedScene.lastSpawn || millis() - drawFeedScene.lastSpawn > 2500) {
+  if (foods.length < 5) {
     const emojiList = ["🍩", "🍎", "🍓", "🍪", "🍕"];
     foods.push({
       x: random(60, width - 60),
@@ -187,6 +189,9 @@ function drawFeedScene() {
       toRemove: false
     });
   }
+  drawFeedScene.lastSpawn = millis();
+}
+
 
   // 🍪 Draw + drag foods
   for (let f of foods) {
@@ -792,6 +797,7 @@ function setupDanceButtonFix() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
