@@ -620,7 +620,21 @@ function mousePressed() {
     crackTime = millis();
   } else if (state === "awake") {
     hasWelcomed = true;
-    if (insideButton(feedBtn)) state = "feed";
+    if (insideButton(feedBtn)) {
+  state = "feed";
+
+  // 🧹 Reset feed state cleanly each time
+  foods = [];
+  sparkles = [];
+  hearts = [];
+  showYum = false;
+  drawYumBubble.currentPhrase = null;
+
+  // 🍳 Reset Eggzee’s position to center
+  eggzee.x = width / 2;
+  eggzee.y = height / 2;
+}
+
     else if (insideButton(danceBtn)) openDancePage();
     else if (insideButton(jokeBtn)) tellJoke();
    else if (insideButton(gameBtn)) {
@@ -738,6 +752,7 @@ function setupDanceButtonFix() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
