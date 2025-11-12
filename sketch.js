@@ -150,13 +150,6 @@ if (startTime) {
 
 
 // ---------- SCENES ----------
-function drawEggScene() {
-  image(eggImg, width / 2, height / 2 + 40, 200, 200);
-  fill(255);
-  text("Tap the egg to hatch Eggzee 🥚", width / 2, height - 40);
-  eggzee.visible = false;
-}
-
 function drawHatchingScene() {
   fill(0, 50);
   rect(0, 0, width, height);
@@ -169,15 +162,25 @@ function drawHatchingScene() {
   image(eggImg, 0, 0, 200, 200);
   pop();
 
-  // ⏳ Wait 2 seconds before hatching Eggzee
-  if (millis() - crackTime > 2000) {
+  // 🐣 Hatch sequence (visible for ~4 seconds)
+  let elapsed = millis() - crackTime;
+  if (elapsed < 2000) {
+    fill(255);
+    textSize(24);
+    text("...crack...", width / 2, height - 120);
+  } else if (elapsed < 4000) {
+    fill(255);
+    textSize(26);
+    text("Eggzee is hatching! 💫", width / 2, height - 120);
+  } else {
     state = "awake";
     eggzee.visible = true;
-   if (!startTime) startTime = millis();
-
+    if (!startTime) startTime = millis();
     hasWelcomed = false;
   }
 }
+
+
 
 
 function drawFeedScene() {
@@ -928,6 +931,7 @@ function setupDanceButtonFix() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
