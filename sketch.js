@@ -624,38 +624,31 @@ function drawJoke() {
 }
 
 function drawOverlayText() {
-  // 👇 only show when awake, and when NO joke is showing
-  if (state === "awake" && !showJoke) {
-    push(); // isolate text style so jokes don’t affect it
-    textAlign(CENTER, CENTER);
-    textStyle(BOLD);
+  push();
+  textAlign(CENTER, CENTER);
+  textSize(20);
+  fill(255);
+  noStroke();
 
-    // 🪄 Adjust size for mobile screens
-    const baseSize = width < 450 ? 16 : width < 800 ? 20 : 26;
-    textSize(baseSize);
-
-    const message = !hasWelcomed
-      ? "💛 Hi, I’m Eggzee! What breaks me, makes me."
-      : "Choose an activity below!";
-
-    // 🌈 Gold shimmer animation
-    let pulse = sin(frameCount * 0.05) * 50 + 205;
-    let goldenColor = color(pulse, 210, 70);
-
-    // 🔸 Word wrapping for mobile so text never cuts off
-    textWrap(WORD);
-    for (let i = 0; i < 6; i++) {
-      fill(255, 140 - i * 15, 0, 100 - i * 10);
-      text(message, width / 2, height * 0.12 + i * 0.5, width * 0.9);
+  if (state === "egg") {
+    text("Tap the egg to hatch Eggzee 🥚", width / 2, height - 40);
+  } 
+  else if (state === "hatching") {
+    let elapsed = millis() - crackTime;
+    if (elapsed < 2000) {
+      text("...crack...", width / 2, height - 120);
+    } else if (elapsed < 4000) {
+      text("Eggzee is hatching! 💫", width / 2, height - 120);
     }
-
-    fill(goldenColor);
-    stroke(255, 200, 0);
-    strokeWeight(2);
-    text(message, width / 2, height * 0.12, width * 0.9);
-    noStroke();
-    pop();
+  } 
+  else if (state === "sleep") {
+    text("Eggzee is sleeping 😴", width / 2, height - 60);
+  } 
+  else if (state === "awake" && energy <= 15) {
+    text("Eggzee is getting sleepy... 🌙", width / 2, height - 60);
   }
+
+  pop();
 }
 
 
@@ -929,6 +922,7 @@ function setupDanceButtonFix() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
