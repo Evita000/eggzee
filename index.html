@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>🐣 Eggzee Interactive</title>
 
-    <!-- ✅ Local libraries — works on all phones -->
-    <script src="p5.min.js"></script>
-    <script src="p5.play.js"></script>
-    <script src="sketch.js?v=32"></script>
+    <!-- ✅ Safe CDN versions for full Safari + iPhone support -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/p5.play@1.5.1/lib/p5.play.min.js"></script>
+    <script src="sketch.js?v=41"></script>
 
     <style>
       html, body {
@@ -26,23 +26,20 @@
         color: white;
         text-align: center;
         margin-top: 40vh;
+        font-family: sans-serif;
       }
     </style>
   </head>
 
   <body>
+    <!-- 🧩 fallback for Safari blocking -->
     <script>
-      // 🧩 fallback: if Safari blocks JS, show a visible message
       setTimeout(() => {
         if (typeof p5 === "undefined") {
           document.body.innerHTML =
-            "<p class='warning'>⚠️ Please reload — Safari blocked a file load. 🥚</p>";
+            "<p class='warning'>⚠️ Safari blocked a file — please reload or use Chrome. 🥚</p>";
         }
       }, 3000);
     </script>
   </body>
 </html>
-
-
-
-
