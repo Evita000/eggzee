@@ -18,7 +18,7 @@
       background: black;
     }
 
-    /* 🖼 Fullscreen canvas */
+    /* 🎨 Fullscreen canvas */
     canvas {
       display: block;
       position: fixed;
@@ -31,7 +31,7 @@
       z-index: 1;
     }
 
-    /* 🥚 Centered loading text */
+    /* 🥚 Centered loading text (now sharp) */
     #loading {
       color: white;
       text-align: center;
@@ -44,29 +44,33 @@
       z-index: 10;
       width: 100%;
       max-width: 400px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+      /* 🔍 Crisp text fix */
+      -webkit-font-smoothing: antialiased;
+      text-rendering: geometricPrecision;
+      -webkit-text-size-adjust: none;
     }
   </style>
 </head>
 
 <body>
-  <!-- ✅ Loading screen -->
+  <!-- 🥚 Loading message -->
   <p id="loading">🥚 Loading Eggzee... please wait</p>
 
-  <!-- ✅ Your libraries -->
- <!-- ✅ Use official CDNs that always load on Safari -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/p5.play@1.5.1/lib/p5.play.min.js"></script>
-
-  <script src="sketch.js?v=4"></script>
+  <!-- ✅ Safe, mobile-friendly libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/p5.play@1.5.1/lib/p5.play.min.js"></script>
+  <script src="sketch.js?v=5"></script>
 
   <script>
-    // ✅ Hide loading message once p5 is ready
+    // Remove the loading text once everything’s ready
     window.addEventListener("load", () => {
-      const loadingMsg = document.getElementById("loading");
-      if (loadingMsg) loadingMsg.remove();
+      const msg = document.getElementById("loading");
+      if (msg) msg.remove();
     });
 
-    // ⚠️ Safari fallback
+    // Safari fallback: show warning if libraries blocked
     setTimeout(() => {
       if (typeof p5 === "undefined") {
         document.body.innerHTML = `
@@ -80,4 +84,3 @@
   </script>
 </body>
 </html>
-
