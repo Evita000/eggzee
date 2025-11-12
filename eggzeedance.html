@@ -142,21 +142,41 @@ function resizeCanvas() {
 
 
 
+    <!-- 🩷 Return to Menu Button -->
   <button id="returnBtn"
     style="position:fixed; bottom:20px; right:20px; padding:12px 18px; font-size:18px;
     border:none; border-radius:10px; background:#ffd6e0; color:#333; cursor:pointer;">
-    ⬅️ Return to Eggzee
+    ⬅️ Return to Menu
   </button>
 
   <script>
-    document.getElementById("returnBtn").addEventListener("click", () => {
-      try { window.close(); } 
-      catch (e) { console.warn("Close blocked, redirecting..."); }
-      setTimeout(() => window.open("index.html", "_self"), 300);
-    });
+  function closeDance() {
+    // 🩵 Save awake state before leaving (ensures main menu stays awake)
+    localStorage.setItem("eggzeeForceAwake", "true");
+
+    // 🕊️ Try to close the tab if it was opened by the main Eggzee page
+    if (window.opener) {
+      window.close(); // ✅ works on mobile + desktop when opened with window.open()
+    } else {
+      // Fallback if tab cannot close (like Safari standalone)
+      window.location.href = "index.html";
+    }
+  }
+
+  // 🩷 Bind the button to the closeDance function
+  document.getElementById("returnBtn").addEventListener("click", closeDance);
+    document.getElementById("returnBtn").style.opacity = "0";
+setTimeout(() => {
+  const btn = document.getElementById("returnBtn");
+  btn.style.transition = "opacity 1s ease";
+  btn.style.opacity = "1";
+}, 2000);
+
   </script>
+
 </body>
 </html>
+
 
 
 
