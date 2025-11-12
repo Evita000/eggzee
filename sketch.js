@@ -702,26 +702,29 @@ function mousePressed() {
       feedInstructionTimer = millis();
     }
 
-   else if (insideButton(danceBtn)) {
+else if (insideButton(danceBtn)) {
   // 💃 Show dance instructions (appears once)
   showDanceInstructions = true;
   danceInstructionTimer = millis();
 
-  // 🩰 Save Eggzee's current state before opening the new tab
-  let savedState = state;
+  // 🩰 Save Eggzee’s current energy
   let savedEnergy = energy;
 
   // 🕺 Open dance page safely
   openDancePage();
 
-  // 🕒 Ensure Eggzee returns to menu (not hatching) when back
+  // 🕒 After a short delay, always return to main menu (not hatch or egg)
   setTimeout(() => {
-    state = "awake";
-    eggzee.visible = true;
-    energy = savedEnergy; // restore timer
-    hasWelcomed = true; // prevent intro message resetting
-  }, 1200); // 1.2 sec after opening new tab
+    if (state !== "miniGame" && state !== "feed" && state !== "sleep") {
+      state = "awake";          // ✅ force main menu state
+      eggzee.visible = true;
+      energy = savedEnergy;     // restore timer
+      hasWelcomed = true;       // prevent intro message reset
+      startTime = millis();     // keep energy countdown consistent
+    }
+  }, 1200); // 1.2 seconds after opening new tab
 }
+
 
 
 
@@ -890,6 +893,7 @@ function setupDanceButtonFix() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
