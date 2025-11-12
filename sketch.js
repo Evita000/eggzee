@@ -422,14 +422,19 @@ function drawButtons() {
 }
 
 function drawButton(btn, emoji, label) {
-  fill(255, 255, 255, 180);
-  rect(btn.x - 50, btn.y - 40, 100, 80, 20);
+  const btnW = width < 500 ? 110 : 120; // bigger for mobile
+  const btnH = width < 500 ? 90 : 80;
+
+  fill(255, 255, 255, 200);
+  rect(btn.x - btnW / 2, btn.y - btnH / 2, btnW, btnH, 25);
+
   fill(0);
-  textSize(20);
+  textSize(width < 500 ? 26 : 20);
   text(emoji, btn.x, btn.y - 10);
-  textSize(14);
+  textSize(width < 500 ? 16 : 14);
   text(label, btn.x, btn.y + 25);
 }
+
 
 function drawEggzeeScene() {
   if (!eggzee.visible) return;
@@ -707,28 +712,26 @@ else if (insideButton(danceBtn)) {
   showDanceInstructions = true;
   danceInstructionTimer = millis();
 
-  // 🩰 Save Eggzee’s current state + energy safely
-  const savedEnergy = energy;
-  const savedVisible = eggzee.visible;
+  // 🩰 Save Eggzee’s state + energy to localStorage (mobile-safe)
+  localStorage.setItem("eggzeeState", "awake");
+  localStorage.setItem("eggzeeEnergy", energy.toString());
 
-  // ✅ Force state to 'awake' BEFORE opening the tab
-  // This ensures it never reverts to 'egg' or 'hatching' on mobile resume
-  state = "awake";
-  hasWelcomed = true;
-  startTime = millis();
-
-  // 🕺 Open dance page in a new tab
+  // 🕺 Open dance page in new tab
   openDancePage();
 
-  // ⏳ After a short delay, re-stabilize UI
+  // ⏳ After 1 second, forcefully restore awake mode
   setTimeout(() => {
-    eggzee.visible = savedVisible;
-    energy = savedEnergy;
+    state = "awake";
+    eggzee.visible = true;
+    hasWelcomed = true;
+    energy = parseFloat(localStorage.getItem("eggzeeEnergy")) || 120;
+    startTime = millis();
     foods = [];
     sparkles = [];
     hearts = [];
-  }, 800);
+  }, 1000);
 }
+
 
 
 
@@ -900,6 +903,7 @@ function setupDanceButtonFix() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
