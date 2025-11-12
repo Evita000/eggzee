@@ -5,11 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>🐣 Eggzee Interactive</title>
 
-  <!-- ✅ Local versions — guaranteed to work on all phones -->
-  <script src="p5.min.js"></script>
-  <script src="p5.play.min.js"></script>
-  <script src="sketch.js?v=50"></script>
-
   <style>
     html, body {
       margin: 0;
@@ -28,21 +23,38 @@
       margin-top: 40vh;
     }
   </style>
-</head>
 
-<body>
+  <!-- ✅ Load scripts only after the page has fully loaded (Safari fix) -->
   <script>
-    // ⚙️ Safety fallback if something fails to load
+    window.addEventListener("load", () => {
+      const addScript = src => {
+        const s = document.createElement("script");
+        s.src = src + "?v=51";
+        document.body.appendChild(s);
+      };
+
+      // Staggered loads so Safari doesn’t choke
+      addScript("p5.min.js");
+      setTimeout(() => addScript("p5.play.min.js"), 500);
+      setTimeout(() => addScript("sketch.js"), 1000);
+    });
+
+    // 🧩 Safety fallback if nothing loads
     setTimeout(() => {
       if (typeof p5 === "undefined") {
         document.body.innerHTML = `
           <p class="warning">
-            ⚠️ Safari blocked a file — please reload or open in Chrome. 🥚
+            ⚠️ If nothing loads, please reload or open in Chrome.<br/>
+            Or disable “Prevent Cross-Site Tracking” in Safari Settings. 🥚
           </p>`;
       }
-    }, 4000);
+    }, 5000);
   </script>
-</body>
+</head>
+
+<body></body>
 </html>
+
+
 
 
