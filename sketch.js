@@ -91,6 +91,7 @@ function setup() {
 
 
    // 🕐 Auto-restore awake state if saved
+   // 🕐 Auto-restore awake state if saved
   if (localStorage.getItem("eggzeeForceAwake") === "true") {
     state = "awake";
     eggzee.visible = true;
@@ -98,10 +99,19 @@ function setup() {
     startTime = millis();
     energy = parseFloat(localStorage.getItem("eggzeeEnergy")) || 120;
   }
-} // 👈 keep this closing brace at the end
+} // 👈 keep this closing brace at the end of setup()
 
-function draw(){
-  
+// ---------- DRAW ----------
+function draw() {
+  // Background
+  const isNight = (energy <= 15 && startTime) || state === "sleep";
+  if (isNight && cityNightImg) image(cityNightImg, width / 2, height / 2, width, height);
+  else if (cityImg) image(cityImg, width / 2, height / 2, width, height);
+  else background(200);
+
+  // Scenes and UI go here...
+}
+
   // Background
   const isNight = (energy <= 15 && startTime) || state === "sleep";
   if (isNight && cityNightImg) image(cityNightImg, width / 2, height / 2, width, height);
@@ -915,6 +925,7 @@ function setupDanceButtonFix() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
