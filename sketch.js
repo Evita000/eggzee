@@ -531,30 +531,29 @@ function drawYumBubble() {
 function drawJoke() {
   if (!showJoke) return;
 
-  // 🧩 Temporarily hide overlay text
-  hasWelcomed = true; // ensures only joke shows during display
-
+  hasWelcomed = true; // hide overlay while showing joke
   const duration = 4000;
   const elapsed = millis() - jokeTimer;
   let alpha = 255;
 
-  // Fade in/out
+  // ⏳ Fade in/out
   if (elapsed < 400) alpha = map(elapsed, 0, 400, 0, 255);
   else if (elapsed > duration - 400) alpha = map(elapsed, duration - 400, duration, 255, 0);
 
-  const bx = eggzee.visible ? eggzee.x : width / 2;
-  const by = eggzee.visible ? eggzee.y - 220 : height / 2 - 200;
+  // 🧭 Base position (keeps text above Eggzee but never off-screen)
+  const bx = constrain(eggzee.x, 120, width - 120);
+  const by = constrain(eggzee.y - 180, 100, height - 180);
 
-  textSize(20);
+  textSize(width < 500 ? 16 : 20);
   textAlign(CENTER, CENTER);
   textStyle(BOLD);
 
-  // 🧠 Auto line wrap so jokes stay in the bubble
-  const maxWidth = min(320, width * 0.8);
+  // 🧠 Auto line wrapping
+  const maxWidth = min(300, width * 0.8);
   const words = jokeText.split(" ");
   let lines = [""];
   for (let w of words) {
-    let currentLine = lines[lines.length - 1];
+    const currentLine = lines[lines.length - 1];
     if (textWidth(currentLine + " " + w) < maxWidth) {
       lines[lines.length - 1] = currentLine + " " + w;
     } else {
@@ -562,19 +561,19 @@ function drawJoke() {
     }
   }
 
-  const lineHeight = 26;
+  const lineHeight = 24;
   const bubbleH = lines.length * lineHeight + 40;
-  const bubbleW = maxWidth + 60;
+  const bubbleW = maxWidth + 50;
 
-  // 🎨 Bubble background
+  // 🎨 Bubble background (light pink)
   noStroke();
-  fill(255, 220, 255, alpha);
+  fill(255, 230, 255, alpha);
   rect(bx - bubbleW / 2, by - bubbleH / 2, bubbleW, bubbleH, 25);
-  fill(255, 180, 255, alpha * 0.9);
+  fill(255, 190, 255, alpha * 0.9);
   rect(bx - bubbleW / 2 + 3, by - bubbleH / 2 + 3, bubbleW - 6, bubbleH - 6, 25);
 
-  // 🫧 Tail
-  fill(255, 200, 255, alpha);
+  // 🫧 Tail — points toward Eggzee’s head
+  fill(255, 210, 255, alpha);
   triangle(
     bx - 15, by + bubbleH / 2,
     bx + 15, by + bubbleH / 2,
@@ -587,11 +586,9 @@ function drawJoke() {
     text(lines[i].trim(), bx, by - (lines.length - 1) * lineHeight / 2 + i * lineHeight);
   }
 
+  // 🕒 Auto-hide after time
   if (elapsed > duration) showJoke = false;
 }
-
-
-
 
 function drawOverlayText() {
   // 👇 only show when awake, and when NO joke is showing
@@ -881,6 +878,7 @@ function setupDanceButtonFix() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
