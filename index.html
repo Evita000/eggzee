@@ -29,18 +29,18 @@
     document.write("<p class='warning'>🥚 Loading Eggzee... please wait</p>");
   </script>
 
-  <!-- ✅ Use renamed files so Safari sees them as new -->
-  <script src="p5lib.js?v=1"></script>
-  <script src="p5playlib.js?v=1"></script>
-  <script src="sketch.js?v=1"></script>
+  <!-- ✅ Renamed local files -->
+  <script src="p5lib.js?v=2"></script>
+  <script src="p5playlib.js?v=2"></script>
+  <script src="sketch.js?v=2"></script>
 
   <script>
     setTimeout(() => {
       if (typeof p5 === "undefined") {
         document.body.innerHTML = `
           <p class='warning'>
-            ⚠️ If Eggzee doesn't load,<br>
-            open in Chrome or disable “Prevent Cross-Site Tracking” in Safari.<br>
+            ⚠️ Safari may be blocking files.<br>
+            Try Chrome, or disable “Prevent Cross-Site Tracking”.<br><br>
             (Settings → Safari → Privacy & Security)
           </p>`;
       }
