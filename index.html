@@ -2,39 +2,60 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+  />
   <title>🐣 Eggzee Interactive</title>
 
   <style>
     html, body {
       margin: 0;
       padding: 0;
-      overflow: hidden;
-      background: black;
       height: 100%;
       width: 100%;
+      overflow: hidden;
+      background: black;
     }
-    canvas { display: block; }
+
+    canvas {
+      display: block;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: transparent;
+      touch-action: none;
+    }
+
     p.warning {
       color: white;
       text-align: center;
-      margin-top: 40vh;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
       padding: 0 20px;
       font-size: 18px;
       line-height: 1.4;
+      width: 100%;
+      max-width: 400px;
     }
   </style>
 
   <script>
+    // 🥚 Temporary message before p5 loads
     document.write("<p class='warning'>🥚 Loading Eggzee... please wait</p>");
   </script>
 
-  <!-- ✅ Renamed local files -->
-  <script src="p5lib.js?v=2"></script>
-  <script src="p5playlib.js?v=2"></script>
-  <script src="sketch.js?v=2"></script>
+  <!-- ✅ Local libraries -->
+  <script src="p5lib.js?v=3"></script>
+  <script src="p5playlib.js?v=3"></script>
+  <script src="sketch.js?v=3"></script>
 
   <script>
+    // ⚠️ Safari fix: show message if p5 fails to load
     setTimeout(() => {
       if (typeof p5 === "undefined") {
         document.body.innerHTML = `
