@@ -1,38 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>🐣 Eggzee Interactive</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>🐣 Eggzee Interactive</title>
 
-  <!-- ✅ Use online versions instead of local -->
-<!-- ✅ Local libraries -->
-<script src="libs/p5.min.js"></script>
-<script src="libs/p5.play.min.js"></script>
-<script src="sketch.js?v=30"></script>
+    <!-- ✅ Local versions of libraries so it works on all phones -->
+    <script src="libs/p5.min.js"></script>
+    <script src="libs/p5.play.min.js"></script>
+    <script src="sketch.js?v=31"></script>
 
+    <style>
+      html, body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background: black;
+        height: 100%;
+        width: 100%;
+      }
+      canvas {
+        display: block;
+      }
+      p.warning {
+        color: white;
+        text-align: center;
+        margin-top: 40vh;
+      }
+    </style>
+  </head>
 
-
-
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-      background: black;
-      height: 100%;
-      width: 100%;
-    }
-    canvas {
-      display: block;
-    }
-  </style>
-</head>
-
-  <body></body>
+  <body>
+    <script>
+      // 🧩 safety fallback: show message if JS blocked or not loaded
+      setTimeout(() => {
+        if (typeof p5 === "undefined") {
+          document.body.innerHTML =
+            "<p class='warning'>⚠️ Please reload — Safari blocked a file load. 🥚</p>";
+        }
+      }, 3000);
+    </script>
+  </body>
 </html>
-
-
 
 
 
