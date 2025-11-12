@@ -101,7 +101,9 @@ jokeBtn = { x: spacing * 4, y: btnY };
     eggzee.visible = true;
     hasWelcomed = true;
     startTime = millis();
-    energy = parseFloat(localStorage.getItem("eggzeeEnergy")) || 120;
+   energy = parseFloat(localStorage.getItem("eggzeeEnergy")) || 120;
+if (!startTime) startTime = millis();
+
   }
 } // 👈 keep this closing brace at the end of setup()
 
@@ -114,13 +116,19 @@ function draw() {
   else if (cityImg) image(cityImg, width / 2, height / 2, width, height);
   else background(200);
 
-  const elapsed = startTime ? (millis() - startTime) / 1000 : 0;
-  energy = startTime ? max(0, 120 - elapsed) : 120;
+  // 🕒 Always update energy every frame (global countdown)
+if (startTime) {
+  const elapsed = (millis() - startTime) / 1000;
+  energy = max(0, 120 - elapsed);
 
+  // 🌙 Auto-sleep when drained
   if (energy <= 0 && state !== "sleep") {
-    sleepFade = 0;
     state = "sleep";
+    sleepFade = 0;
   }
+}
+
+ 
 
   if (state === "egg") drawEggScene();
   else if (state === "hatching") drawHatchingScene();
@@ -165,7 +173,8 @@ function drawHatchingScene() {
   if (millis() - crackTime > 2000) {
     state = "awake";
     eggzee.visible = true;
-    startTime = millis();
+   if (!startTime) startTime = millis();
+
     hasWelcomed = false;
   }
 }
@@ -723,7 +732,8 @@ else if (insideButton(danceBtn)) {
   state = "awake";
   hasWelcomed = true;
   eggzee.visible = true;
-  startTime = millis();
+if (!startTime) startTime = millis();
+
 
   // 🔁 On focus (return from dance), restore awake menu + cleanup
   window.addEventListener("focus", () => {
@@ -917,6 +927,7 @@ function setupDanceButtonFix() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
