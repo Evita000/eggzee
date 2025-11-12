@@ -167,8 +167,17 @@ function drawFeedScene() {
   );
   pop();
 
-  // 🍎 Spawn random foods safely
-  if (frameCount % 120 === 0 && foods.length < 5) {
+  // 🧭 Allow Eggzee to follow touch/mouse slowly for mobile
+  if (touches && touches.length > 0) {
+    eggzee.x = lerp(eggzee.x, touches[0].x, 0.25);
+    eggzee.y = lerp(eggzee.y, touches[0].y, 0.25);
+  } else if (mouseIsPressed) {
+    eggzee.x = lerp(eggzee.x, mouseX, 0.25);
+    eggzee.y = lerp(eggzee.y, mouseY, 0.25);
+  }
+
+  // 🍎 Spawn random foods (spawn immediately + ongoing)
+  if (foods.length === 0 || (frameCount % 120 === 0 && foods.length < 5)) {
     const emojiList = ["🍩", "🍎", "🍓", "🍪", "🍕"];
     foods.push({
       x: random(60, width - 60),
@@ -219,7 +228,7 @@ function drawFeedScene() {
     }
   }
 
-  // 🚮 Safely remove eaten foods
+  // 🚮 Remove eaten foods
   foods = foods.filter(f => !f.toRemove);
 
   // ✨ Animate sparkles
@@ -248,6 +257,7 @@ function drawFeedScene() {
     state = "awake";
   }
 }
+
 
 
 
@@ -782,6 +792,7 @@ function setupDanceButtonFix() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
