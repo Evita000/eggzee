@@ -18,6 +18,12 @@ let foods = [];
 let showYum = false;
 let yumTimer = 0;
 let showJoke = false;
+// Instruction overlays
+let showFeedInstructions = false;
+let feedInstructionTimer = 0;
+let showGameInstructions = false;
+let gameInstructionTimer = 0;
+
 let jokeText = "";
 let jokeTimer = 0;
 
@@ -113,14 +119,16 @@ if (energy <= 0 && state !== "sleep") {
   else if (state === "sleep") drawSleepScene();
 
   // Draw UI + extras (🌟 no debug text anymore)
-drawFoods();
-drawHearts();
-drawButtons();
-drawYumBubble();
-drawEnergyBar();
-drawJoke(); // draw joke first
-drawOverlayText(); // then the intro text on top
+  drawFoods();
+  drawHearts();
+  drawButtons();
+  drawYumBubble();
+  drawEnergyBar();
+  drawJoke(); // draw joke first
+  drawOverlayText(); // then the intro text on top
+  drawInstructions(); // 💬 shows Feed & Game tips for 5 seconds
 }
+
 
 // ---------- SCENES ----------
 function drawEggScene() {
@@ -663,40 +671,57 @@ function mousePressed() {
   if (state === "egg") {
     state = "hatching";
     crackTime = millis();
-  } else if (state === "awake") {
+  } 
+  else if (state === "awake") {
     hasWelcomed = true;
+
     if (insideButton(feedBtn)) {
-  state = "feed";
+      state = "feed";
 
-  // 🧹 Reset feed state cleanly each time
-  foods = [];
-  sparkles = [];
-  hearts = [];
-  showYum = false;
-  drawYumBubble.currentPhrase = null;
+      // 🧹 Reset feed state cleanly each time
+      foods = [];
+      sparkles = [];
+      hearts = [];
+      showYum = false;
+      drawYumBubble.currentPhrase = null;
 
-  // 🍳 Reset Eggzee’s position to center
-  eggzee.x = width / 2;
-  eggzee.y = height / 2;
-}
+      // 🍳 Reset Eggzee’s position to center
+      eggzee.x = width / 2;
+      eggzee.y = height / 2;
+
+      // 💬 Show feed instructions
+      showFeedInstructions = true;
+      feedInstructionTimer = millis();
+    }
 
     else if (insideButton(danceBtn)) openDancePage();
     else if (insideButton(jokeBtn)) tellJoke();
-   else if (insideButton(gameBtn)) {
-  state = "miniGame";
-  gameStartTime = millis();
-  heartsCaught = 0;
 
-  // 🧹 Clear leftover food items from Feed mode
-  foods = [];
-}
+    // 🎮 MINI-GAME BUTTON — insert this here
+    else if (insideButton(gameBtn)) {
+      state = "miniGame";
+      gameStartTime = millis();
+      heartsCaught = 0;
 
+      // 🧹 Clear leftover food items from Feed mode
+      foods = [];
 
-  } else if (state === "sleep") state = "awake";
+      // 💬 Show mini-game instructions
+      showGameInstructions = true;
+      gameInstructionTimer = millis();
+    }
+  } 
+  else if (state === "sleep") {
+    state = "awake";
+  }
 
   for (let f of foods)
-    if (dist(mouseX, mouseY, f.x, f.y) < 30) f.beingDragged = true;
+    if (dist(mouseX, mouseY, f.x, f.y) < 30)
+      f.beingDragged = true;
 }
+
+
+
 
 function mouseReleased() {
   for (let f of foods) f.beingDragged = false;
@@ -751,6 +776,22 @@ function tellJoke() {
   jokeTimer = millis();
 }
 
+function drawInstructions() {
+  fill(255, 255, 255, 240);
+  textAlign(CENTER, CENTER);
+  textSize(width < 600 ? 16 : 20);
+  let now = millis();
+
+  if (showFeedInstructions) {
+    text("🍎 Drag food to Eggzee to feed her!", width / 2, height * 0.15);
+    if (now - feedInstructionTimer > 5000) showFeedInstructions = false;
+  }
+
+  if (showGameInstructions) {
+    text("✨ Move Eggzee to catch falling sparkles!", width / 2, height * 0.15);
+    if (now - gameInstructionTimer > 5000) showGameInstructions = false;
+  }
+}
 
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
@@ -797,6 +838,7 @@ function setupDanceButtonFix() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
