@@ -1,45 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>🐣 Eggzee Interactive</title>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🐣 Eggzee Interactive</title>
 
-    <!-- ✅ Safe CDN versions for full Safari + iPhone support -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/p5.play@1.5.1/lib/p5.play.min.js"></script>
-    <script src="sketch.js?v=41"></script>
+  <!-- ✅ Local versions — guaranteed to work on all phones -->
+  <script src="p5.min.js"></script>
+  <script src="p5.play.min.js"></script>
+  <script src="sketch.js?v=50"></script>
 
-    <style>
-      html, body {
-        margin: 0;
-        padding: 0;
-        overflow: hidden;
-        background: black;
-        height: 100%;
-        width: 100%;
-      }
-      canvas {
-        display: block;
-      }
-      p.warning {
-        color: white;
-        text-align: center;
-        margin-top: 40vh;
-        font-family: sans-serif;
-      }
-    </style>
-  </head>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: black;
+      height: 100%;
+      width: 100%;
+    }
+    canvas {
+      display: block;
+    }
+    p.warning {
+      color: white;
+      text-align: center;
+      margin-top: 40vh;
+    }
+  </style>
+</head>
 
-  <body>
-    <!-- 🧩 fallback for Safari blocking -->
-    <script>
-      setTimeout(() => {
-        if (typeof p5 === "undefined") {
-          document.body.innerHTML =
-            "<p class='warning'>⚠️ Safari blocked a file — please reload or use Chrome. 🥚</p>";
-        }
-      }, 3000);
-    </script>
-  </body>
+<body>
+  <script>
+    // ⚙️ Safety fallback if something fails to load
+    setTimeout(() => {
+      if (typeof p5 === "undefined") {
+        document.body.innerHTML = `
+          <p class="warning">
+            ⚠️ Safari blocked a file — please reload or open in Chrome. 🥚
+          </p>`;
+      }
+    }, 4000);
+  </script>
+</body>
 </html>
+
+
