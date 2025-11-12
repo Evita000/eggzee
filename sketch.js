@@ -697,89 +697,66 @@ function mousePressed() {
   if (state === "egg") {
     state = "hatching";
     crackTime = millis();
+
+    // 🧩 Prevent any accidental double-tap from skipping hatching
+    lastTouchTime = millis() + 4000; // block inputs for 4 seconds
+    return; // stop here, don't trigger other actions
   } 
   else if (state === "awake") {
     hasWelcomed = true;
 
     if (insideButton(feedBtn)) {
       state = "feed";
-
-      // 🧹 Reset feed state cleanly each time
       foods = [];
       sparkles = [];
       hearts = [];
       showYum = false;
       drawYumBubble.currentPhrase = null;
-
-      // 🍳 Reset Eggzee’s position to center
       eggzee.x = width / 2;
       eggzee.y = height / 2;
-
-      // 💬 Show feed instructions
       showFeedInstructions = true;
       feedInstructionTimer = millis();
     }
-else if (insideButton(danceBtn)) {
-  // 💃 Show dance instructions once
-  showDanceInstructions = true;
-  danceInstructionTimer = millis();
 
-  // 🩰 Save awake state instantly BEFORE tab opens (mobile reload fix)
-  localStorage.setItem("eggzeeForceAwake", "true");
-  localStorage.setItem("eggzeeEnergy", energy.toString());
+    else if (insideButton(danceBtn)) {
+      showDanceInstructions = true;
+      danceInstructionTimer = millis();
 
-  // 🕺 Open the dance page
-  openDancePage();
+      localStorage.setItem("eggzeeForceAwake", "true");
+      localStorage.setItem("eggzeeEnergy", energy.toString());
+      openDancePage();
 
-  // 🧠 Keep Eggzee awake even if mobile browser refreshes the main tab
-  state = "awake";
-  hasWelcomed = true;
-  eggzee.visible = true;
-if (!startTime) startTime = millis();
-
-
-  // 🔁 On focus (return from dance), restore awake menu + cleanup
-  window.addEventListener("focus", () => {
-    if (localStorage.getItem("eggzeeForceAwake") === "true") {
       state = "awake";
       hasWelcomed = true;
       eggzee.visible = true;
-      energy = parseFloat(localStorage.getItem("eggzeeEnergy")) || 120;
       if (!startTime) startTime = millis();
 
-      foods = [];
-      sparkles = [];
-      hearts = [];
-      localStorage.removeItem("eggzeeForceAwake"); // ✅ cleanup flag
+      window.addEventListener("focus", () => {
+        if (localStorage.getItem("eggzeeForceAwake") === "true") {
+          state = "awake";
+          hasWelcomed = true;
+          eggzee.visible = true;
+          energy = parseFloat(localStorage.getItem("eggzeeEnergy")) || 120;
+          if (!startTime) startTime = millis();
+          foods = [];
+          sparkles = [];
+          hearts = [];
+          localStorage.removeItem("eggzeeForceAwake");
+        }
+      });
     }
-  });
-}
 
+    else if (insideButton(jokeBtn)) {
+      tellJoke();
+      showJokeInstructions = true;
+      jokeInstructionTimer = millis();
+    }
 
-
-
-
-
-
-else if (insideButton(jokeBtn)) {
-  tellJoke();
-
-  // 😂 Show joke instructions (appears once)
-  showJokeInstructions = true;
-  jokeInstructionTimer = millis();
-}
-
-
-    // 🎮 MINI-GAME BUTTON — insert this here
     else if (insideButton(gameBtn)) {
       state = "miniGame";
       gameStartTime = millis();
       heartsCaught = 0;
-
-      // 🧹 Clear leftover food items from Feed mode
       foods = [];
-
-      // 💬 Show mini-game instructions
       showGameInstructions = true;
       gameInstructionTimer = millis();
     }
@@ -792,6 +769,7 @@ else if (insideButton(jokeBtn)) {
     if (dist(mouseX, mouseY, f.x, f.y) < 30)
       f.beingDragged = true;
 }
+
 
 
 
@@ -931,6 +909,7 @@ function setupDanceButtonFix() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
