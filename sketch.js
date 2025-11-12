@@ -19,10 +19,21 @@ let showYum = false;
 let yumTimer = 0;
 let showJoke = false;
 // Instruction overlays
+
+
+// ---------- Instruction overlays ----------
 let showFeedInstructions = false;
 let feedInstructionTimer = 0;
+
 let showGameInstructions = false;
 let gameInstructionTimer = 0;
+
+let showJokeInstructions = false;
+let jokeInstructionTimer = 0;
+
+let showDanceInstructions = false;
+let danceInstructionTimer = 0;
+
 
 let jokeText = "";
 let jokeTimer = 0;
@@ -694,8 +705,25 @@ function mousePressed() {
       feedInstructionTimer = millis();
     }
 
-    else if (insideButton(danceBtn)) openDancePage();
-    else if (insideButton(jokeBtn)) tellJoke();
+   else if (insideButton(danceBtn)) {
+  openDancePage();
+
+  // 💃 Show dance instructions (appears once)
+  showDanceInstructions = true;
+  danceInstructionTimer = millis();
+
+  // 🩰 Return to main menu right away (not hatch)
+  state = "awake";
+}
+
+else if (insideButton(jokeBtn)) {
+  tellJoke();
+
+  // 😂 Show joke instructions (appears once)
+  showJokeInstructions = true;
+  jokeInstructionTimer = millis();
+}
+
 
     // 🎮 MINI-GAME BUTTON — insert this here
     else if (insideButton(gameBtn)) {
@@ -782,16 +810,31 @@ function drawInstructions() {
   textSize(width < 600 ? 16 : 20);
   let now = millis();
 
+  // 🍎 FEED instructions
   if (showFeedInstructions) {
     text("🍎 Drag food to Eggzee to feed her!", width / 2, height * 0.15);
     if (now - feedInstructionTimer > 5000) showFeedInstructions = false;
   }
 
+  // ✨ GAME instructions
   if (showGameInstructions) {
     text("✨ Move Eggzee to catch falling sparkles!", width / 2, height * 0.15);
     if (now - gameInstructionTimer > 5000) showGameInstructions = false;
   }
+
+  // 😂 JOKE instructions
+  if (showJokeInstructions) {
+    text("😂 Tap the button to make Eggzee tell a joke!", width / 2, height * 0.18);
+    if (now - jokeInstructionTimer > 5000) showJokeInstructions = false;
+  }
+
+  // 💃 DANCE instructions
+  if (showDanceInstructions) {
+    text("💃 Tap once to make Eggzee dance in a new tab!", width / 2, height * 0.21);
+    if (now - danceInstructionTimer > 5000) showDanceInstructions = false;
+  }
 }
+
 
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
@@ -838,6 +881,7 @@ function setupDanceButtonFix() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
