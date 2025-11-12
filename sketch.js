@@ -43,6 +43,8 @@ function preload() {
 function setup() {
   pixelDensity(1);
   createCanvas(windowWidth, windowHeight);
+  frameRate(30); // smoother load transition
+
 
   // ✨ temporary loading background
   background(0);
@@ -350,12 +352,23 @@ function drawMiniGame() {
 
  // 💖 Score display (below the energy bar so it doesn’t overlap)
 // 💖 Score display (well below the energy bar)
-textSize(22);
+push();
+textAlign(CENTER, CENTER);
+textSize(24);
+
+// soft glow behind text
+for (let i = 5; i > 0; i--) {
+  fill(255, 230, 120, 20 * i);
+  text("Hearts caught: " + heartsCaught, width / 2 + i, 120 + i);
+}
+
+// crisp front text
 fill(255, 230, 120);
 stroke(0);
-strokeWeight(3);
+strokeWeight(4);
 text("Hearts caught: " + heartsCaught, width / 2, 120);
 noStroke();
+pop();
 
 
 
@@ -769,6 +782,7 @@ function setupDanceButtonFix() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
