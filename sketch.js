@@ -705,35 +705,36 @@ function mousePressed() {
       showFeedInstructions = true;
       feedInstructionTimer = millis();
     }
-
 else if (insideButton(danceBtn)) {
   // 💃 Show dance instructions once
   showDanceInstructions = true;
   danceInstructionTimer = millis();
 
-  // ✅ Force Eggzee into a safe “awake” state BEFORE opening tab
+  // 🩰 Save awake state instantly BEFORE tab opens (mobile reload fix)
+  localStorage.setItem("eggzeeForceAwake", "true");
+  localStorage.setItem("eggzeeEnergy", energy.toString());
+
+  // 🕺 Open the dance page
+  openDancePage();
+
+  // 🧠 Keep Eggzee awake even if mobile browser refreshes the main tab
   state = "awake";
   hasWelcomed = true;
   eggzee.visible = true;
   startTime = millis();
-  localStorage.setItem("eggzeeForceAwake", "true");
-  localStorage.setItem("eggzeeEnergy", energy.toString());
 
-  // 🕺 Open dance page
-  openDancePage();
-
-  // 🧩 Mobile browsers often blur canvas → re-awake on focus
+  // 🔁 On focus (return from dance), restore awake menu + cleanup
   window.addEventListener("focus", () => {
     if (localStorage.getItem("eggzeeForceAwake") === "true") {
       state = "awake";
-      eggzee.visible = true;
       hasWelcomed = true;
+      eggzee.visible = true;
       energy = parseFloat(localStorage.getItem("eggzeeEnergy")) || 120;
       startTime = millis();
       foods = [];
       sparkles = [];
       hearts = [];
-      localStorage.removeItem("eggzeeForceAwake"); // cleanup
+      localStorage.removeItem("eggzeeForceAwake"); // ✅ cleanup flag
     }
   });
 }
@@ -914,6 +915,7 @@ function setupDanceButtonFix() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
