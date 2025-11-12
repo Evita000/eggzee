@@ -143,11 +143,24 @@ function resizeCanvas() {
 
 
     <!-- 🩷 Return to Menu Button -->
-  <button id="returnBtn"
-    style="position:fixed; bottom:20px; right:20px; padding:12px 18px; font-size:18px;
-    border:none; border-radius:10px; background:#ffd6e0; color:#333; cursor:pointer;">
-    ⬅️ Return to Menu
-  </button>
+<button id="returnBtn"
+  style="
+    position:fixed;
+    bottom:20px;
+    right:20px;
+    padding:14px 20px;
+    font-size:18px;
+    border:none;
+    border-radius:12px;
+    background:#ffd6e0;
+    color:#333;
+    cursor:pointer;
+    box-shadow:0 4px 12px rgba(0,0,0,0.4);
+    z-index:9999; /* 🩷 keeps button above canvas */
+  ">
+  ⬅️ Return to Menu
+</button>
+
 
  <script>
   function closeDance() {
@@ -173,6 +186,7 @@ function resizeCanvas() {
 
 </body>
 </html>
+
 
 
 
