@@ -100,7 +100,7 @@ function setup() {
   }
 } // 👈 keep this closing brace at the end
 
-
+function(draw){
   
   // Background
   const isNight = (energy <= 15 && startTime) || state === "sleep";
@@ -915,6 +915,7 @@ function setupDanceButtonFix() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
