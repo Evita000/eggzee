@@ -8,7 +8,12 @@
   <!-- ✅ Use online versions instead of local -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/p5.play@1.5.1/lib/p5.play.min.js"></script>
-<script src="sketch.js?v=22"></script>
+     <script>
+      if (typeof p5 === "undefined") {
+        document.write("<p style='color:white;text-align:center;margin-top:40vh;'>⚠️ Please reload — Safari blocked a file load. 🥚</p>");
+      }
+    </script>
+<script src="sketch.js?v=27"></script>
 
 
 
@@ -29,6 +34,7 @@
 
   <body></body>
 </html>
+
 
 
 
