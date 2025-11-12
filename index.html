@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>🐣 Eggzee Interactive</title>
 
-    <!-- ✅ Local versions of libraries so it works on all phones -->
-    <script src="libs/p5.min.js"></script>
-    <script src="libs/p5.play.min.js"></script>
-    <script src="sketch.js?v=31"></script>
+    <!-- ✅ Local libraries — works on all phones -->
+    <script src="p5.min.js"></script>
+    <script src="p5.play.js"></script>
+    <script src="sketch.js?v=32"></script>
 
     <style>
       html, body {
@@ -32,7 +32,7 @@
 
   <body>
     <script>
-      // 🧩 safety fallback: show message if JS blocked or not loaded
+      // 🧩 fallback: if Safari blocks JS, show a visible message
       setTimeout(() => {
         if (typeof p5 === "undefined") {
           document.body.innerHTML =
@@ -42,8 +42,6 @@
     </script>
   </body>
 </html>
-
-
 
 
 
