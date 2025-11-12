@@ -59,6 +59,8 @@ function preload() {
 
 // ---------- SETUP ----------
 function setup() {
+  localStorage.removeItem("eggzeeForceAwake"); // 🧹 ensures fresh hatch start
+
   pixelDensity(1);
   createCanvas(windowWidth, windowHeight);
   frameRate(30);
@@ -791,21 +793,27 @@ function mouseReleased() {
 }
 
 function touchStarted() {
-  // 🧩 Prevent double trigger after egg tap
-  if (millis() < lastTouchTime) return false;
-  lastTouchTime = millis() + 4000; // block touches for 4s during hatch
+  // 🐣 Allow tapping egg to hatch on touch screens
+  if (state === "egg" && millis() > lastTouchTime) {
+    state = "hatching";
+    crackTime = millis();
+    lastTouchTime = millis() + 4000; // block further taps for 4s
+    return false;
+  }
 
-  // 🔧 Sync touch → mouse position before triggering press
+  // 🧩 otherwise handle other game interactions
+  if (millis() < lastTouchTime) return false;
+  lastTouchTime = millis() + 4000;
+
+  // 🔧 Sync touch → mouse before triggering mousePressed logic
   if (touches.length > 0) {
     mouseX = touches[0].x;
     mouseY = touches[0].y;
   }
 
-  mousePressed(); // trigger your same logic
+  mousePressed();
   return false;
 }
-
-
 
 
 function insideButton(btn) {
@@ -921,6 +929,7 @@ function setupDanceButtonFix() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
