@@ -742,7 +742,8 @@ if (!startTime) startTime = millis();
       hasWelcomed = true;
       eggzee.visible = true;
       energy = parseFloat(localStorage.getItem("eggzeeEnergy")) || 120;
-      startTime = millis();
+      if (!startTime) startTime = millis();
+
       foods = [];
       sparkles = [];
       hearts = [];
@@ -927,6 +928,7 @@ function setupDanceButtonFix() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
