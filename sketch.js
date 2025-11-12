@@ -338,9 +338,14 @@ function drawMiniGame() {
     if (h.alpha < 0) hearts.splice(i, 1);
   }
 
-  fill(255);
-  textSize(22);
-  text("Hearts caught: " + heartsCaught, width / 2, 50);
+ // 💖 Score display (below the energy bar so it doesn’t overlap)
+textSize(22);
+fill(255, 230, 120);
+stroke(0);
+strokeWeight(3);
+text("Hearts caught: " + heartsCaught, width / 2, 90);
+noStroke();
+
 
  // 🕒 Return to main menu after 20 seconds of mini-game play
   if (millis() - gameStartTime > 20000) {
@@ -752,6 +757,7 @@ function setupDanceButtonFix() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
