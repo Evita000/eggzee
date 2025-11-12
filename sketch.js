@@ -94,7 +94,7 @@ jokeBtn = { x: spacing * 4, y: btnY };
   setupDanceButtonFix(); // 🟢 ensures mobile works
 
 
-   // 🕐 Auto-restore awake state if saved
+  
    // 🕐 Auto-restore awake state if saved
   if (localStorage.getItem("eggzeeForceAwake") === "true") {
     state = "awake";
@@ -147,6 +147,20 @@ if (startTime) {
   drawInstructions();
 } // 👈 end of draw()
 
+// ---------- EGG SCENE ----------
+function drawEggScene() {
+  // 🥚 Draw egg centered
+  image(eggImg, width / 2, height / 2 + 40, 200, 200);
+
+  // 💬 Tap text message
+  fill(255);
+  textSize(20);
+  textAlign(CENTER, CENTER);
+  text("Tap the egg to hatch Eggzee 🥚", width / 2, height - 40);
+
+  eggzee.visible = false;
+}
+
 
 
 // ---------- SCENES ----------
@@ -179,7 +193,24 @@ function drawHatchingScene() {
     hasWelcomed = false;
   }
 }
+function drawEggzeeScene() {
+  if (!eggzee.visible) return;
 
+  // 🧘 Gentle idle motion for Eggzee
+  let sway = sin(frameCount * 0.03) * 2; // small side sway
+  let bounce = showJoke ? sin(frameCount * 0.2) * 3 : 0; // gentle bounce when laughing
+
+  push();
+  translate(eggzee.x, eggzee.y + bounce);
+  rotate(radians(sway));
+  image(
+    eggzeeAwakeImg,
+    0, 0,
+    eggzeeAwakeImg.width * eggzee.scale,
+    eggzeeAwakeImg.height * eggzee.scale
+  );
+  pop();
+}
 
 
 
@@ -449,24 +480,6 @@ function drawButton(btn, emoji, label) {
 
 
 
-function drawEggzeeScene() {
-  if (!eggzee.visible) return;
-
-  // 🧘 Gentle idle motion for Eggzee
-  let sway = sin(frameCount * 0.03) * 2; // small side sway
-  let bounce = showJoke ? sin(frameCount * 0.2) * 3 : 0; // gentle bounce when laughing
-
-  push();
-  translate(eggzee.x, eggzee.y + bounce);
-  rotate(radians(sway));
-  image(
-    eggzeeAwakeImg,
-    0, 0,
-    eggzeeAwakeImg.width * eggzee.scale,
-    eggzeeAwakeImg.height * eggzee.scale
-  );
-  pop();
-}
 
 
 // ---------- FEED HELPERS ----------
@@ -697,11 +710,10 @@ function mousePressed() {
   if (state === "egg") {
     state = "hatching";
     crackTime = millis();
+    lastTouchTime = millis() + 4000; // prevent fast re-tap
+    return;
+  }
 
-    // 🧩 Prevent any accidental double-tap from skipping hatching
-    lastTouchTime = millis() + 4000; // block inputs for 4 seconds
-    return; // stop here, don't trigger other actions
-  } 
   else if (state === "awake") {
     hasWelcomed = true;
 
@@ -779,9 +791,9 @@ function mouseReleased() {
 }
 
 function touchStarted() {
-  // 🧩 Prevent double tap on mobile
-  if (millis() - lastTouchTime < 600) return false;
-  lastTouchTime = millis();
+  // 🧩 Prevent double trigger after egg tap
+  if (millis() < lastTouchTime) return false;
+  lastTouchTime = millis() + 4000; // block touches for 4s during hatch
 
   // 🔧 Sync touch → mouse position before triggering press
   if (touches.length > 0) {
@@ -789,10 +801,10 @@ function touchStarted() {
     mouseY = touches[0].y;
   }
 
-  // 🥚 trigger the same press logic
-  mousePressed();
+  mousePressed(); // trigger your same logic
   return false;
 }
+
 
 
 
@@ -909,6 +921,7 @@ function setupDanceButtonFix() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
