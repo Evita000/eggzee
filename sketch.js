@@ -81,11 +81,15 @@ function setup() {
     rotation: 0
   };
 
-  const spacing = width / 5;
-  feedBtn = { x: spacing * 1, y: height - 90 };
-  danceBtn = { x: spacing * 2, y: height - 90 };
-  gameBtn = { x: spacing * 3, y: height - 90 };
-  jokeBtn = { x: spacing * 4, y: height - 90 };
+  // 🩵 Responsive button layout for mobile and desktop
+let btnY = height - (width < 600 ? 120 : 90); // a little higher on mobile
+let spacing = width < 600 ? width / 4.8 : width / 5; // wider gaps for mobile
+
+feedBtn = { x: spacing * 1, y: btnY };
+danceBtn = { x: spacing * 2, y: btnY };
+gameBtn = { x: spacing * 3, y: btnY };
+jokeBtn = { x: spacing * 4, y: btnY };
+
 
   setupDanceButtonFix(); // 🟢 ensures mobile works
 
@@ -443,6 +447,7 @@ function drawButton(btn, emoji, label) {
   textSize(width < 500 ? 16 : 14);
   text(label, btn.x, btn.y + 25);
 }
+
 
 
 function drawEggzeeScene() {
@@ -925,6 +930,7 @@ function setupDanceButtonFix() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
