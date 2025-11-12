@@ -1,3 +1,13 @@
+function setup() {
+  createCanvas(windowWidth, windowHeight);
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+}
+
+
+
 let state = localStorage.getItem("eggzeeForceAwake") === "true" ? "awake" : "egg";
 
 
@@ -922,6 +932,7 @@ function setupDanceButtonFix() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
