@@ -14,47 +14,40 @@
       height: 100%;
       width: 100%;
     }
-    canvas {
-      display: block;
-    }
+    canvas { display: block; }
     p.warning {
       color: white;
       text-align: center;
       margin-top: 40vh;
+      padding: 0 20px;
+      font-size: 18px;
+      line-height: 1.4;
     }
   </style>
 
-  <!-- ✅ Load scripts only after the page has fully loaded (Safari fix) -->
+  <!-- 🧩 Inline loader so Safari never blocks -->
   <script>
-    window.addEventListener("load", () => {
-      const addScript = src => {
-        const s = document.createElement("script");
-        s.src = src + "?v=51";
-        document.body.appendChild(s);
-      };
+    document.write("<p class='warning'>🥚 Loading Eggzee... please wait</p>");
+  </script>
 
-      // Staggered loads so Safari doesn’t choke
-      addScript("p5.min.js");
-      setTimeout(() => addScript("p5.play.min.js"), 500);
-      setTimeout(() => addScript("sketch.js"), 1000);
-    });
+  <!-- ✅ Load libraries directly, no delay -->
+  <script src="p5.min.js?v=52"></script>
+  <script src="p5.play.min.js?v=52"></script>
+  <script src="sketch.js?v=52"></script>
 
-    // 🧩 Safety fallback if nothing loads
+  <!-- 🧠 Fallback if something fails -->
+  <script>
     setTimeout(() => {
       if (typeof p5 === "undefined") {
         document.body.innerHTML = `
-          <p class="warning">
-            ⚠️ If nothing loads, please reload or open in Chrome.<br/>
-            Or disable “Prevent Cross-Site Tracking” in Safari Settings. 🥚
+          <p class='warning'>
+            ⚠️ Safari may be blocking the game.<br>
+            Try opening in Chrome, or go to<br>
+            Settings → Safari → disable “Prevent Cross-Site Tracking”.
           </p>`;
       }
-    }, 5000);
+    }, 4000);
   </script>
 </head>
-
 <body></body>
 </html>
-
-
-
-
