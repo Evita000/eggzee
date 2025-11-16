@@ -1,15 +1,8 @@
 
-
-
-
 let state = "egg";
 let restoreAwake = localStorage.getItem("eggzeeForceAwake") === "true";
 let realStartTime = null;   // tracks total time even when user leaves for dance
 let restoreTime = localStorage.getItem("eggzeeRealStartTime");
-
-
-
-
 
 let eggImg, eggzeeAwakeImg, eggzeeSleepImg, cityImg, cityNightImg;
 let eggzee = {};
@@ -135,12 +128,6 @@ jokeBtn = { x: spacing * 4, y: btnY };
 
 
 setupDanceButtonFix(); // 🟢 ensures mobile works
-// 🕐 Restore real global timer if coming back from the dance page
-if (restoreTime) {
-  realStartTime = parseInt(restoreTime);   // restore what we saved
-  localStorage.removeItem("eggzeeRealStartTime"); // clean up
-}
-
 
 // 🕐 Auto-restore awake state AFTER preload + canvas exist
 if (restoreAwake) {
@@ -1011,6 +998,7 @@ window.addEventListener("focus", () => {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
