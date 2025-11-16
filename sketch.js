@@ -766,6 +766,7 @@ function drawEnergyBar() {
 
 
 // ---------- INPUT ----------
+// ---------- INPUT ----------
 function mousePressed() {
   if (state === "egg") {
     state = "hatching";
@@ -777,6 +778,7 @@ function mousePressed() {
   else if (state === "awake") {
     hasWelcomed = true;
 
+    // ---- FEED ----
     if (insideButton(feedBtn)) {
       state = "feed";
       foods = [];
@@ -788,29 +790,38 @@ function mousePressed() {
       eggzee.y = height / 2;
       showFeedInstructions = true;
       feedInstructionTimer = millis();
+      return;
     }
 
+    // ---- DANCE ----
     else if (insideButton(danceBtn)) {
       showDanceInstructions = true;
       danceInstructionTimer = millis();
 
+      // 🕒 make sure real-world timer starts before dancing
+      if (!realStartTime) realStartTime = Date.now();
+
+      // save energy + signal for return
       localStorage.setItem("eggzeeForceAwake", "true");
       localStorage.setItem("eggzeeEnergy", energy.toString());
+
       openDancePage();
 
       state = "awake";
       hasWelcomed = true;
       eggzee.visible = true;
-
-      if (!startTime) startTime = millis();
+      return;
     }
 
+    // ---- JOKE ----
     else if (insideButton(jokeBtn)) {
       tellJoke();
       showJokeInstructions = true;
       jokeInstructionTimer = millis();
+      return;
     }
 
+    // ---- GAME ----
     else if (insideButton(gameBtn)) {
       state = "miniGame";
       gameStartTime = millis();
@@ -818,17 +829,21 @@ function mousePressed() {
       foods = [];
       showGameInstructions = true;
       gameInstructionTimer = millis();
+      return;
     }
   }
 
   else if (state === "sleep") {
     state = "awake";
+    return;
   }
 
+  // ---- DRAGGING FOOD ----
   for (let f of foods)
     if (dist(mouseX, mouseY, f.x, f.y) < 30)
       f.beingDragged = true;
 }
+
 
 
 
@@ -988,6 +1003,7 @@ window.addEventListener("focus", () => {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
