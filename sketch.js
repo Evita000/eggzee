@@ -890,6 +890,9 @@ function tellJoke() {
 }
 
 function drawInstructions() {
+  // ⛔️ All old top-floating instructions removed
+  // Only feed, joke, and dance hints kept (if you want)
+  
   fill(255, 255, 255, 240);
   textAlign(CENTER, CENTER);
   textSize(width < 600 ? 16 : 20);
@@ -899,12 +902,6 @@ function drawInstructions() {
   if (showFeedInstructions) {
     text("🍎 Drag food to Eggzee to feed her!", width / 2, height * 0.15);
     if (now - feedInstructionTimer > 5000) showFeedInstructions = false;
-  }
-
-  // ✨ GAME instructions
-  if (showGameInstructions) {
-    text("✨ Move Eggzee to catch falling sparkles!", width / 2, height * 0.15);
-    if (now - gameInstructionTimer > 5000) showGameInstructions = false;
   }
 
   // 😂 JOKE instructions
@@ -918,7 +915,10 @@ function drawInstructions() {
     text("💃 Tap once to make Eggzee dance in a new tab!", width / 2, height * 0.21);
     if (now - danceInstructionTimer > 5000) showDanceInstructions = false;
   }
+
+  // ✨ GAME instructions REMOVED because bottom bubble is better
 }
+
 
 
 function windowResized() {
@@ -978,6 +978,7 @@ window.addEventListener("focus", () => {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
