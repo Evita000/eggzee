@@ -54,6 +54,30 @@ let sparkles = [];
 let heartsCaught = 0;
 let gameStartTime = 0;
 let gameDuration = 25000;
+function resetToAwake() {
+  state = "awake";
+  eggzee.visible = true;
+
+  // Reset visuals
+  foods = [];
+  sparkles = [];
+  hearts = [];
+  showYum = false;
+  drawYumBubble.currentPhrase = null;
+
+  // Reset instructions
+  showGameInstructions = false;
+  showFeedInstructions = false;
+  showJokeInstructions = false;
+  showDanceInstructions = false;
+
+  // Put Eggzee back in center
+  eggzee.x = width / 2;
+  eggzee.y = height / 2;
+
+  // No timer reset!
+}
+
 
 // ---------- PRELOAD ----------
 function preload() {
@@ -497,9 +521,10 @@ pop();
 
 
  // 🕒 Return to main menu after 20 seconds of mini-game play
-  if (millis() - gameStartTime > 20000) {
-    state = "awake";
-  }
+if (millis() - gameStartTime > 20000) {
+  resetToAwake();
+}
+
 }
 
 // ---------- UI ----------
@@ -763,33 +788,33 @@ function mousePressed() {
       feedInstructionTimer = millis();
     }
 
-    else if (insideButton(danceBtn)) {
-      showDanceInstructions = true;
-      danceInstructionTimer = millis();
+   else if (insideButton(danceBtn)) {
+  showDanceInstructions = true;
+  danceInstructionTimer = millis();
 
-      localStorage.setItem("eggzeeForceAwake", "true");
-      localStorage.setItem("eggzeeEnergy", energy.toString());
-      openDancePage();
+  localStorage.setItem("eggzeeForceAwake", "true");
+  localStorage.setItem("eggzeeEnergy", energy.toString());
+  openDancePage();
 
-      state = "awake";
-      hasWelcomed = true;
-      eggzee.visible = true;
-      if (!startTime) startTime = millis();
+  // Keep Eggzee awake while switching tabs
+  state = "awake";
+  hasWelcomed = true;
+  eggzee.visible = true;
 
-      window.addEventListener("focus", () => {
-        if (localStorage.getItem("eggzeeForceAwake") === "true") {
-          state = "awake";
-          hasWelcomed = true;
-          eggzee.visible = true;
-          energy = parseFloat(localStorage.getItem("eggzeeEnergy")) || 120;
-          if (!startTime) startTime = millis();
-          foods = [];
-          sparkles = [];
-          hearts = [];
-          localStorage.removeItem("eggzeeForceAwake");
-        }
-      });
+  if (!startTime) startTime = millis();
+
+  // NEW FIXED RETURN HANDLER
+  window.addEventListener("focus", () => {
+    if (localStorage.getItem("eggzeeForceAwake") === "true") {
+      resetToAwake();
+      energy = parseFloat(localStorage.getItem("eggzeeEnergy")) || energy;
+      localStorage.removeItem("eggzeeForceAwake");
     }
+  });
+
+} // ← THIS BRACE WAS MISSING! VERY IMPORTANT!
+
+
 
     else if (insideButton(jokeBtn)) {
       tellJoke();
@@ -960,6 +985,7 @@ function setupDanceButtonFix() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
