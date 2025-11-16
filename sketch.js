@@ -643,14 +643,7 @@ function drawOverlayText() {
   if (state === "egg") {
     text("Tap the egg to hatch Eggzee 🥚", width / 2, height - 40);
   } 
-  else if (state === "hatching") {
-    let elapsed = millis() - crackTime;
-    if (elapsed < 2000) {
-      text("...crack...", width / 2, height - 120);
-    } else if (elapsed < 4000) {
-      text("Eggzee is hatching! 💫", width / 2, height - 120);
-    }
-  } 
+ 
   else if (state === "sleep") {
     text("Eggzee is sleeping 😴", width / 2, height - 60);
   } 
@@ -932,6 +925,7 @@ function setupDanceButtonFix() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
