@@ -89,7 +89,7 @@ function setup() {
     visible: false,
     x: width / 2,
     y: height / 2,
-    scale: 0.12,
+    scale: 0.35,
     rotation: 0
   };
 
@@ -168,7 +168,7 @@ function drawEggScene() {
   fill(255);
   textSize(20);
   textAlign(CENTER, CENTER);
-  text("Tap the egg to hatch Eggzee 🥚", width / 2, height - 40);
+ 
 
   eggzee.visible = false;
 }
@@ -925,6 +925,7 @@ function setupDanceButtonFix() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
