@@ -96,21 +96,16 @@ function preload() {
 
 // ---------- SETUP ----------
 function setup() {
-// 🧹 Detect a full page reload (not returning from dance)
-if (!document.referrer.includes("eggzeedance.html")) {
-  localStorage.removeItem("eggzeeForceAwake");
-  localStorage.removeItem("eggzeeRealStartTime");
-}
-  
   pixelDensity(1);
   createCanvas(windowWidth, windowHeight);
-  if (!realStartTime) realStartTime = Date.now();
-  // Restore timer if returning from dance page
-if (restoreTime) {
-  realStartTime = parseInt(restoreTime);
-  localStorage.removeItem("eggzeeRealStartTime");
-}
 
+  if (!realStartTime) realStartTime = Date.now();
+
+  // Restore timer if returning from dance page
+  if (restoreTime) {
+    realStartTime = parseInt(restoreTime);
+    localStorage.removeItem("eggzeeRealStartTime");
+  }
 
   frameRate(30);
 
@@ -132,41 +127,37 @@ if (restoreTime) {
     rotation: 0
   };
 
-  // 🩵 Responsive button layout for mobile and desktop
-// 🩵 Responsive button layout for mobile and desktop
-const btnW = width < 600 ? width * 0.42 : 180;  // pill shape width
-const btnH = width < 600 ? 70 : 65;             // pill shape height
-const gap  = width < 600 ? 20 : 35;
+  // 🩵 Responsive buttons
+  const btnW = width < 600 ? width * 0.42 : 180;
+  const btnH = width < 600 ? 70 : 65;
+  const gap  = width < 600 ? 20 : 35;
 
-const row1Y = height - (width < 600 ? 210 : 180);
-const row2Y = row1Y + btnH + gap;
+  const row1Y = height - (width < 600 ? 210 : 180);
+  const row2Y = row1Y + btnH + gap;
 
-const leftX  = width / 2 - btnW - gap/2;
-const rightX = width / 2 + gap/2;
+  const leftX  = width / 2 - btnW - gap/2;
+  const rightX = width / 2 + gap/2;
 
-// Create button objects WITH width + height
-feedBtn  = { x: leftX  + btnW/2, y: row1Y + btnH/2, w: btnW, h: btnH };
-danceBtn = { x: rightX + btnW/2, y: row1Y + btnH/2, w: btnW, h: btnH };
-gameBtn  = { x: leftX  + btnW/2, y: row2Y + btnH/2, w: btnW, h: btnH };
-jokeBtn  = { x: rightX + btnW/2, y: row2Y + btnH/2, w: btnW, h: btnH };
+  feedBtn  = { x: leftX  + btnW/2, y: row1Y + btnH/2, w: btnW, h: btnH };
+  danceBtn = { x: rightX + btnW/2, y: row1Y + btnH/2, w: btnW, h: btnH };
+  gameBtn  = { x: leftX  + btnW/2, y: row2Y + btnH/2, w: btnW, h: btnH };
+  jokeBtn  = { x: rightX + btnW/2, y: row2Y + btnH/2, w: btnW, h: btnH };
 
+  setupDanceButtonFix();
 
+  // 🕐 Auto-restore awake state (ONLY when returning from dance)
+  if (restoreAwake) {
+    state = "awake";
+    eggzee.visible = true;
+    hasWelcomed = true;
+    energy = parseFloat(localStorage.getItem("eggzeeEnergy")) || 120;
 
-setupDanceButtonFix(); // 🟢 ensures mobile works
-
-// 🕐 Auto-restore awake state AFTER preload + canvas exist
-if (restoreAwake) {
-  state = "awake";
-  eggzee.visible = true;
-  hasWelcomed = true;
-  energy = parseFloat(localStorage.getItem("eggzeeEnergy")) || 120;
-
-  // 🔥 keep real time running even while dancing
-  if (!realStartTime) realStartTime = Date.now() - (120 - energy) * 1000;
+    if (!realStartTime) {
+      realStartTime = Date.now() - (120 - energy) * 1000;
+    }
+  }
 }
 
-
-} // 👈 keep this single closing brace – end of setup()
 
 // ---------- DRAW ----------
 function draw() {
@@ -1109,6 +1100,7 @@ window.addEventListener("focus", () => {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
