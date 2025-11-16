@@ -831,32 +831,6 @@ function mousePressed() {
 
 
 
-    else if (insideButton(jokeBtn)) {
-      tellJoke();
-      showJokeInstructions = true;
-      jokeInstructionTimer = millis();
-    }
-
-    else if (insideButton(gameBtn)) {
-      state = "miniGame";
-      gameStartTime = millis();
-      heartsCaught = 0;
-      foods = [];
-      showGameInstructions = true;
-      gameInstructionTimer = millis();
-    }
-  } 
-  else if (state === "sleep") {
-    state = "awake";
-  }
-
-  for (let f of foods)
-    if (dist(mouseX, mouseY, f.x, f.y) < 30)
-      f.beingDragged = true;
-}
-
-
-
 
 
 function mouseReleased() {
@@ -1012,6 +986,7 @@ window.addEventListener("focus", () => {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
