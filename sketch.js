@@ -164,14 +164,10 @@ function drawEggScene() {
   // 🥚 Draw egg centered
   image(eggImg, width / 2, height / 2 + 40, 200, 200);
 
-  // 💬 Tap text message
-  fill(255);
-  textSize(20);
-  textAlign(CENTER, CENTER);
- 
-
+  // hide Eggzee
   eggzee.visible = false;
 }
+
 
 
 
@@ -925,6 +921,7 @@ function setupDanceButtonFix() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
