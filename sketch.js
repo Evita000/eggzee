@@ -12,6 +12,9 @@ let startTime = null;
 let hasWelcomed = false;
 let lastTouchTime = 0; // 🧩 prevent double bubble on mobile
 let sleepFade = 0; // 🌙 controls smooth fade for sleep transition
+let showIntroMessage = false;
+let introMessageTimer = 0;
+
 
 
 
@@ -229,12 +232,17 @@ function drawHatchingScene() {
     fill(255);
     textSize(26);
     text("Eggzee is hatching! 💫", width / 2, height - 120);
-  } else {
-    state = "awake";
-    eggzee.visible = true;
-    if (!startTime) startTime = millis();
-    hasWelcomed = false;
-  }
+} else {
+  state = "awake";
+  eggzee.visible = true;
+  if (!startTime) startTime = millis();
+
+  // 🐣 Show intro message once
+  hasWelcomed = false;
+  introMessageTimer = millis();
+  showIntroMessage = true;
+}
+
 }
 function drawEggzeeScene() {
   if (!eggzee.visible) return;
@@ -771,12 +779,33 @@ function drawOverlayText() {
   fill(255);
   noStroke();
 
+  // 🛑 BLOCK overlay text in modes where it shouldn’t appear
+  if (state === "feed" || state === "miniGame" || state === "sleep" || showJoke) {
+    pop();
+    return;
+  }
+
+  // 🐣 Intro after hatching (OVERRIDES everything else)
+  if (showIntroMessage) {
+    const elapsed = millis() - introMessageTimer;
+
+    textSize(width < 600 ? 18 : 22);
+    fill(255);
+    noStroke();
+    textAlign(CENTER, CENTER);
+
+    text("Hi! I'm Eggzee 🐣✨", width / 2, height - 110);
+    text("What breaks me… makes me 💕", width / 2, height - 80);
+
+    if (elapsed > 4000) showIntroMessage = false;
+
+    pop();
+    return;  // ⛔ STOP HERE so no other text overlaps
+  }
+
+  // 🥚 Normal overlay texts
   if (state === "egg") {
     text("Tap the egg to hatch Eggzee 🥚", width / 2, height - 40);
-  } 
- 
-  else if (state === "sleep") {
-    text("Eggzee is sleeping 😴", width / 2, height - 60);
   } 
   else if (state === "awake" && energy <= 15) {
     text("Eggzee is getting sleepy... 🌙", width / 2, height - 60);
@@ -784,6 +813,8 @@ function drawOverlayText() {
 
   pop();
 }
+
+
 
 
 function drawEnergyBar() {
@@ -1066,6 +1097,7 @@ window.addEventListener("focus", () => {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
