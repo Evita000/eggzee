@@ -93,8 +93,7 @@ function preload() {
 
 // ---------- SETUP ----------
 function setup() {
-  localStorage.removeItem("eggzeeForceAwake"); // 🧹 ensures fresh hatch start
-
+  
   pixelDensity(1);
   createCanvas(windowWidth, windowHeight);
   if (!realStartTime) realStartTime = Date.now();
@@ -1006,6 +1005,7 @@ window.addEventListener("focus", () => {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
