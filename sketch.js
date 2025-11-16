@@ -5,6 +5,8 @@
 let state = "egg";
 let restoreAwake = localStorage.getItem("eggzeeForceAwake") === "true";
 let realStartTime = null;   // tracks total time even when user leaves for dance
+let restoreTime = localStorage.getItem("eggzeeRealStartTime");
+
 
 
 
@@ -128,8 +130,13 @@ jokeBtn = { x: spacing * 4, y: btnY };
 
 
 setupDanceButtonFix(); // 🟢 ensures mobile works
+// 🕐 Restore real global timer if coming back from the dance page
+if (restoreTime) {
+  realStartTime = parseInt(restoreTime);   // restore what we saved
+  localStorage.removeItem("eggzeeRealStartTime"); // clean up
+}
 
-// 🕐 Auto-restore awake state AFTER preload + canvas exist
+
 // 🕐 Auto-restore awake state AFTER preload + canvas exist
 if (restoreAwake) {
   state = "awake";
@@ -762,10 +769,6 @@ function drawEnergyBar() {
   pop(); // 🧩 restore previous text settings
 }
 
-
-
-
-// ---------- INPUT ----------
 // ---------- INPUT ----------
 function mousePressed() {
   if (state === "egg") {
@@ -798,10 +801,13 @@ function mousePressed() {
       showDanceInstructions = true;
       danceInstructionTimer = millis();
 
-      // 🕒 make sure real-world timer starts before dancing
+      // 🕒 ensure real timer exists
       if (!realStartTime) realStartTime = Date.now();
 
-      // save energy + signal for return
+      // ⭐ SAVE REAL TIMER so it keeps counting during dance page
+      localStorage.setItem("eggzeeRealStartTime", realStartTime.toString());
+
+      // save energy + signal return
       localStorage.setItem("eggzeeForceAwake", "true");
       localStorage.setItem("eggzeeEnergy", energy.toString());
 
@@ -835,15 +841,12 @@ function mousePressed() {
 
   else if (state === "sleep") {
     state = "awake";
-    return;
   }
 
-  // ---- DRAGGING FOOD ----
   for (let f of foods)
     if (dist(mouseX, mouseY, f.x, f.y) < 30)
       f.beingDragged = true;
 }
-
 
 
 
@@ -1003,6 +1006,7 @@ window.addEventListener("focus", () => {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
