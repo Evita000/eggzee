@@ -97,6 +97,12 @@ function setup() {
   pixelDensity(1);
   createCanvas(windowWidth, windowHeight);
   if (!realStartTime) realStartTime = Date.now();
+  // Restore timer if returning from dance page
+if (restoreTime) {
+  realStartTime = parseInt(restoreTime);
+  localStorage.removeItem("eggzeeRealStartTime");
+}
+
 
   frameRate(30);
 
@@ -1005,6 +1011,7 @@ window.addEventListener("focus", () => {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
