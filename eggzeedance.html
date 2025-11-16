@@ -139,53 +139,55 @@ function resizeCanvas() {
 
 </script>
 
-
-
-
-    <!-- 🩷 Return to Menu Button -->
+<!-- 🩷 Big Eggzee Return Button -->
 <button id="returnBtn"
   style="
-    position:fixed;
-    bottom:20px;
-    right:20px;
-    padding:14px 20px;
-    font-size:18px;
-    border:none;
-    border-radius:12px;
-    background:#ffd6e0;
-    color:#333;
-    cursor:pointer;
-    box-shadow:0 4px 12px rgba(0,0,0,0.4);
-    z-index:9999; /* 🩷 keeps button above canvas */
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+    z-index: 9999;
   ">
-  ⬅️ Return to Menu
+    <!-- Eggzee icon -->
+    <img src="assets/eggzee7.png" 
+         alt="Return"
+         style="
+           width: 110px;
+           height: 110px;
+           border-radius: 50%;
+           box-shadow: 0 0 18px rgba(255, 200, 240, 0.8);
+         ">
 </button>
 
-
- <script>
+<script>
   function closeDance() {
-    // 💾 Remember Eggzee’s awake state
     localStorage.setItem("eggzeeForceAwake", "true");
-
-    // 🕊️ Always go back to main menu (works on mobile + GitHub Pages)
     window.location.href = "index.html";
   }
 
-  // 🩷 Make sure the button actually triggers
   document.getElementById("returnBtn").addEventListener("click", closeDance);
 
-  // 🩵 Fade-in effect for button
+  // fade-in effect
   const btn = document.getElementById("returnBtn");
   btn.style.opacity = "0";
   setTimeout(() => {
-    btn.style.transition = "opacity 1s ease";
+    btn.style.transition = "opacity 0.9s ease";
     btn.style.opacity = "1";
-  }, 2000);
+  }, 1200);
 </script>
+
+
+
+ 
+
 
 
 </body>
 </html>
+
 
 
 
