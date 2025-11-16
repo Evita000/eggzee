@@ -118,13 +118,23 @@ if (restoreTime) {
   };
 
   // 🩵 Responsive button layout for mobile and desktop
-let btnY = height - (width < 600 ? 120 : 90); // a little higher on mobile
-let spacing = width < 600 ? width / 4.8 : width / 5; // wider gaps for mobile
+// 🩵 Responsive button layout for mobile and desktop
+const btnW = width < 600 ? width * 0.42 : 180;  // pill shape width
+const btnH = width < 600 ? 70 : 65;             // pill shape height
+const gap  = width < 600 ? 20 : 35;
 
-feedBtn = { x: spacing * 1, y: btnY };
-danceBtn = { x: spacing * 2, y: btnY };
-gameBtn = { x: spacing * 3, y: btnY };
-jokeBtn = { x: spacing * 4, y: btnY };
+const row1Y = height - (width < 600 ? 210 : 180);
+const row2Y = row1Y + btnH + gap;
+
+const leftX  = width / 2 - btnW - gap/2;
+const rightX = width / 2 + gap/2;
+
+// Create button objects WITH width + height
+feedBtn  = { x: leftX  + btnW/2, y: row1Y + btnH/2, w: btnW, h: btnH };
+danceBtn = { x: rightX + btnW/2, y: row1Y + btnH/2, w: btnW, h: btnH };
+gameBtn  = { x: leftX  + btnW/2, y: row2Y + btnH/2, w: btnW, h: btnH };
+jokeBtn  = { x: rightX + btnW/2, y: row2Y + btnH/2, w: btnW, h: btnH };
+
 
 
 setupDanceButtonFix(); // 🟢 ensures mobile works
@@ -531,24 +541,48 @@ if (millis() - gameStartTime > 20000) {
 // ---------- UI ----------
 function drawButtons() {
   if (state !== "awake") return;
-  drawButton(feedBtn, "🍩", "Feed");
-  drawButton(danceBtn, "💃", "Dance");
-  drawButton(gameBtn, "✨", "Game");
-  drawButton(jokeBtn, "😂", "Joke");
+
+  const btnW = width < 600 ? width * 0.42 : 180;
+  const btnH = width < 600 ? 70 : 65;
+  const gap = width < 600 ? 20 : 35;
+
+  const row1Y = height - (width < 600 ? 210 : 180);
+  const row2Y = row1Y + btnH + gap;
+  const leftX = width / 2 - btnW - gap/2;
+  const rightX = width / 2 + gap/2;
+
+  drawPillButton(leftX,  row1Y, feedBtn,  "🍩", "Feed");
+  drawPillButton(rightX, row1Y, danceBtn, "💃", "Dance");
+  drawPillButton(leftX,  row2Y, gameBtn,  "✨", "Game");
+  drawPillButton(rightX, row2Y, jokeBtn,  "😂", "Joke");
 }
 
-function drawButton(btn, emoji, label) {
-  const btnW = width < 500 ? 110 : 120; // bigger for mobile
-  const btnH = width < 500 ? 90 : 80;
+function drawPillButton(x, y, btnObj, emoji, label) {
+  const btnW = width < 600 ? width * 0.42 : 180;
+  const btnH = width < 600 ? 70 : 65;
 
-  fill(255, 255, 255, 200);
-  rect(btn.x - btnW / 2, btn.y - btnH / 2, btnW, btnH, 25);
+  // modern rounded button
+  fill(255, 255, 255, 210);
+  stroke(0, 0, 0, 40);
+  strokeWeight(2);
+  rect(x, y, btnW, btnH, 30);
 
+  // emoji
+  noStroke();
   fill(0);
-  textSize(width < 500 ? 26 : 20);
-  text(emoji, btn.x, btn.y - 10);
-  textSize(width < 500 ? 16 : 14);
-  text(label, btn.x, btn.y + 25);
+  textSize(width < 600 ? 32 : 26);
+  textAlign(LEFT, CENTER);
+  text(emoji, x + 18, y + btnH / 2);
+
+  // label
+  textSize(width < 600 ? 20 : 16);
+  text(label, x + 65, y + btnH / 2);
+
+  // update clickable area for insideButton()
+  btnObj.x = x + btnW / 2;
+  btnObj.y = y + btnH / 2;
+  btnObj.w = btnW;
+  btnObj.h = btnH;
 }
 
 
@@ -874,17 +908,15 @@ function touchStarted() {
 
 
 function insideButton(btn) {
-  // 🖐️ Larger, more responsive hitbox for mobile screens
-  const btnW = width < 600 ? 140 : 120; // wider on small screens
-  const btnH = width < 600 ? 110 : 80;  // taller on small screens
 
   return (
-    mouseX > btn.x - btnW / 2 &&
-    mouseX < btn.x + btnW / 2 &&
-    mouseY > btn.y - btnH / 2 &&
-    mouseY < btn.y + btnH / 2
+    mouseX > btn.x - btn.w / 2 &&
+    mouseX < btn.x + btn.w / 2 &&
+    mouseY > btn.y - btn.h / 2 &&
+    mouseY < btn.y + btn.h / 2
   );
 }
+
 
 function tellJoke() {
   const jokes = [
@@ -998,6 +1030,7 @@ window.addEventListener("focus", () => {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
