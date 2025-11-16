@@ -1,10 +1,4 @@
-function setup() {
-  createCanvas(windowWidth, windowHeight);
-}
 
-function windowResized() {
-  resizeCanvas(windowWidth, windowHeight);
-}
 
 
 
@@ -986,6 +980,7 @@ window.addEventListener("focus", () => {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
