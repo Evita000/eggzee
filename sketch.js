@@ -2,7 +2,9 @@
 
 
 
-let state = localStorage.getItem("eggzeeForceAwake") === "true" ? "awake" : "egg";
+let state = "egg";
+let restoreAwake = localStorage.getItem("eggzeeForceAwake") === "true";
+
 
 
 let eggImg, eggzeeAwakeImg, eggzeeSleepImg, cityImg, cityNightImg;
@@ -122,6 +124,14 @@ jokeBtn = { x: spacing * 4, y: btnY };
 
 
   setupDanceButtonFix(); // 🟢 ensures mobile works
+// 🕐 Auto-restore awake state AFTER preload + canvas exist
+if (restoreAwake) {
+  state = "awake";
+  eggzee.visible = true;
+  hasWelcomed = true;
+  startTime = millis();
+  energy = parseFloat(localStorage.getItem("eggzeeEnergy")) || 120;
+}
 
 
   
@@ -980,6 +990,7 @@ window.addEventListener("focus", () => {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
