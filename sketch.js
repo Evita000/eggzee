@@ -236,8 +236,8 @@ function drawFeedScene() {
     eggzeeAwakeImg,
     0,
     0,
-    eggzeeAwakeImg.width * 0.12,
-    eggzeeAwakeImg.height * 0.12
+    eggzeeAwakeImg.width * 0.35,
+    eggzeeAwakeImg.height * 0.35
   );
   pop();
 
@@ -358,8 +358,8 @@ function drawSleepScene() {
     eggzeeSleepImg,
     0,
     0,
-    eggzeeSleepImg.width * 0.1,
-    eggzeeSleepImg.height * 0.1
+    eggzeeSleepImg.width * 0.30,
+    eggzeeSleepImg.height * 0.30
   );
   pop();
 
@@ -925,6 +925,7 @@ function setupDanceButtonFix() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
