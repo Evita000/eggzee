@@ -123,7 +123,8 @@ gameBtn = { x: spacing * 3, y: btnY };
 jokeBtn = { x: spacing * 4, y: btnY };
 
 
-  setupDanceButtonFix(); // 🟢 ensures mobile works
+setupDanceButtonFix(); // 🟢 ensures mobile works
+
 // 🕐 Auto-restore awake state AFTER preload + canvas exist
 if (restoreAwake) {
   state = "awake";
@@ -133,21 +134,7 @@ if (restoreAwake) {
   energy = parseFloat(localStorage.getItem("eggzeeEnergy")) || 120;
 }
 
-
-  
-   // 🕐 Auto-restore awake state if saved
-  if (localStorage.getItem("eggzeeForceAwake") === "true") {
-    state = "awake";
-    eggzee.visible = true;
-    hasWelcomed = true;
-    startTime = millis();
-   energy = parseFloat(localStorage.getItem("eggzeeEnergy")) || 120;
-if (!startTime) startTime = millis();
-
-  }
-} // 👈 keep this closing brace at the end of setup()
-
-// ---------- DRAW ----------
+} // 👈 keep this single closing brace – end of setup()
 
 // ---------- DRAW ----------
 function draw() {
@@ -155,6 +142,7 @@ function draw() {
   if (isNight && cityNightImg) image(cityNightImg, width / 2, height / 2, width, height);
   else if (cityImg) image(cityImg, width / 2, height / 2, width, height);
   else background(200);
+
 
   // 🕒 Always update energy every frame (global countdown)
 if (startTime) {
@@ -990,6 +978,7 @@ window.addEventListener("focus", () => {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
