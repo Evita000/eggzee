@@ -4,6 +4,8 @@
 
 let state = "egg";
 let restoreAwake = localStorage.getItem("eggzeeForceAwake") === "true";
+let realStartTime = null;   // tracks total time even when user leaves for dance
+
 
 
 
@@ -93,6 +95,8 @@ function setup() {
 
   pixelDensity(1);
   createCanvas(windowWidth, windowHeight);
+  if (!realStartTime) realStartTime = Date.now();
+
   frameRate(30);
 
   // ✨ temporary loading background
@@ -126,13 +130,17 @@ jokeBtn = { x: spacing * 4, y: btnY };
 setupDanceButtonFix(); // 🟢 ensures mobile works
 
 // 🕐 Auto-restore awake state AFTER preload + canvas exist
+// 🕐 Auto-restore awake state AFTER preload + canvas exist
 if (restoreAwake) {
   state = "awake";
   eggzee.visible = true;
   hasWelcomed = true;
-  startTime = millis();
   energy = parseFloat(localStorage.getItem("eggzeeEnergy")) || 120;
+
+  // 🔥 keep real time running even while dancing
+  if (!realStartTime) realStartTime = Date.now() - (120 - energy) * 1000;
 }
+
 
 } // 👈 keep this single closing brace – end of setup()
 
@@ -145,16 +153,18 @@ function draw() {
 
 
   // 🕒 Always update energy every frame (global countdown)
-if (startTime) {
-  const elapsed = (millis() - startTime) / 1000;
+// 🕒 Always update energy every frame (global countdown)
+if (realStartTime) {
+  const elapsed = (Date.now() - realStartTime) / 1000;
   energy = max(0, 120 - elapsed);
-
-  // 🌙 Auto-sleep when drained
-  if (energy <= 0 && state !== "sleep") {
-    state = "sleep";
-    sleepFade = 0;
-  }
 }
+
+// 🌙 Auto-sleep when drained
+if (energy <= 0 && state !== "sleep") {
+  state = "sleep";
+  sleepFade = 0;
+}
+
 
  
 
@@ -978,6 +988,7 @@ window.addEventListener("focus", () => {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
