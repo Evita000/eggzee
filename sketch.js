@@ -561,33 +561,69 @@ function drawPillButton(x, y, btnObj, emoji, label) {
   const btnW = width < 600 ? width * 0.42 : 180;
   const btnH = width < 600 ? 70 : 65;
 
-  // modern rounded button
-  fill(255, 255, 255, 210);
-  stroke(0, 0, 0, 40);
+  // detect hover (desktop) or active tap (mobile)
+  let isHover = dist(mouseX, mouseY, btnObj.x, btnObj.y) < btnW * 0.45;
+  let isPressed = mouseIsPressed && isHover;
+
+  // 🎬 Animation scale
+  // idle: 1.0
+  // hover: 1.05
+  // press: 0.95
+  let targetScale = 1.0;
+  if (isPressed)      targetScale = 0.95;
+  else if (isHover)   targetScale = 1.05;
+
+  // smooth animation (lerp)
+  btnObj.scale = lerp(btnObj.scale || 1, targetScale, 0.15);
+
+  push();
+  translate(btnObj.x, btnObj.y);
+  scale(btnObj.scale);
+
+  // 🌈 Pastel gradient
+  let gradTop = color(255, 245, 255, 240);
+  let gradBottom = color(255, 215, 240, 240);
+
+  noStroke();
+  for (let i = 0; i < btnH; i++) {
+    let inter = map(i, 0, btnH, 0, 1);
+    let c = lerpColor(gradTop, gradBottom, inter);
+    fill(c);
+    rect(-btnW/2, -btnH/2 + i, btnW, 1, 30);
+  }
+
+  // ✨ glow
+  drawingContext.shadowBlur = isHover ? 25 : 15;
+  drawingContext.shadowColor = "rgba(255, 180, 220, 0.65)";
+
+  // outline
+  stroke(255, 255, 255, 160);
   strokeWeight(2);
-  rect(x, y, btnW, btnH, 30);
+  noFill();
+  rect(-btnW/2, -btnH/2, btnW, btnH, 30);
+
+  // ✨ reset shadow
+  drawingContext.shadowBlur = 0;
 
   // emoji
   noStroke();
-  fill(0);
+  fill(60);
   textSize(width < 600 ? 32 : 26);
   textAlign(LEFT, CENTER);
-  text(emoji, x + 18, y + btnH / 2);
+  text(emoji, -btnW/2 + 18, 0);
 
   // label
   textSize(width < 600 ? 20 : 16);
-  text(label, x + 65, y + btnH / 2);
+  text(label, -btnW/2 + 65, 0);
 
-  // update clickable area for insideButton()
-  btnObj.x = x + btnW / 2;
-  btnObj.y = y + btnH / 2;
+  pop();
+
+  // update clickable bounds (no animation interference)
+  btnObj.x = x + btnW/2;
+  btnObj.y = y + btnH/2;
   btnObj.w = btnW;
   btnObj.h = btnH;
 }
-
-
-
-
 
 // ---------- FEED HELPERS ----------
 function drawFoods() {
@@ -1030,6 +1066,7 @@ window.addEventListener("focus", () => {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
