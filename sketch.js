@@ -768,7 +768,7 @@ function mousePressed() {
   if (state === "egg") {
     state = "hatching";
     crackTime = millis();
-    lastTouchTime = millis() + 4000; // prevent fast re-tap
+    lastTouchTime = millis() + 4000;
     return;
   }
 
@@ -788,31 +788,46 @@ function mousePressed() {
       feedInstructionTimer = millis();
     }
 
-   else if (insideButton(danceBtn)) {
-  showDanceInstructions = true;
-  danceInstructionTimer = millis();
+    else if (insideButton(danceBtn)) {
+      showDanceInstructions = true;
+      danceInstructionTimer = millis();
 
-  localStorage.setItem("eggzeeForceAwake", "true");
-  localStorage.setItem("eggzeeEnergy", energy.toString());
-  openDancePage();
+      localStorage.setItem("eggzeeForceAwake", "true");
+      localStorage.setItem("eggzeeEnergy", energy.toString());
+      openDancePage();
 
-  // Keep Eggzee awake while switching tabs
-  state = "awake";
-  hasWelcomed = true;
-  eggzee.visible = true;
+      state = "awake";
+      hasWelcomed = true;
+      eggzee.visible = true;
 
-  if (!startTime) startTime = millis();
-
-  // NEW FIXED RETURN HANDLER
-  window.addEventListener("focus", () => {
-    if (localStorage.getItem("eggzeeForceAwake") === "true") {
-      resetToAwake();
-      energy = parseFloat(localStorage.getItem("eggzeeEnergy")) || energy;
-      localStorage.removeItem("eggzeeForceAwake");
+      if (!startTime) startTime = millis();
     }
-  });
 
-} // ← THIS BRACE WAS MISSING! VERY IMPORTANT!
+    else if (insideButton(jokeBtn)) {
+      tellJoke();
+      showJokeInstructions = true;
+      jokeInstructionTimer = millis();
+    }
+
+    else if (insideButton(gameBtn)) {
+      state = "miniGame";
+      gameStartTime = millis();
+      heartsCaught = 0;
+      foods = [];
+      showGameInstructions = true;
+      gameInstructionTimer = millis();
+    }
+  }
+
+  else if (state === "sleep") {
+    state = "awake";
+  }
+
+  for (let f of foods)
+    if (dist(mouseX, mouseY, f.x, f.y) < 30)
+      f.beingDragged = true;
+}
+
 
 
 
@@ -983,8 +998,21 @@ function setupDanceButtonFix() {
   danceLink.attribute("target", "_blank");
   danceLink.style("display", "none");
 }
+// 🔄 Handle returning from dance page ONCE globally
+window.addEventListener("focus", () => {
+  if (localStorage.getItem("eggzeeForceAwake") === "true") {
+    resetToAwake();               // reset visuals + position
+    energy = parseFloat(localStorage.getItem("eggzeeEnergy")) || energy;
+    localStorage.removeItem("eggzeeForceAwake");
+
+    // resume timer correctly
+    if (!startTime) startTime = millis();
+  }
+});
+
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
