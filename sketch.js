@@ -396,17 +396,36 @@ function drawMiniGame() {
   image(eggzeeAwakeImg, 0, 0, eggzeeAwakeImg.width * eggzee.scale, eggzeeAwakeImg.height * eggzee.scale);
   pop();
 
-
-// 📝 Live instructions during mini-game
+// 📝 Live instructions during mini-game (bottom, mobile-friendly)
 push();
 textAlign(CENTER, CENTER);
-textSize(width < 600 ? 18 : 22);
+
+// Bigger text for mobile
+textSize(width < 600 ? 26 : 22);
+textStyle(BOLD);
+
+let instr = "Move Eggzee to catch sparkles!";
+let instrW = textWidth(instr) + 40;
+let instrH = 50;
+
+// Position at the bottom
+let instrX = width / 2 - instrW / 2;
+let instrY = height - instrH - 20; // 20px above bottom
+
+// Dark background bubble
+fill(0, 130); // translucent black
+noStroke();
+rect(instrX, instrY, instrW, instrH, 14);
+
+// White text with clean shadow
 fill(255);
 stroke(0);
 strokeWeight(4);
-text("Move Eggzee to catch sparkles!", width / 2, 50);
+text(instr, width / 2, instrY + instrH / 2 + 2);
+
 noStroke();
 pop();
+
 
   // ⬇️ Helper arrow pointing at the first sparkle (only if sparkles exist)
 if (sparkles.length > 0) {
@@ -941,6 +960,7 @@ function setupDanceButtonFix() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
