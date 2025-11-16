@@ -1,3 +1,10 @@
+// 🧹 Clean localStorage ONLY on full reload (NOT when returning from dance)
+let fromDance = document.referrer.includes("eggzeedance.html");
+
+if (!fromDance) {
+  localStorage.removeItem("eggzeeForceAwake");
+  localStorage.removeItem("eggzeeRealStartTime");
+}
 
 let state = "egg";
 let restoreAwake = localStorage.getItem("eggzeeForceAwake") === "true";
@@ -89,6 +96,11 @@ function preload() {
 
 // ---------- SETUP ----------
 function setup() {
+// 🧹 Detect a full page reload (not returning from dance)
+if (!document.referrer.includes("eggzeedance.html")) {
+  localStorage.removeItem("eggzeeForceAwake");
+  localStorage.removeItem("eggzeeRealStartTime");
+}
   
   pixelDensity(1);
   createCanvas(windowWidth, windowHeight);
@@ -1097,6 +1109,7 @@ window.addEventListener("focus", () => {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
