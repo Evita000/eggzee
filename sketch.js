@@ -1,4 +1,4 @@
-// 🧹 Clean localStorage ONLY on full reload (NOT when returning from dance)
+let lastTouchTime = 0;
 let fromDance = document.referrer.includes("eggzeedance.html");
 
 if (!fromDance) {
@@ -17,10 +17,14 @@ let crackTime = 0;
 let energy = 120;
 let startTime = null;
 let hasWelcomed = false;
-let lastTouchTime = 0; // 🧩 prevent double bubble on mobile
 let sleepFade = 0; // 🌙 controls smooth fade for sleep transition
 let showIntroMessage = false;
 let introMessageTimer = 0;
+let feedStartTime = 0;
+let gameStartTime = 0; // you already had but put it here anyway
+
+
+
 
 
 
@@ -55,7 +59,6 @@ let jokeTimer = 0;
 // Mini-game
 let sparkles = [];
 let heartsCaught = 0;
-let gameStartTime = 0;
 let gameDuration = 25000;
 function resetToAwake() {
   state = "awake";
@@ -119,13 +122,15 @@ function setup() {
   textSize(20);
   textAlign(CENTER, CENTER);
 
-  eggzee = {
-    visible: false,
-    x: width / 2,
-    y: height / 2,
-    scale: 0.35,
-    rotation: 0
-  };
+eggzee = {
+  visible: false,
+  x: width / 2,
+  y: height / 2,
+  scale: 0.35,
+  rotation: 0,
+  isHatching: false   // ✅ Add this here
+};
+
 
   // 🩵 Responsive buttons
   const btnW = width < 600 ? width * 0.42 : 180;
@@ -374,15 +379,12 @@ if (!drawFeedScene.lastSpawn || millis() - drawFeedScene.lastSpawn > 2500) {
   }
 
   // 🕒 Return to main menu after 25 seconds of feeding
-  if (startTime && millis() - startTime > 25000) {
-    state = "awake";
-  }
+ if (millis() - feedStartTime > 25000) {
+  resetToAwake();
+  return;
 }
 
-
-
-
-
+}
 
 function drawSleepScene() {
   // 🌌 Soft fade to night background
@@ -545,7 +547,9 @@ pop();
  // 🕒 Return to main menu after 20 seconds of mini-game play
 if (millis() - gameStartTime > 20000) {
   resetToAwake();
+  return;
 }
+
 
 }
 
@@ -797,8 +801,9 @@ function drawOverlayText() {
     noStroke();
     textAlign(CENTER, CENTER);
 
-    text("Hi! I'm Eggzee 🐣✨", width / 2, height - 110);
-    text("What breaks me… makes me 💕", width / 2, height - 80);
+ text("Hi! I'm Eggzee 🐣✨", width / 2, 80);
+text("What breaks me… makes me 💕", width / 2, 120);
+
 
     if (elapsed > 4000) showIntroMessage = false;
 
@@ -867,56 +872,56 @@ function drawEnergyBar() {
 
 // ---------- INPUT ----------
 function mousePressed() {
+  // 🥚 TAP TO HATCH
   if (state === "egg") {
     state = "hatching";
     crackTime = millis();
-    lastTouchTime = millis() + 4000;
     return;
   }
 
+  // 🌞 MAIN MENU INTERACTIONS
   else if (state === "awake") {
     hasWelcomed = true;
 
-    // ---- FEED ----
-    if (insideButton(feedBtn)) {
-      state = "feed";
-      foods = [];
-      sparkles = [];
-      hearts = [];
-      showYum = false;
-      drawYumBubble.currentPhrase = null;
-      eggzee.x = width / 2;
-      eggzee.y = height / 2;
-      showFeedInstructions = true;
-      feedInstructionTimer = millis();
-      return;
-    }
+   // ---- FEED ----
+if (insideButton(feedBtn)) {
+  state = "feed";
+  foods = [];
+  sparkles = [];
+  hearts = [];
+  showYum = false;
+  drawYumBubble.currentPhrase = null;
+
+  eggzee.x = width / 2;
+  eggzee.y = height / 2;
+
+  feedStartTime = millis();  
+  if (!feedStartTime) feedStartTime = millis();   // ⭐ NEW FIX
+
+  showFeedInstructions = true;
+  feedInstructionTimer = millis();
+  return;
+}
+
 
     // ---- DANCE ----
-    else if (insideButton(danceBtn)) {
-      showDanceInstructions = true;
-      danceInstructionTimer = millis();
+    if (insideButton(danceBtn)) {
 
-      // 🕒 ensure real timer exists
+      // ensure timer exists
       if (!realStartTime) realStartTime = Date.now();
 
-      // ⭐ SAVE REAL TIMER so it keeps counting during dance page
+      // save timer + energy before leaving
       localStorage.setItem("eggzeeRealStartTime", realStartTime.toString());
-
-      // save energy + signal return
       localStorage.setItem("eggzeeForceAwake", "true");
       localStorage.setItem("eggzeeEnergy", energy.toString());
 
-      openDancePage();
+      openDancePage(); // open dance tab
 
-      state = "awake";
-      hasWelcomed = true;
-      eggzee.visible = true;
-      return;
+      return; // stop here
     }
 
     // ---- JOKE ----
-    else if (insideButton(jokeBtn)) {
+    if (insideButton(jokeBtn)) {
       tellJoke();
       showJokeInstructions = true;
       jokeInstructionTimer = millis();
@@ -924,7 +929,7 @@ function mousePressed() {
     }
 
     // ---- GAME ----
-    else if (insideButton(gameBtn)) {
+    if (insideButton(gameBtn)) {
       state = "miniGame";
       gameStartTime = millis();
       heartsCaught = 0;
@@ -935,18 +940,16 @@ function mousePressed() {
     }
   }
 
+  // 🌙 WAKE FROM SLEEP
   else if (state === "sleep") {
     state = "awake";
   }
 
+  // 🍎 DRAG FOOD
   for (let f of foods)
     if (dist(mouseX, mouseY, f.x, f.y) < 30)
       f.beingDragged = true;
 }
-
-
-
-
 
 
 function mouseReleased() {
@@ -954,38 +957,62 @@ function mouseReleased() {
 }
 
 function touchStarted() {
-  // 🐣 Allow tapping egg to hatch on touch screens
-  if (state === "egg" && millis() > lastTouchTime) {
+
+  // ⭐ MOBILE DOUBLE-TAP FIX
+  if (millis() < lastTouchTime + 200) return false;
+  lastTouchTime = millis();
+
+  // 🐣 Hatch egg (first tap)
+  if (state === "egg" && !eggzee.isHatching) {
     state = "hatching";
     crackTime = millis();
-    lastTouchTime = millis() + 4000; // block further taps for 4s
+    eggzee.isHatching = true;
+
+    setTimeout(() => {
+      eggzee.isHatching = false;
+    }, 3000);
+
     return false;
   }
 
-  // 🧩 otherwise handle other game interactions
-  if (millis() < lastTouchTime) return false;
-  lastTouchTime = millis() + 4000;
-
-  // 🔧 Sync touch → mouse before triggering mousePressed logic
+  // 🔧 Sync touch with mouse
   if (touches.length > 0) {
     mouseX = touches[0].x;
     mouseY = touches[0].y;
   }
 
+  // Run normal click logic
   mousePressed();
   return false;
 }
 
 
+
+
 function insideButton(btn) {
 
+  // Touch input (mobile)
+  if (touches.length > 0) {
+    let tx = touches[0].x;
+    let ty = touches[0].y;
+
+    return (
+      tx > btn.x - btn.w/2 &&
+      tx < btn.x + btn.w/2 &&
+      ty > btn.y - btn.h/2 &&
+      ty < btn.y + btn.h/2
+    );
+  }
+
+  // Mouse input (desktop)
   return (
-    mouseX > btn.x - btn.w / 2 &&
-    mouseX < btn.x + btn.w / 2 &&
-    mouseY > btn.y - btn.h / 2 &&
-    mouseY < btn.y + btn.h / 2
+    mouseX > btn.x - btn.w/2 &&
+    mouseX < btn.x + btn.w/2 &&
+    mouseY > btn.y - btn.h/2 &&
+    mouseY < btn.y + btn.h/2
   );
 }
+
 
 
 function tellJoke() {
@@ -1100,6 +1127,7 @@ window.addEventListener("focus", () => {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
