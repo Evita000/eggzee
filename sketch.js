@@ -64,24 +64,22 @@ function resetToAwake() {
   state = "awake";
   eggzee.visible = true;
 
-  // Reset visuals
   foods = [];
   sparkles = [];
   hearts = [];
   showYum = false;
   drawYumBubble.currentPhrase = null;
 
-  // Reset instructions
   showGameInstructions = false;
   showFeedInstructions = false;
   showJokeInstructions = false;
   showDanceInstructions = false;
 
-  // Put Eggzee back in center
   eggzee.x = width / 2;
   eggzee.y = height / 2;
 
-  // No timer reset!
+  feedStartTime = 0;      // ← ⭐ This was missing
+  gameStartTime = 0;      // ← ⭐ Also helps mini-game be clean
 }
 
 
@@ -379,10 +377,21 @@ if (!drawFeedScene.lastSpawn || millis() - drawFeedScene.lastSpawn > 2500) {
   }
 
   // 🕒 Return to main menu after 25 seconds of feeding
- if (millis() - feedStartTime > 25000) {
+
+// 🕒 Return to main menu after 25 seconds of feeding
+
+// 🛑 Guarantee timer starts only once
+if (feedStartTime === 0) feedStartTime = millis();
+
+// 🕒 Return after 25 seconds
+if (millis() - feedStartTime >= 25000) {
   resetToAwake();
+  feedStartTime = 0; // reset for next feed session
   return;
 }
+
+
+
 
 }
 
@@ -884,6 +893,7 @@ function mousePressed() {
     hasWelcomed = true;
 
    // ---- FEED ----
+// ---- FEED ----
 if (insideButton(feedBtn)) {
   state = "feed";
   foods = [];
@@ -895,8 +905,7 @@ if (insideButton(feedBtn)) {
   eggzee.x = width / 2;
   eggzee.y = height / 2;
 
-  feedStartTime = millis();  
-  if (!feedStartTime) feedStartTime = millis();   // ⭐ NEW FIX
+  feedStartTime = 0;   // reset — actual start happens inside drawFeedScene()
 
   showFeedInstructions = true;
   feedInstructionTimer = millis();
@@ -1127,6 +1136,7 @@ window.addEventListener("focus", () => {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
