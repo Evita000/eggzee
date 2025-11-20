@@ -102,10 +102,13 @@ function preload() {
 // ---------- SETUP ----------
 function setup() {
 
-  // TEMP CAMERA DEBUG
-  navigator.mediaDevices.enumerateDevices().then(devices => {
-    console.log("DEVICES:", devices);
+// TEMP CAMERA DEBUG
+navigator.mediaDevices.enumerateDevices().then(devices => {
+  console.log("DEVICES FOUND:");
+  devices.forEach(d => {
+    console.log("• kind:", d.kind, "| label:", d.label, "| id:", d.deviceId);
   });
+});
 
   pixelDensity(1);
   createCanvas(windowWidth, windowHeight);
@@ -1205,6 +1208,7 @@ window.addEventListener("focus", () => {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
