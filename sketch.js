@@ -106,6 +106,9 @@ function setup() {
   // ml5 camera + handpose setup
 video = createCapture(VIDEO);
 video.size(320, 240);
+  video.elt.setAttribute("playsinline", "");
+video.elt.setAttribute("autoplay", "");
+
 video.show();   // 👈 show the camera feed during testing
 video.position(20, 20);  // 👈 optional — puts it in the corner
 video.style("z-index", "10");
@@ -1179,6 +1182,7 @@ window.addEventListener("focus", () => {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
