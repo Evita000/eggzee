@@ -105,13 +105,24 @@ function setup() {
   pixelDensity(1);
   createCanvas(windowWidth, windowHeight);
 
-  // 🔵 AUTO-DETECT CAMERA (WORKS ON ALL DEVICES)
-  navigator.mediaDevices.enumerateDevices().then(devices => {
-    const cams = devices.filter(d => d.kind === "videoinput");
-    console.log("Cameras found:", cams);
-    let selectedCam = cams[0]?.deviceId;  // pick first available camera
-    startCamera(selectedCam);
-  });
+// 🔵 AUTO-DETECT REAL CAMERA (avoids virtual Logi cam)
+navigator.mediaDevices.enumerateDevices().then(devices => {
+  console.log("DEVICES FOUND (FULL):", devices);
+
+  // Filter only real physical cameras
+  const cams = devices.filter(d =>
+    d.kind === "videoinput" &&
+    !d.label.toLowerCase().includes("logi") &&     // avoid Logi Capture virtual cam
+    !d.label.toLowerCase().includes("virtual")     // avoid any virtual devices
+  );
+
+  console.log("REAL cameras:", cams);
+
+  // Pick the first real webcam
+  let selectedCam = cams[0]?.deviceId;
+  startCamera(selectedCam);
+});
+
 
   // 🕐 Restore timer if returning from dance page
   if (restoreTime) {
@@ -1209,6 +1220,7 @@ window.addEventListener("focus", () => {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
