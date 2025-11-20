@@ -1,6 +1,7 @@
 let video;
-let handpose;
-let predictions = [];
+let poseNet;
+let pose = null;
+
 
 let lastTouchTime = 0;
 let fromDance = document.referrer.includes("eggzeedance.html");
@@ -101,68 +102,18 @@ function preload() {
 
 // ---------- SETUP ----------
 function setup() {
-
-// TEMP CAMERA DEBUG (FORCE FULL PRINT)
-navigator.mediaDevices.enumerateDevices().then(devices => {
-  console.log("DEVICES FOUND (FULL):");
-  devices.forEach((d, index) => {
-    console.log(
-      index + ":",
-      "kind:", d.kind,
-      "| label:", d.label,
-      "| deviceId:", d.deviceId
-    );
-  });
-});
-
-
-
   pixelDensity(1);
   createCanvas(windowWidth, windowHeight);
 
-  // ml5 camera + handpose setup
-// FORCE pick the REAL front camera (Integrated Camera)
-video = createCapture({
-  audio: false,
-  video: {
-    deviceId: "1ee67b87d7a9b7ee2b7a722b3b094c3b5fd302a3868f11b2370dcd3fbf7803c1",
-    width: 320,
-    height: 240,
-    frameRate: 30
-  }
-});
+  // 🔵 AUTO-DETECT CAMERA (WORKS ON ALL DEVICES)
+  navigator.mediaDevices.enumerateDevices().then(devices => {
+    const cams = devices.filter(d => d.kind === "videoinput");
+    console.log("Cameras found:", cams);
+    let selectedCam = cams[0]?.deviceId;  // pick first available camera
+    startCamera(selectedCam);
+  });
 
-video.size(320, 240);
-
-// required for Edge + mobile
-video.elt.setAttribute("playsinline", "");
-video.elt.setAttribute("autoplay", "");
-video.elt.setAttribute("muted", "");
-video.elt.muted = true;
-video.elt.playsInline = true;
-
-// show video feed for testing
-video.show();
-video.position(20, 20);
-video.style("z-index", "10");
-
-video.elt.play();
-
-
-
-
-
-handpose = ml5.handpose(video, () => {
-  console.log("Handpose model loaded!");
-});
-
-handpose.on("predict", results => {
-  predictions = results;
-});
-
-
-
-  // Restore timer if returning from dance page
+  // 🕐 Restore timer if returning from dance page
   if (restoreTime) {
     realStartTime = parseInt(restoreTime);
     localStorage.removeItem("eggzeeRealStartTime");
@@ -170,7 +121,7 @@ handpose.on("predict", results => {
 
   frameRate(30);
 
-  // ✨ temporary loading background
+  // Loading Message
   background(0);
   fill(255);
   textAlign(CENTER, CENTER);
@@ -178,19 +129,18 @@ handpose.on("predict", results => {
 
   imageMode(CENTER);
   textSize(20);
-  textAlign(CENTER, CENTER);
 
-eggzee = {
-  visible: false,
-  x: width / 2,
-  y: height / 2,
-  scale: 0.35,
-  rotation: 0,
-  isHatching: false   // ✅ Add this here
-};
+  // Create Eggzee object
+  eggzee = {
+    visible: false,
+    x: width / 2,
+    y: height / 2,
+    scale: 0.35,
+    rotation: 0,
+    isHatching: false
+  };
 
-
-  // 🩵 Responsive buttons
+  // 🩵 Responsive UI Buttons
   const btnW = width < 600 ? width * 0.42 : 180;
   const btnH = width < 600 ? 70 : 65;
   const gap  = width < 600 ? 20 : 35;
@@ -201,25 +151,65 @@ eggzee = {
   const leftX  = width / 2 - btnW - gap/2;
   const rightX = width / 2 + gap/2;
 
-  feedBtn  = { x: leftX  + btnW/2, y: row1Y + btnH/2, w: btnW, h: btnH };
+  feedBtn  = { x: leftX + btnW/2,  y: row1Y + btnH/2, w: btnW, h: btnH };
   danceBtn = { x: rightX + btnW/2, y: row1Y + btnH/2, w: btnW, h: btnH };
-  gameBtn  = { x: leftX  + btnW/2, y: row2Y + btnH/2, w: btnW, h: btnH };
+  gameBtn  = { x: leftX + btnW/2,  y: row2Y + btnH/2, w: btnW, h: btnH };
   jokeBtn  = { x: rightX + btnW/2, y: row2Y + btnH/2, w: btnW, h: btnH };
 
   setupDanceButtonFix();
 
-  // 🕐 Auto-restore awake state (ONLY when returning from dance)
+  // Restore awake if returning from dance page
   if (restoreAwake) {
     state = "awake";
     eggzee.visible = true;
     hasWelcomed = true;
     energy = parseFloat(localStorage.getItem("eggzeeEnergy")) || 120;
-
+    
     if (!realStartTime) {
       realStartTime = Date.now() - (120 - energy) * 1000;
     }
   }
 }
+
+// ---------- CAMERA + POSENET ----------
+function startCamera(selectedCam) {
+  const constraints = {
+    audio: false,
+    video: {
+      deviceId: selectedCam ? { exact: selectedCam } : undefined,
+      facingMode: "user",
+      width: 320,
+      height: 240
+    }
+  };
+
+  video = createCapture(constraints, () => {
+    console.log("📷 Camera started!");
+  });
+
+  video.size(320, 240);
+  video.hide();
+
+  video.elt.setAttribute("playsinline", "");
+  video.elt.setAttribute("autoplay", "");
+  video.elt.setAttribute("muted", "");
+  video.elt.muted = true;
+
+  // Load PoseNet
+  poseNet = ml5.poseNet(video, () => {
+    console.log("🤖 PoseNet model loaded");
+  });
+
+  poseNet.on("pose", results => {
+    if (results.length > 0) {
+      pose = results[0].pose;
+    }
+  });
+}
+
+
+
+
 
 
 // ---------- DRAW ----------
@@ -229,26 +219,48 @@ function draw() {
   else if (cityImg) image(cityImg, width / 2, height / 2, width, height);
   else background(200);
 
+  // 🌟 POSENET GESTURES — ONLY WHEN AWAKE
+  if (pose && state === "awake") {
+    let wristY = pose.rightWrist?.y;
+
+    if (wristY) {
+      // ENERGY GESTURE
+      if (wristY < height / 3) {
+        energy = min(energy + 2, 200);
+      } else if (wristY > (2 * height) / 3) {
+        energy = max(energy - 2, 0);
+      }
+
+      // STATE GESTURE
+      if (wristY < height / 3) {
+        state = "dance";
+      } else if (wristY > (2 * height) / 3) {
+        state = "sleep";
+      }
+    }
+  }
+
+  // 🔴 Debug dot to show wrist tracking
+  if (pose && pose.rightWrist) {
+    let rw = pose.rightWrist;
+    fill(255, 0, 0);
+    noStroke();
+    circle(rw.x, rw.y, 20);
+  }
 
   // 🕒 Always update energy every frame (global countdown)
-// 🕒 Always update energy every frame (global countdown)
-if (realStartTime) {
-  const elapsed = (Date.now() - realStartTime) / 1000;
-  energy = max(0, 120 - elapsed);
-}
+  if (realStartTime) {
+    const elapsed = (Date.now() - realStartTime) / 1000;
+    energy = max(0, 120 - elapsed);
+  }
 
-// 🌙 Auto-sleep when drained
-if (energy <= 0 && state !== "sleep") {
-  state = "sleep";
-  sleepFade = 0;
-}
+  // 🌙 Auto-sleep when drained
+  if (energy <= 0 && state !== "sleep") {
+    state = "sleep";
+    sleepFade = 0;
+  }
 
-
- fill(255);
-textSize(14);
-text("Hands detected: " + predictions.length, 20, 20);
-
-
+  // ---------- SCENES ----------
   if (state === "egg") drawEggScene();
   else if (state === "hatching") drawHatchingScene();
   else if (state === "awake") drawEggzeeScene();
@@ -256,6 +268,7 @@ text("Hands detected: " + predictions.length, 20, 20);
   else if (state === "miniGame") drawMiniGame();
   else if (state === "sleep") drawSleepScene();
 
+  // ---------- UI + FX ----------
   drawFoods();
   drawHearts();
   drawButtons();
@@ -264,26 +277,6 @@ text("Hands detected: " + predictions.length, 20, 20);
   drawJoke();
   drawOverlayText();
   drawInstructions();
-  // --- HAND GESTURE CONTROLS --- //
-if (predictions.length > 0) {
-  let hand = predictions[0];
-
-  let thumb = hand.landmarks[4];
-  let pinky = hand.landmarks[20];
-
-  let openHandSpread = dist(thumb[0], thumb[1], pinky[0], pinky[1]);
-
-  // 👋 OPEN HAND = DANCE
-  if (openHandSpread > 120) {
-    state = "dance";
-  }
-
-  // ✊ CLOSED FIST = SLEEP
-  if (openHandSpread < 60) {
-    state = "sleep";
-  }
-}
-
 } // 👈 end of draw()
 
 // ---------- EGG SCENE ----------
@@ -294,9 +287,6 @@ function drawEggScene() {
   // hide Eggzee
   eggzee.visible = false;
 }
-
-
-
 
 // ---------- SCENES ----------
 function drawHatchingScene() {
@@ -1219,6 +1209,7 @@ window.addEventListener("focus", () => {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
