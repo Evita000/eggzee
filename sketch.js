@@ -126,7 +126,7 @@ video = createCapture({
   video: {
     width: 320,
     height: 240,
-    facingMode: "user",   // ⭐ forces the REAL front camera
+    facingMode: "user",
     frameRate: 30
   }
 });
@@ -143,7 +143,8 @@ video.show();
 video.position(20, 20);
 video.style("z-index", "10");
 
-video.elt.play();   // ⭐ FORCE the stream to stay on
+video.elt.play();
+
 
 
 
@@ -1215,6 +1216,7 @@ window.addEventListener("focus", () => {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
