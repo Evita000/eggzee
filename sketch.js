@@ -110,6 +110,7 @@ navigator.mediaDevices.enumerateDevices().then(devices => {
   });
 });
 
+
   pixelDensity(1);
   createCanvas(windowWidth, windowHeight);
 
@@ -1208,6 +1209,7 @@ window.addEventListener("focus", () => {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
