@@ -248,31 +248,41 @@ function draw() {
   else if (cityImg) image(cityImg, width / 2, height / 2, width, height);
   else background(200);
 
+
+// 🌟 POSENET GESTURES — ONLY WHEN AWAKE
 // 🌟 POSENET GESTURES — ONLY WHEN AWAKE
 if (gestureReady && pose && pose.rightWrist && state === "awake") {
-
-
-  // Raw PoseNet wrist scale (0–320, 0–240)
   let rw = pose.rightWrist;
+
+  if (showIntroMessage) return;   // ⛔ block gestures during intro
 
   // Convert PoseNet → screen space
   let scaledX = map(rw.x, 0, 320, 0, width);
   let scaledY = map(rw.y, 0, 240, 0, height);
 
-  // ENERGY GESTURES
+  // ⭐ ENERGY GESTURES (unchanged)
   if (scaledY < height / 3) {
     energy = min(energy + 2, 200);
-  } else if (scaledY > (2 * height) / 3) {
+  } 
+  else if (scaledY > (2 * height) / 3) {
     energy = max(energy - 2, 0);
   }
 
-  // STATE GESTURES
-  if (scaledY < height / 3) {
+  // ⭐ STATE GESTURES
+  // 🟣 Dance when hand is high
+  if (scaledY < height * 0.45) {
     state = "dance";
-  } else if (scaledY > (2 * height) / 3) {
+  }
+  // 🟡 Return to awake when hand moves to middle
+  else if (scaledY >= height * 0.45 && scaledY <= height * 0.80 && state === "dance") {
+    state = "awake";
+  }
+  // 🔵 Sleep only when VERY low
+  else if (scaledY > height * 0.80) {
     state = "sleep";
   }
-}
+} // ← ← ← ⭐ THIS BRACE WAS MISSING!
+
 
 
 // 🔴 Debug dot to show scaled wrist tracking
@@ -308,6 +318,8 @@ if (pose && pose.rightWrist) {
   else if (state === "feed") drawFeedScene();
   else if (state === "miniGame") drawMiniGame();
   else if (state === "sleep") drawSleepScene();
+  else if (state === "dance") drawDanceScene();
+
 
   // ---------- UI + FX ----------
   drawFoods();
@@ -543,6 +555,32 @@ function drawSleepScene() {
   textSize(width < 600 ? 18 : 22);
   fill(255, 230, 255);
   text("💤 Eggzee is sleeping... Tap to wake! 💫", width / 2, height - 100);
+}
+// ---------- DANCE SCENE ----------
+function drawDanceScene() {
+  if (!eggzee.visible) eggzee.visible = true;
+
+  // fun bounce + wiggle
+  let bounce = sin(frameCount * 0.3) * 12;
+  let wiggle = sin(frameCount * 0.15) * 6;
+
+  push();
+  translate(eggzee.x, eggzee.y + bounce);
+  rotate(radians(wiggle));
+  image(
+    eggzeeAwakeImg,
+    0,
+    0,
+    eggzeeAwakeImg.width * eggzee.scale,
+    eggzeeAwakeImg.height * eggzee.scale
+  );
+  pop();
+
+  // text
+  textAlign(CENTER, CENTER);
+  fill(255);
+  textSize(width < 600 ? 22 : 26);
+  text("💃 Eggzee is dancing! Move your hand to stop 💃", width / 2, height - 100);
 }
 
 
@@ -1258,6 +1296,7 @@ window.addEventListener("focus", () => {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
