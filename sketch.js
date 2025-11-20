@@ -106,7 +106,6 @@ function setup() {
   // ml5 camera + handpose setup
 video = createCapture(VIDEO);
 video.size(320, 240);
-video.hide();
   video.show();
 
 
@@ -1177,6 +1176,7 @@ window.addEventListener("focus", () => {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
