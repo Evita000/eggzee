@@ -1,3 +1,4 @@
+let gestureReady = false;
 let video;
 let poseNet;
 let pose = null;
@@ -248,7 +249,8 @@ function draw() {
   else background(200);
 
 // 🌟 POSENET GESTURES — ONLY WHEN AWAKE
-if (pose && pose.rightWrist && state === "awake") {
+if (gestureReady && pose && pose.rightWrist && state === "awake") {
+
 
   // Raw PoseNet wrist scale (0–320, 0–240)
   let rw = pose.rightWrist;
@@ -359,7 +361,15 @@ function drawHatchingScene() {
   hasWelcomed = false;
   introMessageTimer = millis();
   showIntroMessage = true;
+
+  // ⭐ Disable gestures for 1.5 seconds after hatching (fixes instant sleep)
+  gestureReady = false;
+  setTimeout(() => {
+    gestureReady = true;
+    console.log("📸 Gesture control now active");
+  }, 1500);
 }
+
 
 }
 function drawEggzeeScene() {
@@ -1248,6 +1258,7 @@ window.addEventListener("focus", () => {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
