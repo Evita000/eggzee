@@ -17,7 +17,6 @@
       overflow: hidden;
       background: black;
     }
-
     canvas {
       display: block;
       position: fixed;
@@ -29,7 +28,6 @@
       touch-action: none;
       z-index: 1;
     }
-
     #loading {
       color: white;
       text-align: center;
@@ -43,9 +41,6 @@
       width: 100%;
       max-width: 400px;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      -webkit-font-smoothing: antialiased;
-      text-rendering: geometricPrecision;
-      -webkit-text-size-adjust: none;
     }
   </style>
 </head>
@@ -53,16 +48,14 @@
 <body>
   <p id="loading">🥚 Loading Eggzee... please wait</p>
 
-  <!-- ml5 + TensorFlow -->
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.3.0/dist/tf.min.js"></script>
+  <!-- ❌ Removed TensorFlow.js — ml5 loads its own -->
   <script src="https://cdn.jsdelivr.net/npm/ml5@0.12.2/dist/ml5.min.js"></script>
 
-  <!-- Correct library filenames -->
-<script src="p5lib.js"></script>
-<script src="p5playlib.js"></script>
+  <!-- p5 libraries -->
+  <script src="p5lib.js"></script>
+  <script src="p5playlib.js"></script>
 
-
-  <!-- Main sketch -->
+  <!-- Your sketch -->
   <script src="sketch.js?v=9"></script>
 
   <script>
@@ -70,18 +63,6 @@
       const msg = document.getElementById("loading");
       if (msg) msg.remove();
     });
-
-    setTimeout(() => {
-      if (typeof p5 === "undefined") {
-        document.body.innerHTML = `
-          <p id="loading">
-            ⚠️ Safari may be blocking files.<br>
-            Try Chrome, or disable “Prevent Cross-Site Tracking”.<br><br>
-            (Settings → Safari → Privacy & Security)
-          </p>`;
-      }
-    }, 5000);
   </script>
 </body>
 </html>
-
