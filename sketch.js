@@ -109,19 +109,16 @@ function setup() {
 navigator.mediaDevices.enumerateDevices().then(devices => {
   console.log("DEVICES FOUND (FULL):", devices);
 
-  // Filter only real physical cameras
   const cams = devices.filter(d =>
     d.kind === "videoinput" &&
-    !d.label.toLowerCase().includes("logi") &&     // avoid Logi Capture virtual cam
-    !d.label.toLowerCase().includes("virtual")     // avoid any virtual devices
+    !d.label.toLowerCase().includes("logi") &&
+    !d.label.toLowerCase().includes("virtual")
   );
 
-  console.log("REAL cameras:", cams);
-
-  // Pick the first real webcam
   let selectedCam = cams[0]?.deviceId;
-  startCamera(selectedCam);
+  safeStartCamera(selectedCam);   // ⭐ THIS MUST EXIST
 });
+
 
 
   // 🕐 Restore timer if returning from dance page
@@ -182,21 +179,41 @@ navigator.mediaDevices.enumerateDevices().then(devices => {
   }
 }
 
+
 // ---------- CAMERA + POSENET ----------
-function startCamera(selectedCam) {
+// ---------- CAMERA RETRY WRAPPER ----------
+async function safeStartCamera(deviceId) {
+  try {
+    await startCamera(deviceId);
+  } catch (err) {
+    console.warn("Camera failed, retrying in 800ms…");
+    setTimeout(() => safeStartCamera(deviceId), 800);
+  }
+}
+
+async function startCamera(selectedCam) {
   const constraints = {
     audio: false,
-    video: {
-      deviceId: selectedCam ? { exact: selectedCam } : undefined,
-      facingMode: "user",
-      width: 320,
-      height: 240
-    }
+    video: selectedCam
+      ? { deviceId: { exact: selectedCam }, width: 320, height: 240 }
+      : { facingMode: "user", width: 320, height: 240 }
   };
 
-  video = createCapture(constraints, () => {
-    console.log("📷 Camera started!");
-  });
+  try {
+    video = createCapture(constraints, () => {
+      console.log("📷 Camera started!");
+    });
+  } catch (e) {
+    console.warn("❗ DeviceId failed, falling back to facingMode:user");
+
+    video = createCapture(
+      {
+        audio: false,
+        video: { facingMode: "user", width: 320, height: 240 }
+      },
+      () => console.log("📱 Mobile camera fallback started!")
+    );
+  }
 
   video.size(320, 240);
   video.hide();
@@ -206,7 +223,6 @@ function startCamera(selectedCam) {
   video.elt.setAttribute("muted", "");
   video.elt.muted = true;
 
-  // Load PoseNet
   poseNet = ml5.poseNet(video, () => {
     console.log("🤖 PoseNet model loaded");
   });
@@ -287,7 +303,7 @@ function draw() {
   drawEnergyBar();
   drawJoke();
   drawOverlayText();
-  drawInstructions();
+
 } // 👈 end of draw()
 
 // ---------- EGG SCENE ----------
@@ -1220,6 +1236,7 @@ window.addEventListener("focus", () => {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
