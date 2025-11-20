@@ -102,13 +102,19 @@ function preload() {
 // ---------- SETUP ----------
 function setup() {
 
-// TEMP CAMERA DEBUG
+// TEMP CAMERA DEBUG (FORCE FULL PRINT)
 navigator.mediaDevices.enumerateDevices().then(devices => {
-  console.log("DEVICES FOUND:");
-  devices.forEach(d => {
-    console.log("• kind:", d.kind, "| label:", d.label, "| id:", d.deviceId);
+  console.log("DEVICES FOUND (FULL):");
+  devices.forEach((d, index) => {
+    console.log(
+      index + ":",
+      "kind:", d.kind,
+      "| label:", d.label,
+      "| deviceId:", d.deviceId
+    );
   });
 });
+
 
 
   pixelDensity(1);
@@ -1209,6 +1215,7 @@ window.addEventListener("focus", () => {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
