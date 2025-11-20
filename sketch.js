@@ -107,6 +107,8 @@ function setup() {
 video = createCapture(VIDEO);
 video.size(320, 240);
 video.hide();
+  video.show();
+
 
 handpose = ml5.handpose(video, () => {
   console.log("Handpose model loaded!");
@@ -1175,6 +1177,7 @@ window.addEventListener("focus", () => {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
