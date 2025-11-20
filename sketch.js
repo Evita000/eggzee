@@ -121,24 +121,27 @@ navigator.mediaDevices.enumerateDevices().then(devices => {
   createCanvas(windowWidth, windowHeight);
 
   // ml5 camera + handpose setup
+// FORCE pick the REAL front camera (Integrated Camera)
 video = createCapture({
   audio: false,
   video: {
+    deviceId: "1ee67b87d7a9b7ee2b7a722b3b094c3b5fd302a3868f11b2370dcd3fbf7803c1",
     width: 320,
     height: 240,
-    facingMode: "user",
     frameRate: 30
   }
 });
 
 video.size(320, 240);
 
+// required for Edge + mobile
 video.elt.setAttribute("playsinline", "");
 video.elt.setAttribute("autoplay", "");
 video.elt.setAttribute("muted", "");
 video.elt.muted = true;
 video.elt.playsInline = true;
 
+// show video feed for testing
 video.show();
 video.position(20, 20);
 video.style("z-index", "10");
@@ -1216,6 +1219,7 @@ window.addEventListener("focus", () => {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
