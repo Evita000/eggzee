@@ -104,7 +104,16 @@ function setup() {
   pixelDensity(1);
   createCanvas(windowWidth, windowHeight);
   // ml5 camera + handpose setup
-video = createCapture(VIDEO);
+video = createCapture({
+  audio: false,
+  video: {
+    width: 320,
+    height: 240,
+    facingMode: "user",   // ⭐ forces the REAL front camera
+    frameRate: 30
+  }
+});
+
 video.size(320, 240);
 
 video.elt.setAttribute("playsinline", "");
@@ -1189,6 +1198,7 @@ window.addEventListener("focus", () => {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
