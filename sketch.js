@@ -101,12 +101,15 @@ function preload() {
 
 // ---------- SETUP ----------
 function setup() {
-  pixelDensity(1);
-  navigator.mediaDevices.enumerateDevices().then(devices => {
-  console.log("DEVICES:", devices);
-});
 
+  // TEMP CAMERA DEBUG
+  navigator.mediaDevices.enumerateDevices().then(devices => {
+    console.log("DEVICES:", devices);
+  });
+
+  pixelDensity(1);
   createCanvas(windowWidth, windowHeight);
+
   // ml5 camera + handpose setup
 video = createCapture({
   audio: false,
@@ -1202,6 +1205,7 @@ window.addEventListener("focus", () => {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
