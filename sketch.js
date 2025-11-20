@@ -1,3 +1,7 @@
+let video;
+let handpose;
+let predictions = [];
+
 let lastTouchTime = 0;
 let fromDance = document.referrer.includes("eggzeedance.html");
 
@@ -99,7 +103,19 @@ function preload() {
 function setup() {
   pixelDensity(1);
   createCanvas(windowWidth, windowHeight);
-  
+  // ml5 camera + handpose setup
+video = createCapture(VIDEO);
+video.size(320, 240);
+video.hide();
+
+handpose = ml5.handpose(video, () => {
+  console.log("Handpose model loaded!");
+});
+
+handpose.on("predict", results => {
+  predictions = results;
+});
+
 
 
   // Restore timer if returning from dance page
@@ -184,7 +200,10 @@ if (energy <= 0 && state !== "sleep") {
 }
 
 
- 
+ fill(255);
+textSize(14);
+text("Hands detected: " + predictions.length, 20, 20);
+
 
   if (state === "egg") drawEggScene();
   else if (state === "hatching") drawHatchingScene();
@@ -201,6 +220,26 @@ if (energy <= 0 && state !== "sleep") {
   drawJoke();
   drawOverlayText();
   drawInstructions();
+  // --- HAND GESTURE CONTROLS --- //
+if (predictions.length > 0) {
+  let hand = predictions[0];
+
+  let thumb = hand.landmarks[4];
+  let pinky = hand.landmarks[20];
+
+  let openHandSpread = dist(thumb[0], thumb[1], pinky[0], pinky[1]);
+
+  // 👋 OPEN HAND = DANCE
+  if (openHandSpread > 120) {
+    state = "dance";
+  }
+
+  // ✊ CLOSED FIST = SLEEP
+  if (openHandSpread < 60) {
+    state = "sleep";
+  }
+}
+
 } // 👈 end of draw()
 
 // ---------- EGG SCENE ----------
@@ -1136,6 +1175,7 @@ window.addEventListener("focus", () => {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
