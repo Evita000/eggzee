@@ -192,28 +192,33 @@ async function safeStartCamera(deviceId) {
 }
 
 async function startCamera(selectedCam) {
-  const constraints = {
-    audio: false,
-    video: selectedCam
-      ? { deviceId: { exact: selectedCam }, width: 320, height: 240 }
-      : { facingMode: "user", width: 320, height: 240 }
-  };
+  console.log("🚀 Starting camera...");
 
-  try {
-    video = createCapture(constraints, () => {
-      console.log("📷 Camera started!");
-    });
-  } catch (e) {
-    console.warn("❗ DeviceId failed, falling back to facingMode:user");
+  let constraints;
 
-    video = createCapture(
-      {
-        audio: false,
-        video: { facingMode: "user", width: 320, height: 240 }
-      },
-      () => console.log("📱 Mobile camera fallback started!")
-    );
+  if (selectedCam) {
+    constraints = {
+      audio: false,
+      video: {
+        deviceId: { exact: selectedCam },
+        width: 320,
+        height: 240
+      }
+    };
+  } else {
+    constraints = {
+      audio: false,
+      video: {
+        facingMode: "user",
+        width: 320,
+        height: 240
+      }
+    };
   }
+
+  video = createCapture(constraints, () =>
+    console.log("📷 Camera started!")
+  );
 
   video.size(320, 240);
   video.hide();
@@ -223,7 +228,7 @@ async function startCamera(selectedCam) {
   video.elt.setAttribute("muted", "");
   video.elt.muted = true;
 
-  poseNet = ml5.poseNet(video, () => {
+  poseNet = ml5.poseNet(video, { flipHorizontal: true }, () => {
     console.log("🤖 PoseNet model loaded");
   });
 
@@ -235,10 +240,6 @@ async function startCamera(selectedCam) {
 }
 
 
-
-
-
-
 // ---------- DRAW ----------
 function draw() {
   const isNight = (energy <= 15 && startTime) || state === "sleep";
@@ -246,34 +247,45 @@ function draw() {
   else if (cityImg) image(cityImg, width / 2, height / 2, width, height);
   else background(200);
 
-  // 🌟 POSENET GESTURES — ONLY WHEN AWAKE
-  if (pose && state === "awake") {
-    let wristY = pose.rightWrist?.y;
+// 🌟 POSENET GESTURES — ONLY WHEN AWAKE
+if (pose && pose.rightWrist && state === "awake") {
 
-    if (wristY) {
-      // ENERGY GESTURE
-      if (wristY < height / 3) {
-        energy = min(energy + 2, 200);
-      } else if (wristY > (2 * height) / 3) {
-        energy = max(energy - 2, 0);
-      }
+  // Raw PoseNet wrist scale (0–320, 0–240)
+  let rw = pose.rightWrist;
 
-      // STATE GESTURE
-      if (wristY < height / 3) {
-        state = "dance";
-      } else if (wristY > (2 * height) / 3) {
-        state = "sleep";
-      }
-    }
+  // Convert PoseNet → screen space
+  let scaledX = map(rw.x, 0, 320, 0, width);
+  let scaledY = map(rw.y, 0, 240, 0, height);
+
+  // ENERGY GESTURES
+  if (scaledY < height / 3) {
+    energy = min(energy + 2, 200);
+  } else if (scaledY > (2 * height) / 3) {
+    energy = max(energy - 2, 0);
   }
 
-  // 🔴 Debug dot to show wrist tracking
-  if (pose && pose.rightWrist) {
-    let rw = pose.rightWrist;
-    fill(255, 0, 0);
-    noStroke();
-    circle(rw.x, rw.y, 20);
+  // STATE GESTURES
+  if (scaledY < height / 3) {
+    state = "dance";
+  } else if (scaledY > (2 * height) / 3) {
+    state = "sleep";
   }
+}
+
+
+// 🔴 Debug dot to show scaled wrist tracking
+if (pose && pose.rightWrist) {
+  let rw = pose.rightWrist;
+
+  // Convert PoseNet coordinates (0–320, 0–240) → full screen
+  let scaledX = map(rw.x, 0, 320, 0, width);
+  let scaledY = map(rw.y, 0, 240, 0, height);
+
+  fill(255, 0, 0);
+  noStroke();
+  circle(scaledX, scaledY, 20);
+}
+
 
   // 🕒 Always update energy every frame (global countdown)
   if (realStartTime) {
@@ -1236,6 +1248,7 @@ window.addEventListener("focus", () => {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
