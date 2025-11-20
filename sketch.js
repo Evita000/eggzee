@@ -2,6 +2,8 @@ let gestureReady = false;
 let video;
 let poseNet;
 let pose = null;
+let lastX = null;
+let handSpeedX = 0;
 
 
 let lastTouchTime = 0;
@@ -229,9 +231,11 @@ async function startCamera(selectedCam) {
   video.elt.setAttribute("muted", "");
   video.elt.muted = true;
 
-  poseNet = ml5.poseNet(video, { flipHorizontal: true }, () => {
+poseNet = ml5.poseNet(video, { flipHorizontal: true }, () => {
     console.log("🤖 PoseNet model loaded");
-  });
+    gestureReady = true;   // ⭐ ENABLE GESTURES HERE
+});
+
 
   poseNet.on("pose", results => {
     if (results.length > 0) {
@@ -249,39 +253,54 @@ function draw() {
   else background(200);
 
 
-// 🌟 POSENET GESTURES — ONLY WHEN AWAKE
-// 🌟 POSENET GESTURES — ONLY WHEN AWAKE
+// 🌟 SIMPLE GESTURES: only Dance + Sleep
 if (gestureReady && pose && pose.rightWrist && state === "awake") {
-  let rw = pose.rightWrist;
 
-  if (showIntroMessage) return;   // ⛔ block gestures during intro
+  if (showIntroMessage) return;
+
+  let rw = pose.rightWrist;
 
   // Convert PoseNet → screen space
   let scaledX = map(rw.x, 0, 320, 0, width);
-  let scaledY = map(rw.y, 0, 240, 0, height);
 
-  // ⭐ ENERGY GESTURES (unchanged)
-  if (scaledY < height / 3) {
-    energy = min(energy + 2, 200);
-  } 
-  else if (scaledY > (2 * height) / 3) {
-    energy = max(energy - 2, 0);
+  // -----------------------------
+  // TRACK WAVE (dance)
+  // -----------------------------
+  if (lastX !== null) {
+    handSpeedX = abs(scaledX - lastX);
   }
+  lastX = scaledX;
 
-  // ⭐ STATE GESTURES
-  // 🟣 Dance when hand is high
-  if (scaledY < height * 0.45) {
+  // If hand moves fast side-to-side → DANCE
+  if (handSpeedX > 18) {
     state = "dance";
+    return;
   }
-  // 🟡 Return to awake when hand moves to middle
-  else if (scaledY >= height * 0.45 && scaledY <= height * 0.80 && state === "dance") {
+
+  // Calm → return to awake from dance
+  if (handSpeedX < 4 && state === "dance") {
     state = "awake";
+    return;
   }
-  // 🔵 Sleep only when VERY low
-  else if (scaledY > height * 0.80) {
+
+  // -----------------------------
+  // CLOSED FIST → SLEEP
+  // -----------------------------
+  let index = pose.rightIndex;
+  let pinky = pose.rightPinky;
+  let fingerOpen = 999;
+
+  if (index && pinky) {
+    let distIndex = dist(rw.x, rw.y, index.x, index.y);
+    let distPinky = dist(rw.x, rw.y, pinky.x, pinky.y);
+    fingerOpen = (distIndex + distPinky) / 2;
+  }
+
+  if (fingerOpen < 25) {
     state = "sleep";
+    return;
   }
-} // ← ← ← ⭐ THIS BRACE WAS MISSING!
+}
 
 
 
@@ -1296,6 +1315,7 @@ window.addEventListener("focus", () => {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
