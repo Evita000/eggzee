@@ -97,14 +97,13 @@ function preload() {
 
 // ---------- SETUP ----------
 function setup() {
+  pixelDensity(1);
+  createCanvas(windowWidth, windowHeight);
+  
   // 🔍 CAMERA TEST
 let testCam = createCapture(VIDEO);
 testCam.size(320, 240);
 testCam.position(10, 10); 
-
-  pixelDensity(1);
-  createCanvas(windowWidth, windowHeight);
-
   if (!realStartTime) realStartTime = Date.now();
 
   // Restore timer if returning from dance page
@@ -1141,6 +1140,7 @@ window.addEventListener("focus", () => {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
