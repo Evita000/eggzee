@@ -18,7 +18,6 @@
       background: black;
     }
 
-    /* 🎨 Fullscreen canvas */
     canvas {
       display: block;
       position: fixed;
@@ -31,7 +30,6 @@
       z-index: 1;
     }
 
-    /* 🥚 Centered loading text (now sharp) */
     #loading {
       color: white;
       text-align: center;
@@ -45,8 +43,6 @@
       width: 100%;
       max-width: 400px;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-
-      /* 🔍 Crisp text fix */
       -webkit-font-smoothing: antialiased;
       text-rendering: geometricPrecision;
       -webkit-text-size-adjust: none;
@@ -55,27 +51,25 @@
 </head>
 
 <body>
-  <!-- 🥚 Loading message -->
   <p id="loading">🥚 Loading Eggzee... please wait</p>
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.3.0/dist/tf.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/ml5@0.12.2/dist/ml5.min.js"></script>
 
-  <!-- ✅ Safe, mobile-friendly libraries -->
-<!-- ✅ Libraries compatible with classic Eggzee code -->
-<!-- ✅ Load local copies so Safari can't block them -->
-<script src="libs/p5.min.js"></script>
-<script src="libs/p5.play.js"></script>
-<script src="sketch.js?v=8"></script>
+  <!-- ml5 + TensorFlow -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.3.0/dist/tf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/ml5@0.12.2/dist/ml5.min.js"></script>
 
+  <!-- Correct library filenames -->
+  <script src="libs/p5lib.js"></script>
+  <script src="libs/p5playlib.js"></script>
+
+  <!-- Main sketch -->
+  <script src="sketch.js?v=9"></script>
 
   <script>
-    // Remove the loading text once everything’s ready
     window.addEventListener("load", () => {
       const msg = document.getElementById("loading");
       if (msg) msg.remove();
     });
 
-    // Safari fallback: show warning if libraries blocked
     setTimeout(() => {
       if (typeof p5 === "undefined") {
         document.body.innerHTML = `
@@ -89,9 +83,3 @@
   </script>
 </body>
 </html>
-
-
-
-
-
-
