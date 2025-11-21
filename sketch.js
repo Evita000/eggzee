@@ -216,7 +216,7 @@ async function startCamera(selectedCam) {
 } else {
   video.show();   // show camera on mobile so handpose works
   video.style("position","absolute");
-  video.style("opacity","0.08"); 
+  video.style("opacity","0.18"); 
 // almost invisible but still 'visible' to OS
   video.style("z-index","1");
 }
@@ -291,7 +291,7 @@ if (gestureReady && hand && state === "awake" && millis() - lastGestureTime > ge
   pinch = d < 30;
 
   // HIGH HAND → DANCE
-if (handY < height * 0.30) {
+if (handY < height * 0.50) {
 
     state = "dance";
     lastGestureTime = millis();
@@ -1346,6 +1346,7 @@ function drawDiscoScene() {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
