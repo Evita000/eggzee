@@ -1137,7 +1137,6 @@ function startCameraFromUserGesture() {
     safeStartCamera(selectedCam);
   });
 }
-
 function touchStarted() {
 
   // ⭐ FIRST TAP → Allow camera + unlock sketch
@@ -1176,15 +1175,11 @@ function touchStarted() {
     mouseY = touches[0].y;
   }
 
-  return false;  // ⭐ END OF touchStarted()
-}  // ← ADD THIS BRACE HERE
+  return false;  
+}  // ✅ THIS IS THE ONLY CLOSING BRACE YOU NEED
 
 // --------------------------------------------------
-
-
-
-// --------------------------------------------------
-// ✔️ Correct, stand-alone insideButton() function
+// ✔️ Correct, stand-alone insideButton()
 // --------------------------------------------------
 function insideButton(btn) {
 
@@ -1328,6 +1323,7 @@ function drawDiscoScene() {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
