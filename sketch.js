@@ -181,7 +181,6 @@ navigator.mediaDevices.enumerateDevices().then(devices => {
 }
 
 
-// ---------- CAMERA + POSENET ----------
 // ---------- CAMERA RETRY WRAPPER ----------
 async function safeStartCamera(deviceId) {
   try {
@@ -225,6 +224,8 @@ async function startCamera(selectedCam) {
   video.hide();
 
     video.elt.setAttribute("playsinline", "");
+  video.elt.setAttribute("webkit-playsinline", "");
+
   video.elt.setAttribute("autoplay", "");
   video.elt.setAttribute("muted", "");
   video.elt.muted = true;
@@ -259,35 +260,33 @@ function draw() {
 // ------------------------------------------------
 // ✋ HAND GESTURES — SAFE + COOLDOWN
 // ------------------------------------------------
-if (gestureReady && hand && state === "awake") {
 
-  // Cooldown so gestures don’t trigger constantly
-  if (millis() - lastGestureTime > gestureCooldown) {
+if (gestureReady && hand && state === "awake" && millis() - lastGestureTime > gestureCooldown) {
 
-    // Palm Y
-    let palm = hand.annotations.palmBase[0];
-    let y = palm[1];
-    handY = map(y, 0, 240, 0, height);
+  // Palm Y
+  let palm = hand.annotations.palmBase[0];
+  let y = palm[1];
+  handY = map(y, 0, 240, 0, height);
 
-    // Pinch (wake)
-    let thumb = hand.annotations.thumb[3];
-    let index = hand.annotations.indexFinger[3];
-    let d = dist(thumb[0], thumb[1], index[0], index[1]);
-    pinch = d < 30;
+  // Pinch
+  let thumb = hand.annotations.thumb[3];
+  let index = hand.annotations.indexFinger[3];
+  let d = dist(thumb[0], thumb[1], index[0], index[1]);
+  pinch = d < 30;
 
-    // ✋ Hand HIGH → DANCE
-    if (handY < height * 0.33) {
-      state = "dance";
-      lastGestureTime = millis();
-    }
+  // ✋ Hand HIGH → Dance
+  if (handY < height * 0.33) {
+    state = "dance";
+    lastGestureTime = millis();
+  }
 
-    // ✋ Hand LOW → SLEEP
-    else if (handY > height * 0.66) {
-      state = "sleep";
-      lastGestureTime = millis();
-    }
+  // ✋ Hand LOW → Sleep
+  else if (handY > height * 0.66) {
+    state = "sleep";
+    lastGestureTime = millis();
   }
 }
+
 
 // 🤏 Pinch wakes Eggzee from sleep
 if (state === "sleep" && pinch) {
@@ -1076,12 +1075,12 @@ if (insideButton(feedBtn)) {
 
 
 // ---- DANCE ----
+// ---- DANCE ----
 if (insideButton(danceBtn)) {
-  state = "disco";   // ← BUTTON triggers disco mode
-  showDanceInstructions = true;
-  danceInstructionTimer = millis();
+  window.open("eggzeedance.html", "_blank");
   return;
 }
+
 
     // ---- JOKE ----
     if (insideButton(jokeBtn)) {
@@ -1295,6 +1294,7 @@ function drawDiscoScene() {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
