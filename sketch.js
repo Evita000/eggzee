@@ -1175,13 +1175,14 @@ function touchStarted() {
     mouseY = touches[0].y;
   }
 
-  return false;  
-}  // ✅ THIS IS THE ONLY CLOSING BRACE YOU NEED
+  return false;  // ⭐ END OF touchStarted()
+}  // ← This closes touchStarted() properly
 
 // --------------------------------------------------
-// ✔️ Correct, stand-alone insideButton()
+// ✔️ Correct, stand-alone insideButton() function
 // --------------------------------------------------
 function insideButton(btn) {
+
 
   // Touch input (mobile)
   if (touches.length > 0) {
@@ -1323,6 +1324,7 @@ function drawDiscoScene() {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
