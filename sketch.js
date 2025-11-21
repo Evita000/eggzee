@@ -191,8 +191,8 @@ async function startCamera(selectedCam) {
       audio: false,
       video: {
         deviceId: { exact: selectedCam },
-        width: 320,
-        height: 240
+        width: { ideal: 640 },
+        height: { ideal: 480 }
       }
     };
   } else {
@@ -200,8 +200,8 @@ async function startCamera(selectedCam) {
       audio: false,
       video: {
         facingMode: "user",
-        width: 320,
-        height: 240
+        width: { ideal: 640 },
+        height: { ideal: 480 }
       }
     };
   }
@@ -210,10 +210,10 @@ async function startCamera(selectedCam) {
     console.log("📷 Camera started!")
   );
 
-  video.size(320, 240);
+  video.size(640, 480);   // ⬅️ Also bump size here
   video.hide();
 
-    video.elt.setAttribute("playsinline", "");
+  video.elt.setAttribute("playsinline", "");
   video.elt.setAttribute("webkit-playsinline", "");
 
   video.elt.setAttribute("autoplay", "");
@@ -235,9 +235,7 @@ async function startCamera(selectedCam) {
     }
   });
 
-} // ←❗ CLOSE startCamera() HERE — VERY IMPORTANT
-
-
+} // ← end startCamera()
 
 // ---------- DRAW ----------
 function draw() {
@@ -263,10 +261,14 @@ function draw() {
 
 if (gestureReady && hand && state === "awake" && millis() - lastGestureTime > gestureCooldown) {
 
+  /
   // Palm Y
-  let palm = hand.annotations.palmBase[0];
-  let y = palm[1];
-  handY = map(y, 0, 240, 0, height);
+let palm = hand.annotations.palmBase[0];
+let y = palm[1];
+
+// ml5 handpose ALWAYS uses 240px height — keep this
+handY = map(y, 0, 240, 0, height);
+
 
   // Pinch
   let thumb = hand.annotations.thumb[3];
@@ -1125,6 +1127,11 @@ function touchStarted() {
   // 1️⃣ First tap = allow camera + ml5 to start
   if (needsStart) {
     needsStart = false;
+// Start energy timer on first real start
+if (!realStartTime) {
+  realStartTime = Date.now();
+  startTime = millis();
+}
 
     // Start camera AFTER user gesture
     navigator.mediaDevices.enumerateDevices().then(devices => {
@@ -1317,6 +1324,7 @@ function drawDiscoScene() {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
