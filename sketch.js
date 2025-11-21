@@ -171,6 +171,7 @@ text("Tap to Start Eggzee 🐣", width / 2, height / 2);
 }
 
 
+
 // ---------- CAMERA RETRY WRAPPER ----------
 async function safeStartCamera(deviceId) {
   try {
@@ -1056,7 +1057,7 @@ function mousePressed() {
   else if (state === "awake") {
     hasWelcomed = true;
 
-   // ---- FEED ----
+  
 // ---- FEED ----
 if (insideButton(feedBtn)) {
   state = "feed";
@@ -1120,37 +1121,43 @@ if (insideButton(danceBtn)) {
 function mouseReleased() {
   for (let f of foods) f.beingDragged = false;
 }
+function startCameraFromUserGesture() {
+  if (!realStartTime) {
+    realStartTime = Date.now();
+    startTime = millis();
+  }
+
+  navigator.mediaDevices.enumerateDevices().then(devices => {
+    const cams = devices.filter(d =>
+      d.kind === "videoinput" &&
+      !d.label.toLowerCase().includes("logi") &&
+      !d.label.toLowerCase().includes("virtual")
+    );
+    let selectedCam = cams[0]?.deviceId;
+    safeStartCamera(selectedCam);
+  });
+}
 
 function touchStarted() {
 
-  // 1️⃣ First tap = allow camera + ml5 to start
+  // ⭐ FIRST TAP → Allow camera + unlock sketch
   if (needsStart) {
     needsStart = false;
-// Start energy timer on first real start
-if (!realStartTime) {
-  realStartTime = Date.now();
-  startTime = millis();
-}
-
-    // Start camera AFTER user gesture
-    navigator.mediaDevices.enumerateDevices().then(devices => {
-      const cams = devices.filter(d =>
-        d.kind === "videoinput" &&
-        !d.label.toLowerCase().includes("logi") &&
-        !d.label.toLowerCase().includes("virtual")
-      );
-      let selectedCam = cams[0]?.deviceId;
-      safeStartCamera(selectedCam);
-    });
-
-    return false; // do not hatch on the first tap
+    startCameraFromUserGesture();
+    return false;
   }
 
-  // ⭐ MOBILE DOUBLE-TAP FIX
+  // ⭐ Start energy timer if not started
+  if (!realStartTime) {
+    realStartTime = Date.now();
+    startTime = millis();
+  }
+
+  // ⭐ Prevent double-tap triggering twice
   if (millis() < lastTouchTime + 200) return false;
   lastTouchTime = millis();
 
-  // 🐣 Hatch egg (first real tap)
+  // 🐣 Hatch egg
   if (state === "egg" && !eggzee.isHatching) {
     state = "hatching";
     crackTime = millis();
@@ -1163,23 +1170,19 @@ if (!realStartTime) {
     return false;
   }
 
-  // sync + normal mousePressed logic
+  // Sync touch with mouse for button logic
   if (touches.length > 0) {
     mouseX = touches[0].x;
     mouseY = touches[0].y;
   }
 
+  return false;  // ⭐ END OF touchStarted()
+} // ← ← MISSING BRACE #1
 
 
-
-  // Run normal click logic
-  mousePressed();
-  return false;
-}
-
-
-
-
+// --------------------------------------------------
+// ✔️ Correct, stand-alone insideButton() function
+// --------------------------------------------------
 function insideButton(btn) {
 
   // Touch input (mobile)
@@ -1202,7 +1205,9 @@ function insideButton(btn) {
     mouseY > btn.y - btn.h/2 &&
     mouseY < btn.y + btn.h/2
   );
-}
+} // ← ← MISSING BRACE #2
+
+
 
 
 
@@ -1323,6 +1328,7 @@ function drawDiscoScene() {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
