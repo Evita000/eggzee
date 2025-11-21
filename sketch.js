@@ -211,8 +211,17 @@ async function startCamera(selectedCam) {
     console.log("📷 Camera started!")
   );
 
+  if (!/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+  video.hide();   // hide only on desktop
+} else {
+  video.show();   // show camera on mobile so handpose works
+  video.style("position","absolute");
+  video.style("opacity","0.01"); // almost invisible but still 'visible' to OS
+  video.style("z-index","1");
+}
+
+
   video.size(640, 480);   // ⬅️ Also bump size here
-  video.hide();
 
   video.elt.setAttribute("playsinline", "");
   video.elt.setAttribute("webkit-playsinline", "");
@@ -260,55 +269,36 @@ function draw() {
   // ------------------------------------------------
 // ------------------------------------------------
 // ------------------------------------------------
-// ✋ HAND GESTURES — MOBILE SAFE VERSION
-// ------------------------------------------------
-
-// 📱 MOBILE → disable sleep/dance gestures
+// ✋ UNIVERSAL GESTURES (mobile + desktop)
 let isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-if (isMobile) {
-  // Only allow pinch waking from sleep
-  // (NO sleep/dance gestures on mobile)
-  
-  // detect pinch
-  if (gestureReady && hand) {
-    let thumb = hand.annotations.thumb[3];
-    let index = hand.annotations.indexFinger[3];
-    let d = dist(thumb[0], thumb[1], index[0], index[1]);
-    pinch = d < 30;
+if (gestureReady && hand && state === "awake" && millis() - lastGestureTime > gestureCooldown) {
+
+  // Palm height
+  let palm = hand.annotations.palmBase[0];
+  let y = palm[1];
+  handY = map(y, 0, 240, 0, height);
+
+  // Pinch detection
+  let thumb = hand.annotations.thumb[3];
+  let index = hand.annotations.indexFinger[3];
+  let d = dist(thumb[0], thumb[1], index[0], index[1]);
+  pinch = d < 30;
+
+  // HIGH HAND → DANCE
+  if (handY < height * 0.33) {
+    state = "dance";
+    lastGestureTime = millis();
   }
 
-} else {
-  // 🖥 DESKTOP → full gesture control
-  if (gestureReady && hand && state === "awake" && millis() - lastGestureTime > gestureCooldown) {
-
-    // Palm Y
-    let palm = hand.annotations.palmBase[0];
-    let y = palm[1];
-
-    handY = map(y, 0, 240, 0, height);
-
-    // Pinch detection
-    let thumb = hand.annotations.thumb[3];
-    let index = hand.annotations.indexFinger[3];
-    let d = dist(thumb[0], thumb[1], index[0], index[1]);
-    pinch = d < 30;
-
-    // ✋ Hand HIGH → Dance
-    if (handY < height * 0.33) {
-      state = "dance";
-      lastGestureTime = millis();
-    }
-
-    // ✋ Hand LOW → Sleep
-    else if (handY > height * 0.66) {
-      state = "sleep";
-      lastGestureTime = millis();
-    }
+  // LOW HAND → SLEEP
+  else if (handY > height * 0.66) {
+    state = "sleep";
+    lastGestureTime = millis();
   }
 }
 
-// 🤏 Pinch wakes Eggzee from sleep (mobile + desktop)
+// 🤏 Pinch wakes from SLEEP (mobile + desktop)
 if (state === "sleep" && pinch) {
   state = "awake";
   lastGestureTime = millis();
@@ -1344,6 +1334,7 @@ function drawDiscoScene() {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
