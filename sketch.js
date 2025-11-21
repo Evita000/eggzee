@@ -269,7 +269,9 @@ function draw() {
   // ------------------------------------------------
 // ------------------------------------------------
 // ------------------------------------------------
+// ------------------------------------------------
 // ✋ UNIVERSAL GESTURES (mobile + desktop)
+// ------------------------------------------------
 let isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
 if (gestureReady && hand && state === "awake" && millis() - lastGestureTime > gestureCooldown) {
@@ -298,14 +300,11 @@ if (gestureReady && hand && state === "awake" && millis() - lastGestureTime > ge
   }
 }
 
-// 🤏 Pinch wakes from SLEEP (mobile + desktop)
+// 🤏 Pinch wakes from SLEEP
 if (state === "sleep" && pinch) {
   state = "awake";
   lastGestureTime = millis();
 }
-
-
-
 
 
 
@@ -1334,6 +1333,7 @@ function drawDiscoScene() {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
