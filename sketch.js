@@ -1053,67 +1053,59 @@ function drawEnergyBar() {
   pop(); // 🧩 restore previous text settings
 }
 
-// ---------- INPUT ----------
 function mousePressed() {
- if (needsStart) {
-  needsStart = false;
-  startCameraFromUserGesture();
-  return;
-}
+  // ⭐ START on laptop OR mobile when they click ANYWHERE
+  if (needsStart) {
+    needsStart = false;
+    startCameraFromUserGesture();
+    return false;
+  }
 
-  
-  
-  
-  
-  // 🥚 TAP TO HATCH
+  // 🥚 Hatch egg
   if (state === "egg") {
     state = "hatching";
     crackTime = millis();
-    return;
+    return false;
   }
 
-  // 🌞 MAIN MENU INTERACTIONS
-  else if (state === "awake") {
+  // 🌞 MAIN MENU
+  if (state === "awake") {
     hasWelcomed = true;
 
-  
-// ---- FEED ----
-if (insideButton(feedBtn)) {
-  state = "feed";
-  foods = [];
-  sparkles = [];
-  hearts = [];
-  showYum = false;
-  drawYumBubble.currentPhrase = null;
+    // FEED
+    if (insideButton(feedBtn)) {
+      state = "feed";
+      foods = [];
+      sparkles = [];
+      hearts = [];
+      showYum = false;
+      drawYumBubble.currentPhrase = null;
 
-  eggzee.x = width / 2;
-  eggzee.y = height / 2;
+      eggzee.x = width / 2;
+      eggzee.y = height / 2;
 
-  feedStartTime = 0;   // reset — actual start happens inside drawFeedScene()
+      feedStartTime = 0;
 
-  showFeedInstructions = true;
-  feedInstructionTimer = millis();
-  return;
-}
+      showFeedInstructions = true;
+      feedInstructionTimer = millis();
+      return false;
+    }
 
+    // DANCE
+    if (insideButton(danceBtn)) {
+      window.open("eggzeedance.html", "_blank");
+      return false;
+    }
 
-// ---- DANCE ----
-// ---- DANCE ----
-if (insideButton(danceBtn)) {
-  window.open("eggzeedance.html", "_blank");
-  return;
-}
-
-
-    // ---- JOKE ----
+    // JOKE
     if (insideButton(jokeBtn)) {
       tellJoke();
       showJokeInstructions = true;
       jokeInstructionTimer = millis();
-      return;
+      return false;
     }
 
-    // ---- GAME ----
+    // MINI GAME
     if (insideButton(gameBtn)) {
       state = "miniGame";
       gameStartTime = millis();
@@ -1121,14 +1113,17 @@ if (insideButton(danceBtn)) {
       foods = [];
       showGameInstructions = true;
       gameInstructionTimer = millis();
-      return;
+      return false;
     }
   }
 
-  // 🌙 WAKE FROM SLEEP
-  else if (state === "sleep") {
+  // WAKE FROM SLEEP
+  if (state === "sleep") {
     state = "awake";
+    return false;
   }
+}
+
 
   // 🍎 DRAG FOOD
   for (let f of foods)
@@ -1343,6 +1338,7 @@ function drawDiscoScene() {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
