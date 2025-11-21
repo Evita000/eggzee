@@ -1,5 +1,10 @@
 let gestureReady = false;
 let video;
+// --- HANDPOSE (ml5) ---
+let handpose;
+let hand = null;
+let handY = null;
+let pinch = false;
 
 
 
@@ -216,10 +221,27 @@ async function startCamera(selectedCam) {
   video.size(320, 240);
   video.hide();
 
-  video.elt.setAttribute("playsinline", "");
+    video.elt.setAttribute("playsinline", "");
   video.elt.setAttribute("autoplay", "");
   video.elt.setAttribute("muted", "");
   video.elt.muted = true;
+
+  // 🎯 Start Handpose (ml5)
+  handpose = ml5.handpose(video, () => {
+    console.log("✋ Handpose model loaded");
+    gestureReady = true;
+  });
+
+  // 🔥 Listen for predictions
+  handpose.on("predict", results => {
+    if (results.length > 0) {
+      hand = results[0];
+    } else {
+      hand = null;
+    }
+  });
+
+} // ←❗ CLOSE startCamera() HERE — VERY IMPORTANT
 
 
 
@@ -229,6 +251,45 @@ function draw() {
   if (isNight && cityNightImg) image(cityNightImg, width / 2, height / 2, width, height);
   else if (cityImg) image(cityImg, width / 2, height / 2, width, height);
   else background(200);
+
+  // ------------------------------------------------
+// ✋ HAND GESTURES — SIMPLE VERSION
+// ------------------------------------------------
+if (gestureReady && hand && state !== "egg" && state !== "hatching") {
+  
+  // 1) Palm Y position (Wrist = palm base)
+  let palm = hand.annotations.palmBase[0];
+  let y = palm[1];
+
+  // Convert camera Y to screen Y
+  handY = map(y, 0, 240, 0, height);
+
+  // 2) Detect pinch (thumb + index)
+  let thumb = hand.annotations.thumb[3];
+  let index = hand.annotations.indexFinger[3];
+  let d = dist(thumb[0], thumb[1], index[0], index[1]);
+  pinch = d < 30;
+
+  // ====== SIMPLE GESTURES ======
+
+  // ✋ Move hand high → DANCE
+  if (handY < height * 0.33 && state !== "dance") {
+    state = "dance";
+  }
+
+  // ✋ Move hand low → SLEEP
+  if (handY > height * 0.66 && state !== "sleep") {
+    state = "sleep";
+  }
+
+  // 🤏 Pinch → WAKE UP
+  if (state === "sleep" && pinch) {
+    state = "awake";
+  }
+}
+
+
+
 
 
   // 🕒 Always update energy every frame (global countdown)
@@ -1203,6 +1264,7 @@ function touchEnded() {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
