@@ -281,6 +281,8 @@ if (gestureReady && hand && state === "awake" && millis() - lastGestureTime > ge
   let palm = hand.annotations.palmBase[0];
   let y = palm[1];
   handY = map(y, 0, 240, 0, height);
+  console.log("PalmY:", handY, "ScreenHeight:", height);
+
 
   // Pinch detection
   let thumb = hand.annotations.thumb[3];
@@ -289,7 +291,8 @@ if (gestureReady && hand && state === "awake" && millis() - lastGestureTime > ge
   pinch = d < 30;
 
   // HIGH HAND → DANCE
-  if (handY < height * 0.33) {
+if (handY < height * 0.70) {
+
     state = "dance";
     lastGestureTime = millis();
   }
@@ -1343,6 +1346,7 @@ function drawDiscoScene() {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
