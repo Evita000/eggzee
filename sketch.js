@@ -1117,19 +1117,22 @@ function mousePressed() {
     }
   }
 
-  // WAKE FROM SLEEP
+  // 🌙 WAKE FROM SLEEP
   if (state === "sleep") {
     state = "awake";
     return false;
   }
 
-  // 🍎 DRAG FOOD
+  // 🍎 DRAG FOOD (THIS STAYS INSIDE mousePressed)
   for (let f of foods) {
     if (dist(mouseX, mouseY, f.x, f.y) < 30) {
       f.beingDragged = true;
     }
   }
-}
+}   // ✅ THIS IS THE ONLY CLOSING BRACE
+
+
+
 
 
 
@@ -1339,6 +1342,7 @@ function drawDiscoScene() {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
