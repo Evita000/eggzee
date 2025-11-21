@@ -255,46 +255,66 @@ function draw() {
   else if (cityImg) image(cityImg, width / 2, height / 2, width, height);
   else background(200);
 
+
+
   // ------------------------------------------------
 // ------------------------------------------------
-// ✋ HAND GESTURES — SAFE + COOLDOWN
+// ------------------------------------------------
+// ✋ HAND GESTURES — MOBILE SAFE VERSION
 // ------------------------------------------------
 
-if (gestureReady && hand && state === "awake" && millis() - lastGestureTime > gestureCooldown) {
+// 📱 MOBILE → disable sleep/dance gestures
+let isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-  // Palm Y
-let palm = hand.annotations.palmBase[0];
-let y = palm[1];
-
-// ml5 handpose ALWAYS uses 240px height — keep this
-handY = map(y, 0, 240, 0, height);
-
-
-  // Pinch
-  let thumb = hand.annotations.thumb[3];
-  let index = hand.annotations.indexFinger[3];
-  let d = dist(thumb[0], thumb[1], index[0], index[1]);
-  pinch = d < 30;
-
-  // ✋ Hand HIGH → Dance
-  if (handY < height * 0.33) {
-    state = "dance";
-    lastGestureTime = millis();
+if (isMobile) {
+  // Only allow pinch waking from sleep
+  // (NO sleep/dance gestures on mobile)
+  
+  // detect pinch
+  if (gestureReady && hand) {
+    let thumb = hand.annotations.thumb[3];
+    let index = hand.annotations.indexFinger[3];
+    let d = dist(thumb[0], thumb[1], index[0], index[1]);
+    pinch = d < 30;
   }
 
-  // ✋ Hand LOW → Sleep
-  else if (handY > height * 0.66) {
-    state = "sleep";
-    lastGestureTime = millis();
+} else {
+  // 🖥 DESKTOP → full gesture control
+  if (gestureReady && hand && state === "awake" && millis() - lastGestureTime > gestureCooldown) {
+
+    // Palm Y
+    let palm = hand.annotations.palmBase[0];
+    let y = palm[1];
+
+    handY = map(y, 0, 240, 0, height);
+
+    // Pinch detection
+    let thumb = hand.annotations.thumb[3];
+    let index = hand.annotations.indexFinger[3];
+    let d = dist(thumb[0], thumb[1], index[0], index[1]);
+    pinch = d < 30;
+
+    // ✋ Hand HIGH → Dance
+    if (handY < height * 0.33) {
+      state = "dance";
+      lastGestureTime = millis();
+    }
+
+    // ✋ Hand LOW → Sleep
+    else if (handY > height * 0.66) {
+      state = "sleep";
+      lastGestureTime = millis();
+    }
   }
 }
 
-
-// 🤏 Pinch wakes Eggzee from sleep
+// 🤏 Pinch wakes Eggzee from sleep (mobile + desktop)
 if (state === "sleep" && pinch) {
   state = "awake";
   lastGestureTime = millis();
 }
+
+
 
 
 
@@ -1152,8 +1172,8 @@ function touchStarted() {
     startTime = millis();
   }
 
-  // ⭐ Prevent double-tap triggering twice
-  if (millis() < lastTouchTime + 200) return false;
+  // ⭐ Prevent double-tap
+  if (millis() < lastTouchTime + 250) return false;
   lastTouchTime = millis();
 
   // 🐣 Hatch egg
@@ -1161,22 +1181,22 @@ function touchStarted() {
     state = "hatching";
     crackTime = millis();
     eggzee.isHatching = true;
-
-    setTimeout(() => {
-      eggzee.isHatching = false;
-    }, 3000);
-
+    setTimeout(() => { eggzee.isHatching = false; }, 3000);
     return false;
   }
 
-  // Sync touch with mouse for button logic
+  // ⭐ Sync touch → mouse for button hitboxes
   if (touches.length > 0) {
     mouseX = touches[0].x;
     mouseY = touches[0].y;
   }
 
-  return false;  // ⭐ END OF touchStarted()
-}  // ← This closes touchStarted() properly
+  // ⭐ ⭐ ⭐ MAIN FIX: run button logic now ⭐ ⭐ ⭐
+  mousePressed();
+
+  return false;
+}
+
 
 // --------------------------------------------------
 // ✔️ Correct, stand-alone insideButton() function
@@ -1324,6 +1344,7 @@ function drawDiscoScene() {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
