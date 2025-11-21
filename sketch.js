@@ -400,8 +400,6 @@ function drawHatchingScene() {
     console.log("📸 Gesture control now active");
   }, 1500);
 }
-
-
 }
 function drawEggzeeScene() {
   if (!eggzee.visible) return;
@@ -1315,6 +1313,7 @@ window.addEventListener("focus", () => {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
