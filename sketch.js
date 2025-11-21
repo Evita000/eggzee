@@ -291,6 +291,16 @@ if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
 console.log("handY =", handY, "height =", height);
 
   console.log("PalmY:", handY, "ScreenHeight:", height);
+// -----------------------------------------
+// STEP 3 TEST: FORCE DANCE FROM ANY HANDMOVE
+// -----------------------------------------
+console.log("🔥 TEST: Gesture system is running. handY =", handY);
+
+if (handY < height * 0.95) {   // ANY hand Y value
+  console.log("💃 TEST → DANCE should trigger NOW");
+  state = "dance";
+  lastGestureTime = millis();
+}
 
 
   // Pinch detection
@@ -321,6 +331,12 @@ if (state === "sleep" && pinch) {
   lastGestureTime = millis();
 }
 
+// 🔍 DEBUG: show live handY on screen
+if (gestureReady && hand) {
+  fill(255);
+  textSize(24);
+  text("handY: " + nf(handY, 1, 0), 80, 40);
+}
 
 
 
@@ -1357,6 +1373,7 @@ function drawDiscoScene() {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
