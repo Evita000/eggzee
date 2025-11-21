@@ -216,7 +216,8 @@ async function startCamera(selectedCam) {
 } else {
   video.show();   // show camera on mobile so handpose works
   video.style("position","absolute");
-  video.style("opacity","0.01"); // almost invisible but still 'visible' to OS
+  video.style("opacity","0.08"); 
+// almost invisible but still 'visible' to OS
   video.style("z-index","1");
 }
 
@@ -1342,6 +1343,7 @@ function drawDiscoScene() {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
