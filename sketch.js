@@ -291,7 +291,7 @@ if (gestureReady && hand && state === "awake" && millis() - lastGestureTime > ge
   pinch = d < 30;
 
   // HIGH HAND → DANCE
-if (handY < height * 0.70) {
+if (handY < height * 0.30) {
 
     state = "dance";
     lastGestureTime = millis();
@@ -1346,6 +1346,7 @@ function drawDiscoScene() {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
