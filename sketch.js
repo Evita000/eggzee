@@ -261,7 +261,7 @@ function draw() {
 
 if (gestureReady && hand && state === "awake" && millis() - lastGestureTime > gestureCooldown) {
 
-  /
+  
   // Palm Y
 let palm = hand.annotations.palmBase[0];
 let y = palm[1];
@@ -1324,6 +1324,7 @@ function drawDiscoScene() {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
