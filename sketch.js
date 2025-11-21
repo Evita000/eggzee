@@ -1,3 +1,6 @@
+let lastGestureTime = 0;
+let gestureCooldown = 800; // ms (0.8 sec)
+
 let gestureReady = false;
 let video;
 // --- HANDPOSE (ml5) ---
@@ -253,40 +256,45 @@ function draw() {
   else background(200);
 
   // ------------------------------------------------
-// ✋ HAND GESTURES — SIMPLE VERSION
 // ------------------------------------------------
-if (gestureReady && hand && state !== "egg" && state !== "hatching") {
-  
-  // 1) Palm Y position (Wrist = palm base)
-  let palm = hand.annotations.palmBase[0];
-  let y = palm[1];
+// ✋ HAND GESTURES — SAFE + COOLDOWN
+// ------------------------------------------------
+if (gestureReady && hand && state === "awake") {
 
-  // Convert camera Y to screen Y
-  handY = map(y, 0, 240, 0, height);
+  // Cooldown so gestures don’t trigger constantly
+  if (millis() - lastGestureTime > gestureCooldown) {
 
-  // 2) Detect pinch (thumb + index)
-  let thumb = hand.annotations.thumb[3];
-  let index = hand.annotations.indexFinger[3];
-  let d = dist(thumb[0], thumb[1], index[0], index[1]);
-  pinch = d < 30;
+    // Palm Y
+    let palm = hand.annotations.palmBase[0];
+    let y = palm[1];
+    handY = map(y, 0, 240, 0, height);
 
-  // ====== SIMPLE GESTURES ======
+    // Pinch (wake)
+    let thumb = hand.annotations.thumb[3];
+    let index = hand.annotations.indexFinger[3];
+    let d = dist(thumb[0], thumb[1], index[0], index[1]);
+    pinch = d < 30;
 
-  // ✋ Move hand high → DANCE
-  if (handY < height * 0.33 && state !== "dance") {
-    state = "dance";
-  }
+    // ✋ Hand HIGH → DANCE
+    if (handY < height * 0.33) {
+      state = "dance";
+      lastGestureTime = millis();
+    }
 
-  // ✋ Move hand low → SLEEP
-  if (handY > height * 0.66 && state !== "sleep") {
-    state = "sleep";
-  }
-
-  // 🤏 Pinch → WAKE UP
-  if (state === "sleep" && pinch) {
-    state = "awake";
+    // ✋ Hand LOW → SLEEP
+    else if (handY > height * 0.66) {
+      state = "sleep";
+      lastGestureTime = millis();
+    }
   }
 }
+
+// 🤏 Pinch wakes Eggzee from sleep
+if (state === "sleep" && pinch) {
+  state = "awake";
+  lastGestureTime = millis();
+}
+
 
 
 
@@ -312,6 +320,8 @@ if (gestureReady && hand && state !== "egg" && state !== "hatching") {
   else if (state === "miniGame") drawMiniGame();
   else if (state === "sleep") drawSleepScene();
   else if (state === "dance") drawDanceScene();
+  else if (state === "disco") drawDiscoScene();
+
 
 
   // ---------- UI + FX ----------
@@ -573,6 +583,7 @@ function drawDanceScene() {
   textSize(width < 600 ? 22 : 26);
   text("💃 Eggzee is dancing! Move your hand to stop 💃", width / 2, height - 100);
 }
+
 
 
 
@@ -1064,24 +1075,13 @@ if (insideButton(feedBtn)) {
 }
 
 
-    // ---- DANCE ----
-  if (insideButton(danceBtn)) {
-  state = "dance";
+// ---- DANCE ----
+if (insideButton(danceBtn)) {
+  state = "disco";   // ← BUTTON triggers disco mode
   showDanceInstructions = true;
   danceInstructionTimer = millis();
   return;
 }
-
-
-      // ensure timer exists
-      if (!realStartTime) realStartTime = Date.now();
-
-      // save timer + energy before leaving
-      localStorage.setItem("eggzeeRealStartTime", realStartTime.toString());
-      localStorage.setItem("eggzeeForceAwake", "true");
-      localStorage.setItem("eggzeeEnergy", energy.toString());
-
-   
 
     // ---- JOKE ----
     if (insideButton(jokeBtn)) {
@@ -1260,10 +1260,42 @@ function touchEnded() {
   return false;
 }
 
+function drawDiscoScene() {
+  background(0);
+
+  // 🔥 Flashing disco glow
+  let glow = sin(frameCount * 0.15) * 100 + 155;
+  fill(glow, 50, 180, 70);
+  rect(0, 0, width, height);
+
+  // 🕺 Eggzee bouncing & rotating
+  push();
+  translate(eggzee.x, eggzee.y);
+  rotate(radians(sin(frameCount * 0.3) * 12));
+  let bounce = sin(frameCount * 0.4) * 20;
+  translate(0, bounce);
+  image(
+    eggzeeAwakeImg,
+    0,
+    0,
+    eggzeeAwakeImg.width * 0.35,
+    eggzeeAwakeImg.height * 0.35
+  );
+  pop();
+
+  // 💬 Text
+  textAlign(CENTER, CENTER);
+  textSize(width < 600 ? 26 : 30);
+  fill(255);
+  text("💃 Eggzee is DISCO dancing!", width / 2, height - 70);
+
+  
+}
 
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
