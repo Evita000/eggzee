@@ -281,6 +281,15 @@ if (gestureReady && hand && state === "awake" && millis() - lastGestureTime > ge
   let palm = hand.annotations.palmBase[0];
   let y = palm[1];
   handY = map(y, 0, 240, 0, height);
+
+// ⭐ FIX: invert Y on iPhone because camera is flipped
+if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+  handY = height - handY;
+}
+
+// debug
+console.log("handY =", handY, "height =", height);
+
   console.log("PalmY:", handY, "ScreenHeight:", height);
 
 
@@ -290,12 +299,12 @@ if (gestureReady && hand && state === "awake" && millis() - lastGestureTime > ge
   let d = dist(thumb[0], thumb[1], index[0], index[1]);
   pinch = d < 30;
 
-  // HIGH HAND → DANCE
-if (handY < height * 0.50) {
+// HIGH HAND → DANCE
+if (handY < height * 0.60) {
+  state = "dance";
+  lastGestureTime = millis();
+}
 
-    state = "dance";
-    lastGestureTime = millis();
-  }
 
   // LOW HAND → SLEEP
   else if (handY > height * 0.66) {
@@ -1346,6 +1355,7 @@ function drawDiscoScene() {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
