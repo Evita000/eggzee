@@ -1,18 +1,9 @@
 let gestureReady = false;
 let video;
-let poseNet;
-let pose = null;
-let lastX = null;
-let handSpeedX = 0;
+
 
 
 let lastTouchTime = 0;
-let fromDance = document.referrer.includes("eggzeedance.html");
-
-if (!fromDance) {
-  localStorage.removeItem("eggzeeForceAwake");
-  localStorage.removeItem("eggzeeRealStartTime");
-}
 
 let state = "egg";
 let restoreAwake = localStorage.getItem("eggzeeForceAwake") === "true";
@@ -167,7 +158,6 @@ navigator.mediaDevices.enumerateDevices().then(devices => {
   gameBtn  = { x: leftX + btnW/2,  y: row2Y + btnH/2, w: btnW, h: btnH };
   jokeBtn  = { x: rightX + btnW/2, y: row2Y + btnH/2, w: btnW, h: btnH };
 
-  setupDanceButtonFix();
 
   // Restore awake if returning from dance page
   if (restoreAwake) {
@@ -231,18 +221,6 @@ async function startCamera(selectedCam) {
   video.elt.setAttribute("muted", "");
   video.elt.muted = true;
 
-poseNet = ml5.poseNet(video, { flipHorizontal: true }, () => {
-    console.log("🤖 PoseNet model loaded");
-    gestureReady = true;   // ⭐ ENABLE GESTURES HERE
-});
-
-
-  poseNet.on("pose", results => {
-    if (results.length > 0) {
-      pose = results[0].pose;
-    }
-  });
-}
 
 
 // ---------- DRAW ----------
@@ -251,71 +229,6 @@ function draw() {
   if (isNight && cityNightImg) image(cityNightImg, width / 2, height / 2, width, height);
   else if (cityImg) image(cityImg, width / 2, height / 2, width, height);
   else background(200);
-
-
-// 🌟 SIMPLE GESTURES: only Dance + Sleep
-if (gestureReady && pose && pose.rightWrist && state === "awake") {
-
-  if (showIntroMessage) return;
-
-  let rw = pose.rightWrist;
-
-  // Convert PoseNet → screen space
-  let scaledX = map(rw.x, 0, 320, 0, width);
-
-  // -----------------------------
-  // TRACK WAVE (dance)
-  // -----------------------------
-  if (lastX !== null) {
-    handSpeedX = abs(scaledX - lastX);
-  }
-  lastX = scaledX;
-
-  // If hand moves fast side-to-side → DANCE
-  if (handSpeedX > 18) {
-    state = "dance";
-    return;
-  }
-
-  // Calm → return to awake from dance
-  if (handSpeedX < 4 && state === "dance") {
-    state = "awake";
-    return;
-  }
-
-  // -----------------------------
-  // CLOSED FIST → SLEEP
-  // -----------------------------
-  let index = pose.rightIndex;
-  let pinky = pose.rightPinky;
-  let fingerOpen = 999;
-
-  if (index && pinky) {
-    let distIndex = dist(rw.x, rw.y, index.x, index.y);
-    let distPinky = dist(rw.x, rw.y, pinky.x, pinky.y);
-    fingerOpen = (distIndex + distPinky) / 2;
-  }
-
-  if (fingerOpen < 25) {
-    state = "sleep";
-    return;
-  }
-}
-
-
-
-// 🔴 Debug dot to show scaled wrist tracking
-if (pose && pose.rightWrist) {
-  let rw = pose.rightWrist;
-
-  // Convert PoseNet coordinates (0–320, 0–240) → full screen
-  let scaledX = map(rw.x, 0, 320, 0, width);
-  let scaledY = map(rw.y, 0, 240, 0, height);
-
-  fill(255, 0, 0);
-  noStroke();
-  circle(scaledX, scaledY, 20);
-}
 
 
   // 🕒 Always update energy every frame (global countdown)
@@ -1091,7 +1004,13 @@ if (insideButton(feedBtn)) {
 
 
     // ---- DANCE ----
-    if (insideButton(danceBtn)) {
+  if (insideButton(danceBtn)) {
+  state = "dance";
+  showDanceInstructions = true;
+  danceInstructionTimer = millis();
+  return;
+}
+
 
       // ensure timer exists
       if (!realStartTime) realStartTime = Date.now();
@@ -1101,10 +1020,7 @@ if (insideButton(feedBtn)) {
       localStorage.setItem("eggzeeForceAwake", "true");
       localStorage.setItem("eggzeeEnergy", energy.toString());
 
-      openDancePage(); // open dance tab
-
-      return; // stop here
-    }
+   
 
     // ---- JOKE ----
     if (insideButton(jokeBtn)) {
@@ -1283,36 +1199,11 @@ function touchEnded() {
   return false;
 }
 
-// ---------- DANCE BUTTON ----------
-function openDancePage() {
-  try {
-    const newWin = window.open("eggzeedance.html", "_blank");
-    if (!newWin) window.location.href = "eggzeedance.html";
-  } catch (e) {
-    window.location.href = "eggzeedance.html";
-  }
-}
 
-function setupDanceButtonFix() {
-  let danceLink = createA("eggzeedance.html", "hiddenDanceLink");
-  danceLink.id("hiddenDanceLink");
-  danceLink.attribute("target", "_blank");
-  danceLink.style("display", "none");
-}
-// 🔄 Handle returning from dance page ONCE globally
-window.addEventListener("focus", () => {
-  if (localStorage.getItem("eggzeeForceAwake") === "true") {
-    resetToAwake();               // reset visuals + position
-    energy = parseFloat(localStorage.getItem("eggzeeEnergy")) || energy;
-    localStorage.removeItem("eggzeeForceAwake");
-
-    // resume timer correctly
-    if (!startTime) startTime = millis();
-  }
-});
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
