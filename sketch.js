@@ -241,6 +241,16 @@ async function startCamera(selectedCam) {
 
 // ---------- DRAW ----------
 function draw() {
+    // ⭐ STOP EVERYTHING UNTIL USER TAPS ⭐
+  if (needsStart) {
+    background(0);
+    fill(255);
+    textAlign(CENTER, CENTER);
+    textSize(26);
+    text("Tap to Start Eggzee 🐣", width / 2, height / 2);
+    return;  // ⛔ Do NOT run the rest of draw() yet
+  }
+
   const isNight = (energy <= 15 && startTime) || state === "sleep";
   if (isNight && cityNightImg) image(cityNightImg, width / 2, height / 2, width, height);
   else if (cityImg) image(cityImg, width / 2, height / 2, width, height);
@@ -1305,6 +1315,7 @@ function drawDiscoScene() {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
