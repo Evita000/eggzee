@@ -1,3 +1,5 @@
+let needsStart = true;   // mobile gate
+
 let lastGestureTime = 0;
 let gestureCooldown = 800; // ms (0.8 sec)
 
@@ -107,19 +109,12 @@ function setup() {
   pixelDensity(1);
   createCanvas(windowWidth, windowHeight);
 
-// 🔵 AUTO-DETECT REAL CAMERA (avoids virtual Logi cam)
-navigator.mediaDevices.enumerateDevices().then(devices => {
-  console.log("DEVICES FOUND (FULL):", devices);
-
-  const cams = devices.filter(d =>
-    d.kind === "videoinput" &&
-    !d.label.toLowerCase().includes("logi") &&
-    !d.label.toLowerCase().includes("virtual")
-  );
-
-  let selectedCam = cams[0]?.deviceId;
-  safeStartCamera(selectedCam);   // ⭐ THIS MUST EXIST
-});
+// 👇 SHOW TAP SCREEN INSTEAD
+background(0);
+fill(255);
+textAlign(CENTER, CENTER);
+textSize(26);
+text("Tap to Start Eggzee 🐣", width / 2, height / 2);
 
 
 
@@ -1120,11 +1115,29 @@ function mouseReleased() {
 
 function touchStarted() {
 
+  // 1️⃣ First tap = allow camera + ml5 to start
+  if (needsStart) {
+    needsStart = false;
+
+    // Start camera AFTER user gesture
+    navigator.mediaDevices.enumerateDevices().then(devices => {
+      const cams = devices.filter(d =>
+        d.kind === "videoinput" &&
+        !d.label.toLowerCase().includes("logi") &&
+        !d.label.toLowerCase().includes("virtual")
+      );
+      let selectedCam = cams[0]?.deviceId;
+      safeStartCamera(selectedCam);
+    });
+
+    return false; // do not hatch on the first tap
+  }
+
   // ⭐ MOBILE DOUBLE-TAP FIX
   if (millis() < lastTouchTime + 200) return false;
   lastTouchTime = millis();
 
-  // 🐣 Hatch egg (first tap)
+  // 🐣 Hatch egg (first real tap)
   if (state === "egg" && !eggzee.isHatching) {
     state = "hatching";
     crackTime = millis();
@@ -1137,11 +1150,14 @@ function touchStarted() {
     return false;
   }
 
-  // 🔧 Sync touch with mouse
+  // sync + normal mousePressed logic
   if (touches.length > 0) {
     mouseX = touches[0].x;
     mouseY = touches[0].y;
   }
+
+
+
 
   // Run normal click logic
   mousePressed();
@@ -1294,6 +1310,7 @@ function drawDiscoScene() {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
