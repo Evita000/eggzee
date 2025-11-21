@@ -16,7 +16,8 @@ let pinch = false;
 let lastTouchTime = 0;
 
 let state = "egg";
-let restoreAwake = localStorage.getItem("eggzeeForceAwake") === "true";
+let restoreAwake = false;   // 🚫 ALWAYS start at egg now
+
 let realStartTime = null;   // tracks total time even when user leaves for dance
 let restoreTime = localStorage.getItem("eggzeeRealStartTime");
 
@@ -125,12 +126,6 @@ text("Tap to Start Eggzee 🐣", width / 2, height / 2);
   }
 
   frameRate(30);
-
-  // Loading Message
-  background(0);
-  fill(255);
-  textAlign(CENTER, CENTER);
-  text("Loading Eggzee… 🥚", width / 2, height / 2);
 
   imageMode(CENTER);
   textSize(20);
@@ -1310,6 +1305,7 @@ function drawDiscoScene() {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
