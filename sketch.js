@@ -1055,6 +1055,16 @@ function drawEnergyBar() {
 
 // ---------- INPUT ----------
 function mousePressed() {
+ if (needsStart) {
+  needsStart = false;
+  startCameraFromUserGesture();
+  return;
+}
+
+  
+  
+  
+  
   // 🥚 TAP TO HATCH
   if (state === "egg") {
     state = "hatching";
@@ -1333,6 +1343,7 @@ function drawDiscoScene() {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
