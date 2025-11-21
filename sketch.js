@@ -369,6 +369,8 @@ function drawHatchingScene() {
 } else {
   state = "awake";
   eggzee.visible = true;
+    realStartTime = Date.now();   // ← START ENERGY COUNTDOWN
+
   if (!startTime) startTime = millis();
 
   // 🐣 Show intro message once
@@ -1315,6 +1317,7 @@ function drawDiscoScene() {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
