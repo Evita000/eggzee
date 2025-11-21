@@ -299,8 +299,10 @@ console.log("handY =", handY, "height =", height);
   let d = dist(thumb[0], thumb[1], index[0], index[1]);
   pinch = d < 30;
 
-// HIGH HAND → DANCE
-if (handY < height * 0.60) {
+// ⭐ NEW HIGH-HAND → DANCE TRIGGER
+// If hand is in TOP 40% of the screen
+if (handY < height * 0.40) {
+  console.log("🎉 HIGH HAND → DANCE TRIGGERED");
   state = "dance";
   lastGestureTime = millis();
 }
@@ -1355,6 +1357,7 @@ function drawDiscoScene() {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
