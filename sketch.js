@@ -1177,7 +1177,7 @@ function touchStarted() {
   }
 
   return false;  // ⭐ END OF touchStarted()
-} // ← ← MISSING BRACE #1
+
 
 
 // --------------------------------------------------
@@ -1205,7 +1205,7 @@ function insideButton(btn) {
     mouseY > btn.y - btn.h/2 &&
     mouseY < btn.y + btn.h/2
   );
-} // ← ← MISSING BRACE #2
+
 
 
 
@@ -1328,6 +1328,7 @@ function drawDiscoScene() {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
