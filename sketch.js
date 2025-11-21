@@ -1177,6 +1177,9 @@ function touchStarted() {
   }
 
   return false;  // ⭐ END OF touchStarted()
+}  // ← ADD THIS BRACE HERE
+
+// --------------------------------------------------
 
 
 
@@ -1198,15 +1201,15 @@ function insideButton(btn) {
     );
   }
 
-   return (
+  // Mouse input (desktop)
+  return (
     mouseX > btn.x - btn.w/2 &&
     mouseX < btn.x + btn.w/2 &&
     mouseY > btn.y - btn.h/2 &&
     mouseY < btn.y + btn.h/2
   );
-}  // CLOSE insideButton()
+}
 
-}  // CLOSE the missing outer block
 
 function tellJoke() {
   const jokes = [
@@ -1325,6 +1328,7 @@ function drawDiscoScene() {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
