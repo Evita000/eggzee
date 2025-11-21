@@ -1122,14 +1122,15 @@ function mousePressed() {
     state = "awake";
     return false;
   }
-}
-
 
   // 🍎 DRAG FOOD
-  for (let f of foods)
-    if (dist(mouseX, mouseY, f.x, f.y) < 30)
+  for (let f of foods) {
+    if (dist(mouseX, mouseY, f.x, f.y) < 30) {
       f.beingDragged = true;
+    }
+  }
 }
+
 
 
 function mouseReleased() {
@@ -1338,6 +1339,7 @@ function drawDiscoScene() {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
