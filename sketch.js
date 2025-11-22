@@ -352,6 +352,10 @@ if (gestureReady && hand) {
     state = "sleep";
     sleepFade = 0;
   }
+// ⭐ ALWAYS ensure Eggzee is visible (except egg + hatching)
+if (state !== "egg" && state !== "hatching") {
+    eggzee.visible = true;
+}
 
   // ---------- SCENES ----------
   if (state === "egg") drawEggScene();
@@ -1373,6 +1377,7 @@ function drawDiscoScene() {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
