@@ -1130,7 +1130,7 @@ function drawEnergyBar() {
 }
 
 function mousePressed() {
-function mousePressed() {
+
   // ⭐ START on laptop OR mobile when they click ANYWHERE
   if (needsStart) {
     needsStart = false;
@@ -1426,6 +1426,7 @@ function drawDiscoScene() {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
