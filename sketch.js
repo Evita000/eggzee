@@ -396,7 +396,7 @@ drawYumBubble();
 drawEnergyBar();
 drawJoke();
 drawOverlayText();
-
+}
 
 
 // ---------- EGG SCENE ----------
@@ -491,7 +491,9 @@ function drawEggzeeScene() {
 
 
 function drawFeedScene() {
-eggzee.visible = true;  // ⭐ Force Eggzee to stay visible inside feeding mode
+eggzee.visible = true;
+  eggzee.x = constrain(eggzee.x, 60, width - 60);
+  eggzee.y = constrain(eggzee.y, 120, height - 120);
 
 
   // 🐣 Draw Eggzee
@@ -1426,6 +1428,7 @@ function drawDiscoScene() {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
