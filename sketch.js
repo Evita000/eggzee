@@ -265,13 +265,8 @@ function draw() {
   else if (cityImg) image(cityImg, width / 2, height / 2, width, height);
   else background(200);
 
-
-
-  // ------------------------------------------------
 // ------------------------------------------------
-// ------------------------------------------------
-// ------------------------------------------------
-// ------------------------------------------------
+//// ------------------------------------------------
 // ✋ UNIVERSAL GESTURES (mobile + desktop)
 // ------------------------------------------------
 let isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
@@ -283,7 +278,7 @@ if (gestureReady && hand && millis() - lastGestureTime > gestureCooldown) {
   let y = palm[1];
   handY = map(y, 0, 240, 0, height);
 
-  // ⭐ FIX: invert Y on iPhone (camera flips vertically)
+  // ⭐ FIX: invert Y on iPhone
   if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
     handY = height - handY;
   }
@@ -294,23 +289,18 @@ if (gestureReady && hand && millis() - lastGestureTime > gestureCooldown) {
   let d = dist(thumb[0], thumb[1], index[0], index[1]);
   pinch = d < 30;
 
-  // ⭐ LOW HAND → SLEEP
+  // ⭐ LOW HAND → SLEEP (check FIRST)
   if (state === "awake" && handY > height * 0.66) {
-    console.log("😴 LOW HAND → SLEEP");
     state = "sleep";
     lastGestureTime = millis();
   }
 
-  // ⭐ HIGH HAND → DANCE
-  if (state === "awake" && handY < height * 0.40) {
-    console.log("💃 HIGH HAND → DANCE");
+  // ⭐ HIGH HAND → DANCE (check SECOND)
+  else if (state === "awake" && handY < height * 0.40) {
     state = "dance";
     lastGestureTime = millis();
   }
 }
-
-
-
 
 // 🤏 Pinch wakes from SLEEP
 if (state === "sleep" && pinch) {
@@ -318,12 +308,13 @@ if (state === "sleep" && pinch) {
   lastGestureTime = millis();
 }
 
-// 🔍 DEBUG: show live handY on screen
+// 🔍 DEBUG display
 if (gestureReady && hand) {
   fill(255);
   textSize(24);
   text("handY: " + nf(handY, 1, 0), 80, 40);
 }
+
 
 
 
@@ -1425,6 +1416,7 @@ function drawDiscoScene() {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
