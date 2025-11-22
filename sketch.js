@@ -301,24 +301,20 @@ console.log("handY =", handY, "height =", height);
   let d = dist(thumb[0], thumb[1], index[0], index[1]);
   pinch = d < 30;
 
-// ⭐ NEW HIGH-HAND → DANCE TRIGGER
-if (handY < height * 0.40) {
+// ⭐ LOW HAND → SLEEP (check this FIRST)
+if (handY > height * 0.66) {
+  console.log("😴 LOW HAND → SLEEP TRIGGERED");
+  state = "sleep";
+  lastGestureTime = millis();
+}
+
+// ⭐ HIGH HAND → DANCE (check second)
+else if (handY < height * 0.40) {
   console.log("🎉 HIGH HAND → DANCE TRIGGERED");
   state = "dance";
   lastGestureTime = millis();
 }
 
-
-  
-
-
-
-  // LOW HAND → SLEEP
-  else if (handY > height * 0.66) {
-    state = "sleep";
-    lastGestureTime = millis();
-  }
-}
 
 // 🤏 Pinch wakes from SLEEP
 if (state === "sleep" && pinch) {
@@ -1242,6 +1238,11 @@ function startCameraFromUserGesture() {
   });
 }
 function touchStarted() {
+  // ⭐ EXIT DANCE MODE ON TOUCH
+  if (state === "dance") {
+    state = "awake";
+    return false;
+  }
 
   // ⭐ FIRST TAP → Allow camera + unlock sketch
   if (needsStart) {
@@ -1428,6 +1429,7 @@ function drawDiscoScene() {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
