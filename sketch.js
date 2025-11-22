@@ -292,15 +292,7 @@ console.log("handY =", handY, "height =", height);
 
   console.log("PalmY:", handY, "ScreenHeight:", height);
 // -----------------------------------------
-// STEP 3 TEST: FORCE DANCE FROM ANY HANDMOVE
-// -----------------------------------------
-console.log("🔥 TEST: Gesture system is running. handY =", handY);
 
-if (handY < height * 0.95) {   // ANY hand Y value
-  console.log("💃 TEST → DANCE should trigger NOW");
-  state = "dance";
-  lastGestureTime = millis();
-}
 
 
   // Pinch detection
@@ -310,12 +302,15 @@ if (handY < height * 0.95) {   // ANY hand Y value
   pinch = d < 30;
 
 // ⭐ NEW HIGH-HAND → DANCE TRIGGER
-// If hand is in TOP 40% of the screen
 if (handY < height * 0.40) {
   console.log("🎉 HIGH HAND → DANCE TRIGGERED");
   state = "dance";
   lastGestureTime = millis();
 }
+
+
+  
+
 
 
   // LOW HAND → SLEEP
@@ -352,6 +347,7 @@ if (state !== "egg" && state !== "hatching") {
     eggzee.visible = true;
 }
 
+  
   // 🌙 Auto-sleep when drained
   if (energy <= 0 && state !== "sleep") {
     state = "sleep";
@@ -414,55 +410,64 @@ function drawEggScene() {
 
 // ---------- SCENES ----------
 function drawHatchingScene() {
+  // darken background
   fill(0, 50);
   rect(0, 0, width, height);
 
-  // 🥚 Tremble animation only during hatching
+  // egg wobble
   const trembleX = random(-3, 3);
   const trembleY = sin(frameCount * 0.3) * 5;
+
   push();
   translate(width / 2 + trembleX, height / 2 + 40 + trembleY);
   image(eggImg, 0, 0, 200, 200);
   pop();
 
- 
-}
-
   // 🐣 Hatch sequence (visible for ~4 seconds)
   let elapsed = millis() - crackTime;
+
   if (elapsed < 2000) {
     fill(255);
     textSize(24);
     text("...crack...", width / 2, height - 120);
-  } else if (elapsed < 4000) {
+    return;
+  }
+
+  if (elapsed < 4000) {
     fill(255);
     textSize(26);
     text("Eggzee is hatching! 💫", width / 2, height - 120);
-} else {
+    return;
+  }
+
+  // ⭐ FINAL STEP — Eggzee appears
   state = "awake";
- eggzee.visible = true;
-eggzee.x = width / 2;
-eggzee.y = height / 2;
+  eggzee.visible = true;
 
-    realStartTime = Date.now();   // ← START ENERGY COUNTDOWN
+  eggzee.x = width / 2;
+  eggzee.y = height / 2;
 
+  realStartTime = Date.now();
   if (!startTime) startTime = millis();
 
-  // 🐣 Show intro message once
+  // intro bubble
   hasWelcomed = false;
   introMessageTimer = millis();
   showIntroMessage = true;
 
-  // ⭐ Disable gestures for 1.5 seconds after hatching (fixes instant sleep)
+  // delay gestures
   gestureReady = false;
   setTimeout(() => {
     gestureReady = true;
     console.log("📸 Gesture control now active");
   }, 1500);
 }
-}
+
+
 function drawEggzeeScene() {
-  if (!eggzee.visible) return;
+
+  eggzee.visible = true;   // ⭐ Force Eggzee to exist every time awake scene runs
+
   // ⭐ Keep Eggzee inside the screen (fix disappearing)
   eggzee.x = constrain(eggzee.x, 60, width - 60);
   eggzee.y = constrain(eggzee.y, 120, height - 120);
@@ -1125,6 +1130,7 @@ function drawEnergyBar() {
 }
 
 function mousePressed() {
+function mousePressed() {
   // ⭐ START on laptop OR mobile when they click ANYWHERE
   if (needsStart) {
     needsStart = false;
@@ -1132,11 +1138,12 @@ function mousePressed() {
     return false;
   }
 
-    // ⭐ EXIT DANCE MODE WITH TAP
+  // ⭐ EXIT DANCE MODE WITH TAP (MOVE THIS UP)
   if (state === "dance") {
     state = "awake";
     return false;
   }
+
 
   // 🥚 Hatch egg
   if (state === "egg") {
@@ -1419,6 +1426,7 @@ function drawDiscoScene() {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
