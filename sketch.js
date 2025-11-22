@@ -267,6 +267,7 @@ function draw() {
 
 // ------------------------------------------------
 //// ------------------------------------------------
+// ------------------------------------------------
 // ✋ UNIVERSAL GESTURES (mobile + desktop)
 // ------------------------------------------------
 let isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
@@ -278,10 +279,13 @@ if (gestureReady && hand && millis() - lastGestureTime > gestureCooldown) {
   let y = palm[1];
   handY = map(y, 0, 240, 0, height);
 
-  // ⭐ FIX: invert Y on iPhone
+  // ⭐ FIX: invert Y on iPhone because camera is flipped
   if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
     handY = height - handY;
   }
+
+  // Debug
+  console.log("PalmY:", handY);
 
   // Pinch detection
   let thumb = hand.annotations.thumb[3];
@@ -289,14 +293,16 @@ if (gestureReady && hand && millis() - lastGestureTime > gestureCooldown) {
   let d = dist(thumb[0], thumb[1], index[0], index[1]);
   pinch = d < 30;
 
-  // ⭐ LOW HAND → SLEEP (check FIRST)
+  // ⭐ LOW HAND → SLEEP (CHECK FIRST)
   if (state === "awake" && handY > height * 0.66) {
+    console.log("💤 LOW HAND → SLEEP");
     state = "sleep";
     lastGestureTime = millis();
   }
 
-  // ⭐ HIGH HAND → DANCE (check SECOND)
+  // ⭐ HIGH HAND → DANCE (CHECK SECOND)
   else if (state === "awake" && handY < height * 0.40) {
+    console.log("💃 HIGH HAND → DANCE");
     state = "dance";
     lastGestureTime = millis();
   }
@@ -1416,6 +1422,7 @@ function drawDiscoScene() {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
