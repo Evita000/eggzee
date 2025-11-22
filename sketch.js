@@ -347,38 +347,61 @@ if (gestureReady && hand) {
     energy = max(0, 120 - elapsed);
   }
 
+  // ⭐ ALWAYS ensure Eggzee stays visible (except egg + hatching)
+if (state !== "egg" && state !== "hatching") {
+    eggzee.visible = true;
+}
+
   // 🌙 Auto-sleep when drained
   if (energy <= 0 && state !== "sleep") {
     state = "sleep";
     sleepFade = 0;
   }
-// ⭐ ALWAYS ensure Eggzee is visible (except egg + hatching)
-if (state !== "egg" && state !== "hatching") {
-    eggzee.visible = true;
+
+
+// ---------- SCENES ----------
+if (state === "egg") {
+  drawEggScene();
+}
+else if (state === "hatching") {
+  drawHatchingScene();
+}
+else if (state === "awake") {
+  drawEggzeeScene();
+}
+else if (state === "feed") {
+  drawFeedScene();
+}
+else if (state === "miniGame") {
+  drawMiniGame();
+}
+else if (state === "sleep") {
+  drawSleepScene();
+}
+else if (state === "dance") {
+  drawDanceScene();
+}
+else if (state === "disco") {
+  drawDiscoScene();
 }
 
-  // ---------- SCENES ----------
-  if (state === "egg") drawEggScene();
-  else if (state === "hatching") drawHatchingScene();
-  else if (state === "awake") drawEggzeeScene();
-  else if (state === "feed") drawFeedScene();
-  else if (state === "miniGame") drawMiniGame();
-  else if (state === "sleep") drawSleepScene();
-  else if (state === "dance") drawDanceScene();
-  else if (state === "disco") drawDiscoScene();
+// --------------------------------------------
+// 🛑 IMPORTANT: STOP HERE unless in AWAKE MODE
+// --------------------------------------------
+if (state !== "awake") {
+  return;   // no UI, no buttons, nothing overlays Eggzee
+}
+
+// ---------- UI + FX (AWAKE ONLY) ----------
+drawFoods();
+drawHearts();
+drawButtons();
+drawYumBubble();
+drawEnergyBar();
+drawJoke();
+drawOverlayText();
 
 
-
-  // ---------- UI + FX ----------
-  drawFoods();
-  drawHearts();
-  drawButtons();
-  drawYumBubble();
-  drawEnergyBar();
-  drawJoke();
-  drawOverlayText();
-
-} // 👈 end of draw()
 
 // ---------- EGG SCENE ----------
 function drawEggScene() {
@@ -402,6 +425,9 @@ function drawHatchingScene() {
   image(eggImg, 0, 0, 200, 200);
   pop();
 
+ 
+}
+
   // 🐣 Hatch sequence (visible for ~4 seconds)
   let elapsed = millis() - crackTime;
   if (elapsed < 2000) {
@@ -414,7 +440,10 @@ function drawHatchingScene() {
     text("Eggzee is hatching! 💫", width / 2, height - 120);
 } else {
   state = "awake";
-  eggzee.visible = true;
+ eggzee.visible = true;
+eggzee.x = width / 2;
+eggzee.y = height / 2;
+
     realStartTime = Date.now();   // ← START ENERGY COUNTDOWN
 
   if (!startTime) startTime = millis();
@@ -434,6 +463,9 @@ function drawHatchingScene() {
 }
 function drawEggzeeScene() {
   if (!eggzee.visible) return;
+  // ⭐ Keep Eggzee inside the screen (fix disappearing)
+  eggzee.x = constrain(eggzee.x, 60, width - 60);
+  eggzee.y = constrain(eggzee.y, 120, height - 120);
 
   // 🧘 Gentle idle motion for Eggzee
   let sway = sin(frameCount * 0.03) * 2; // small side sway
@@ -454,7 +486,8 @@ function drawEggzeeScene() {
 
 
 function drawFeedScene() {
-  if (!eggzee.visible) eggzee.visible = true;
+eggzee.visible = true;  // ⭐ Force Eggzee to stay visible inside feeding mode
+
 
   // 🐣 Draw Eggzee
   push();
@@ -467,6 +500,9 @@ function drawFeedScene() {
     eggzeeAwakeImg.height * 0.35
   );
   pop();
+// ⭐ Keep Eggzee inside screen during feeding
+eggzee.x = constrain(eggzee.x, 60, width - 60);
+eggzee.y = constrain(eggzee.y, 120, height - 120);
 
   // 🧭 Allow Eggzee to follow touch/mouse slowly for mobile
   if (touches && touches.length > 0) {
@@ -1096,6 +1132,12 @@ function mousePressed() {
     return false;
   }
 
+    // ⭐ EXIT DANCE MODE WITH TAP
+  if (state === "dance") {
+    state = "awake";
+    return false;
+  }
+
   // 🥚 Hatch egg
   if (state === "egg") {
     state = "hatching";
@@ -1377,6 +1419,7 @@ function drawDiscoScene() {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
