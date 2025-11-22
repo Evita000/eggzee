@@ -271,29 +271,22 @@ function draw() {
 // ------------------------------------------------
 // ------------------------------------------------
 // ------------------------------------------------
+// ------------------------------------------------
 // ✋ UNIVERSAL GESTURES (mobile + desktop)
 // ------------------------------------------------
 let isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-if (gestureReady && hand && state === "awake" && millis() - lastGestureTime > gestureCooldown) {
+if (gestureReady && hand && millis() - lastGestureTime > gestureCooldown) {
 
   // Palm height
   let palm = hand.annotations.palmBase[0];
   let y = palm[1];
   handY = map(y, 0, 240, 0, height);
 
-// ⭐ FIX: invert Y on iPhone because camera is flipped
-if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-  handY = height - handY;
-}
-
-// debug
-console.log("handY =", handY, "height =", height);
-
-  console.log("PalmY:", handY, "ScreenHeight:", height);
-// -----------------------------------------
-
-
+  // ⭐ FIX: invert Y on iPhone (camera flips vertically)
+  if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+    handY = height - handY;
+  }
 
   // Pinch detection
   let thumb = hand.annotations.thumb[3];
@@ -301,19 +294,22 @@ console.log("handY =", handY, "height =", height);
   let d = dist(thumb[0], thumb[1], index[0], index[1]);
   pinch = d < 30;
 
-// ⭐ LOW HAND → SLEEP (check this FIRST)
-if (handY > height * 0.66) {
-  console.log("😴 LOW HAND → SLEEP TRIGGERED");
-  state = "sleep";
-  lastGestureTime = millis();
+  // ⭐ LOW HAND → SLEEP
+  if (state === "awake" && handY > height * 0.66) {
+    console.log("😴 LOW HAND → SLEEP");
+    state = "sleep";
+    lastGestureTime = millis();
+  }
+
+  // ⭐ HIGH HAND → DANCE
+  if (state === "awake" && handY < height * 0.40) {
+    console.log("💃 HIGH HAND → DANCE");
+    state = "dance";
+    lastGestureTime = millis();
+  }
 }
 
-// ⭐ HIGH HAND → DANCE (check second)
-else if (handY < height * 0.40) {
-  console.log("🎉 HIGH HAND → DANCE TRIGGERED");
-  state = "dance";
-  lastGestureTime = millis();
-}
+
 
 
 // 🤏 Pinch wakes from SLEEP
@@ -1429,6 +1425,7 @@ function drawDiscoScene() {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
