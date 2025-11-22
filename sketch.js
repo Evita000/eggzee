@@ -269,48 +269,67 @@ function draw() {
 //// ------------------------------------------------
 // ------------------------------------------------
 // ------------------------------------------------
+// ------------------------------------------------
 // ✋ UNIVERSAL GESTURES (mobile + desktop)
 // ------------------------------------------------
 if (gestureReady && hand && millis() - lastGestureTime > gestureCooldown) {
 
-  // Palm height
-  let palm = hand.annotations.palmBase[0];
-  let y = palm[1];
-  handY = map(y, 0, 240, 0, height);
+  // ⭐ SAFETY CHECK — make sure palm exists
+  if (
+    hand.annotations &&
+    hand.annotations.palmBase &&
+    hand.annotations.palmBase[0]
+  ) {
+    let palm = hand.annotations.palmBase[0];
+    let y = palm[1];
 
-  // ⭐ FIX: invert Y on iPhone
-  if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-    handY = height - handY;
+    // map Y from camera space → screen space
+    handY = map(y, 0, 240, 0, height);
+
+    // iPhone flip fix
+    if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+      handY = height - handY;
+    }
+  } else {
+    handY = null; // no valid hand
   }
 
-  // Pinch detection
-  let thumb = hand.annotations.thumb[3];
-  let index = hand.annotations.indexFinger[3];
-  let d = dist(thumb[0], thumb[1], index[0], index[1]);
-  pinch = d < 30;
+  // ⭐ Only run gestures if handY is valid
+  if (handY !== null) {
 
-  // ⭐ LOW HAND → SLEEP
-  if (state === "awake" && handY > height * 0.66) {
-    console.log("💤 LOW HAND → SLEEP");
-    state = "sleep";
-    lastGestureTime = millis();
+    // 🔽 LOW HAND → SLEEP
+    if (state === "awake" && handY > height * 0.66) {
+      console.log("💤 LOW HAND → SLEEP");
+      state = "sleep";
+      lastGestureTime = millis();
+    }
+
+    // 🔼 HIGH HAND → DANCE
+    else if (state === "awake" && handY < height * 0.40) {
+      console.log("💃 HIGH HAND → DANCE");
+      state = "dance";
+      lastGestureTime = millis();
+    }
   }
 
-  // ⭐ HIGH HAND → DANCE
-  else if (state === "awake" && handY < height * 0.40) {
-    console.log("💃 HIGH HAND → DANCE");
-    state = "dance";
-    lastGestureTime = millis();
+  // 🤏 PINCH WAKE
+  if (
+    hand.annotations &&
+    hand.annotations.thumb &&
+    hand.annotations.indexFinger
+  ) {
+    let thumb = hand.annotations.thumb[3];
+    let index = hand.annotations.indexFinger[3];
+    let d = dist(thumb[0], thumb[1], index[0], index[1]);
+    pinch = d < 30;
+
+    if (state === "sleep" && pinch) {
+      console.log("✨ PINCH → WAKE");
+      state = "awake";
+      lastGestureTime = millis();
+    }
   }
 }
-
-// 🤏 Pinch wakes from sleep
-if (state === "sleep" && pinch) {
-  console.log("✨ Pinch → WAKE");
-  state = "awake";
-  lastGestureTime = millis();
-}
-
 
 // 🔍 DEBUG display
 if (gestureReady && hand) {
@@ -1420,6 +1439,7 @@ function drawDiscoScene() {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
