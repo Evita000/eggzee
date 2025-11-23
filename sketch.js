@@ -197,27 +197,16 @@ async function safeStartCamera(deviceId) {
 async function startCamera(selectedCam) {
   console.log("🚀 Starting camera...");
 
-  let constraints;
 
-  if (selectedCam) {
-    constraints = {
-      audio: false,
-      video: {
-        deviceId: { exact: selectedCam },
-        width: { ideal: 640 },
-        height: { ideal: 480 }
-      }
-    };
-  } else {
-    constraints = {
-      audio: false,
-      video: {
-        facingMode: "user",
-        width: { ideal: 640 },
-        height: { ideal: 480 }
-      }
-    };
+  let constraints = {
+  audio: false,
+  video: {
+    facingMode: "user",
+    width: { ideal: 640 },
+    height: { ideal: 480 }
   }
+};
+
 
   video = createCapture(constraints, () =>
     console.log("📷 Camera started!")
@@ -1494,6 +1483,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
