@@ -185,16 +185,7 @@ text("Tap to Start Eggzee 🐣", width / 2, height / 2);
 
 
 // ---------- CAMERA RETRY WRAPPER ----------
-async function safeStartCamera(deviceId) {
-  try {
-    await startCamera(deviceId);
-  } catch (err) {
-    console.warn("Camera failed, retrying in 800ms…");
-    setTimeout(() => safeStartCamera(deviceId), 800);
-  }
-}
-
-async function startCamera(selectedCam) {
+async function startCamera() {
   console.log("🚀 Starting camera...");
 
   let constraints = {
@@ -210,34 +201,16 @@ async function startCamera(selectedCam) {
     console.log("📷 Camera started!");
   });
 
-// ✅ FIX: force Chrome to keep the camera stream alive
-try {
-  const track = video.elt.srcObject?.getVideoTracks?.()[0];
-  if (track) {
-    track.applyConstraints({ advanced: [{ torch: false }] });
-  }
-  video.elt.addEventListener("loadeddata", () => {
-    console.log("🎥 Video streaming confirmed");
-  });
-} catch (e) {
-  console.warn("Stream not ready yet, continuing…");
-}
-
-
-
-  
-  // ⭐ DO NOT HIDE ON DESKTOP — KEEP IT VISIBLE
+  // Keep stream alive
   video.show();
   video.size(640, 480);
-
-  // ⭐ Put video on screen but tiny & transparent
-  video.style("position", "fixed");
-  video.style("bottom", "10px");
-  video.style("right", "10px");
-  video.style("width", "160px");
-  video.style("height", "120px");
-  video.style("z-index", "9999");
-  video.style("opacity", "0.3");
+  video.style("position","fixed");
+  video.style("bottom","10px");
+  video.style("right","10px");
+  video.style("width","160px");
+  video.style("height","120px");
+  video.style("opacity","0.3");
+  video.style("z-index","9999");
 
   video.elt.setAttribute("playsinline", "");
   video.elt.setAttribute("webkit-playsinline", "");
@@ -245,17 +218,17 @@ try {
   video.elt.setAttribute("muted", "");
   video.elt.muted = true;
 
-  // ⭐ Handpose
+  // Handpose
   handpose = ml5.handpose(video, () => {
     console.log("✋ Handpose model loaded");
     gestureReady = true;
   });
 
   handpose.on("predict", results => {
-    if (results.length > 0) hand = results[0];
-    else hand = null;
+    hand = results.length > 0 ? results[0] : null;
   });
 }
+
 
 
 // ---------- DRAW ----------
@@ -1290,6 +1263,8 @@ function startCameraFromUserGesture() {
     realStartTime = Date.now();
     startTime = millis();
   }
+  startCamera();
+
 
   navigator.mediaDevices.enumerateDevices().then(devices => {
     const cams = devices.filter(d =>
@@ -1492,6 +1467,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
