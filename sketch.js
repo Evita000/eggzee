@@ -317,10 +317,11 @@ if (gestureReady && hand && millis() - lastGestureTime > gestureCooldown) {
       }
     }
 
-   // ⭐ Flip ONLY if device is physically upside-down
-if (rawY !== null && window.orientation === 180) {
+// ⭐ ALWAYS FLIP Y-AXIS ON IPAD (your device reports upside-down)
+if (rawY !== null && /iPad/i.test(navigator.userAgent)) {
   rawY = height - rawY;
 }
+
 
   }
 
@@ -1473,6 +1474,7 @@ function drawDiscoScene() {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
