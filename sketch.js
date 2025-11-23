@@ -308,18 +308,25 @@ if (gestureReady && hand && millis() - lastGestureTime > gestureCooldown) {
       }
     }
 
-    if (allY.length > 0) {
-      let minY = Math.min(...allY);
-      let maxY = Math.max(...allY);
+   if (allY.length > 0) {
+  let minY = Math.min(...allY);
+  let maxY = Math.max(...allY);
 
-      if (maxY !== minY) {
-        rawY = map(y, minY, maxY, 0, height);
-      } else {
-        rawY = height / 2;
-      }
-    }
-
+  if (maxY !== minY) {
+    rawY = map(y, minY, maxY, 0, height);
+  } else {
+    rawY = height / 2;
   }
+}
+
+// ⭐ Flip for iPad cameras that report upside-down Y
+if (rawY !== null && /iPad/i.test(navigator.userAgent)) {
+  rawY = height - rawY;
+}
+
+}  // ← ⭐ CLOSES the palmBase block PROPERLY
+
+
 
   // ⭐ Now apply smoothing ONLY if rawY is valid
 if (rawY !== null) {
@@ -1473,6 +1480,7 @@ function drawDiscoScene() {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
