@@ -310,10 +310,11 @@ if (gestureReady && hand && millis() - lastGestureTime > gestureCooldown) {
       }
     }
 
-    // ⭐ Flip for iPad only
-    if (rawY !== null && /iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-      rawY = height - rawY;
-    }
+   // ⭐ Flip ONLY if device is physically upside-down
+if (rawY !== null && window.orientation === 180) {
+  rawY = height - rawY;
+}
+
   }
 
   // ⭐ Now apply smoothing ONLY if rawY is valid
@@ -1465,6 +1466,7 @@ function drawDiscoScene() {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
