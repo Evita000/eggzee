@@ -1,3 +1,10 @@
+let calibTop = Infinity;
+let calibBottom = -Infinity;
+let isCalibrating = true;
+let calibStartTime = 0;
+
+
+
 let needsStart = true;   // mobile gate
 
 let lastGestureTime = 0;
@@ -284,7 +291,7 @@ text("handY: " + handY, 20, 20);
 textAlign(CENTER, CENTER);
 
 
-// ✋ UNIVERSAL GESTURES — FIXED FOR MOBILE + iPAD
+// ✋ UNIVERSAL GESTURES — with AUTO-CALIBRATION
 // ------------------------------------------------
 if (gestureReady && hand && millis() - lastGestureTime > gestureCooldown) {
 
@@ -295,69 +302,77 @@ if (gestureReady && hand && millis() - lastGestureTime > gestureCooldown) {
     rawY = hand.annotations.palmBase[0][1];
   }
 
-  // ⭐ Detect device
   let isIPad = /iPad/i.test(navigator.userAgent);
   let isMobile = /Android|iPhone/i.test(navigator.userAgent);
 
-  // ⭐ Final thresholds
-  let danceThreshold;
-  let sleepThreshold;
-
+  // ---------------------------------------------
+  // ⭐ SMOOTH + DEVICE FIX
+  // ---------------------------------------------
   if (rawY !== null) {
 
-    // -------- iPAD ----------
     if (isIPad) {
-      rawY = height - rawY;   // flip Y for iPad
-      if (handY == null) handY = rawY;
-      handY = lerp(handY, rawY, 0.20);
-      danceThreshold = height * 0.15;  // top
-      sleepThreshold = height * 0.85;  // bottom
+      rawY = height - rawY;   // iPad invert
     }
 
-    // -------- MOBILE ----------
-    else if (isMobile) {
-      if (handY == null) handY = rawY;
-      handY = lerp(handY, rawY, 0.20);
-      // your measured mobile ranges: ~30 top, ~276 bottom
-      danceThreshold = 70;
-      sleepThreshold = 220;
-    }
-
-    // -------- DESKTOP ----------
-    else {
-      if (handY == null) handY = rawY;
-      handY = lerp(handY, rawY, 0.15);
-      danceThreshold = height * 0.20;
-      sleepThreshold = height * 0.80;
-    }
+    if (handY == null) handY = rawY;
+    handY = lerp(handY, rawY, 0.20);
   }
 
+  // ---------------------------------------------
+  // ⭐ AUTO-CALIBRATION (first 1 second)
+  // ---------------------------------------------
+  if (isCalibrating && rawY !== null) {
 
-  // ⭐ Lockout to stop flip-flopping
-  if (!draw.lastStateChange) draw.lastStateChange = 0;
-  const lockout = 1500;
+    calibTop = min(calibTop, rawY);
+    calibBottom = max(calibBottom, rawY);
 
-  if (millis() - draw.lastStateChange > lockout && handY !== null) {
+    if (millis() - calibStartTime > 1000) {
 
-    // 💃 DANCE
-    if (handY < danceThreshold) {
-      console.log("💃 → DANCE");
-      state = "dance";
-      draw.lastStateChange = millis();
-      lastGestureTime = millis();
+      isCalibrating = false;
+
+      danceThreshold = calibTop + (calibBottom - calibTop) * 0.20;
+      sleepThreshold = calibTop + (calibBottom - calibTop) * 0.80;
+
+      console.log("✔️ Calibration done");
+      console.log("calibTop:", calibTop);
+      console.log("calibBottom:", calibBottom);
+      console.log("danceThreshold:", danceThreshold);
+      console.log("sleepThreshold:", sleepThreshold);
     }
 
-    // 😴 SLEEP
-    else if (handY > sleepThreshold) {
-      console.log("😴 → SLEEP");
-      state = "sleep";
-      draw.lastStateChange = millis();
-      lastGestureTime = millis();
+    return; // ⛔ stop until calibration finishes
+  }
+
+  // ---------------------------------------------
+  // ⭐ AFTER CALIBRATION — APPLY THRESHOLDS
+  // ---------------------------------------------
+  if (!isCalibrating && handY !== null) {
+
+    if (!draw.lastStateChange) draw.lastStateChange = 0;
+    const lockout = 1500;
+
+    if (millis() - draw.lastStateChange > lockout) {
+
+      // 💃 DANCE (hand HIGH)
+      if (handY < danceThreshold) {
+        console.log("💃 → DANCE");
+        state = "dance";
+        draw.lastStateChange = millis();
+        lastGestureTime = millis();
+      }
+
+      // 😴 SLEEP (hand LOW)
+      else if (handY > sleepThreshold) {
+        console.log("😴 → SLEEP");
+        state = "sleep";
+        draw.lastStateChange = millis();
+        lastGestureTime = millis();
+      }
     }
   }
 
   // --------------------------------------------------
-  // ⭐ PINCH TO WAKE — KEEP THIS HERE
+  // ⭐ PINCH TO WAKE — stays same
   // --------------------------------------------------
   if (
     hand.annotations?.thumb &&
@@ -375,6 +390,7 @@ if (gestureReady && hand && millis() - lastGestureTime > gestureCooldown) {
     }
   }
 }
+
 
   // 🕒 Always update energy every frame (global countdown)
   if (realStartTime) {
@@ -1265,6 +1281,13 @@ function mouseReleased() {
   for (let f of foods) f.beingDragged = false;
 }
 function startCameraFromUserGesture() {
+
+  // ⭐ Start auto-calibration for gestures
+  calibStartTime = millis();
+  isCalibrating = true;
+  calibTop = Infinity;
+  calibBottom = -Infinity;
+
   if (!realStartTime) {
     realStartTime = Date.now();
     startTime = millis();
@@ -1280,6 +1303,7 @@ function startCameraFromUserGesture() {
     safeStartCamera(selectedCam);
   });
 }
+
 function touchStarted() {
   // ⭐ EXIT DANCE MODE ON TOUCH
   if (state === "dance") {
@@ -1470,6 +1494,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
