@@ -156,7 +156,6 @@ text("Tap to Start Eggzee 🐣", width / 2, height / 2);
   gameBtn  = { x: leftX + btnW/2,  y: row2Y + btnH/2, w: btnW, h: btnH };
   jokeBtn  = { x: rightX + btnW/2, y: row2Y + btnH/2, w: btnW, h: btnH };
 
-
   // Restore awake if returning from dance page
   if (restoreAwake) {
     state = "awake";
@@ -168,7 +167,13 @@ text("Tap to Start Eggzee 🐣", width / 2, height / 2);
       realStartTime = Date.now() - (120 - energy) * 1000;
     }
   }
-}
+
+  // ⭐ THIS MUST BE INSIDE setup() ⭐
+  console.log("HEIGHT:", height);
+
+} // ← THIS is the only closing brace for setup()
+
+
 
 
 
@@ -289,7 +294,22 @@ if (gestureReady && hand && millis() - lastGestureTime > gestureCooldown) {
     let y = palm[1];
 
     // 🎯 Map Y from camera to screen
-    let rawY = map(y, 0, 240, 0, height);
+    // Get the SMALLEST and LARGEST Y of the hand model to normalize iPad values
+let allY = [];
+for (let key in hand.annotations) {
+  hand.annotations[key].forEach(pt => allY.push(pt[1]));
+}
+
+let minY = Math.min(...allY);
+let maxY = Math.max(...allY);
+
+// Avoid divide-by-zero errors
+if (maxY !== minY) {
+  rawY = map(y, minY, maxY, 0, height);
+} else {
+  rawY = height / 2; // fallback
+}
+
 
     // reverse camera on iPhone/iPad
     if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
@@ -1453,6 +1473,7 @@ function drawDiscoScene() {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
