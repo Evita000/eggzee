@@ -265,17 +265,22 @@ function draw() {
     return;  // ⛔ Do NOT run the rest of draw() yet
   }
 
-// ⭐ ALWAYS SHOW DEBUG HANDY — TOP OF DRAW LOOP
+const isNight = (energy <= 15 && startTime) || state === "sleep";
+
+if (isNight && cityNightImg) {
+  image(cityNightImg, width / 2, height / 2, width, height);
+} else if (cityImg) {
+  image(cityImg, width / 2, height / 2, width, height);
+} else {
+  background(200);
+}
+
+// ⭐ NOW DRAW DEBUG ON TOP OF EVERYTHING
 fill(255, 0, 0);
 textSize(50);
 textAlign(LEFT, TOP);
 text("handY: " + handY, 20, 20);
 
-
-  const isNight = (energy <= 15 && startTime) || state === "sleep";
-  if (isNight && cityNightImg) image(cityNightImg, width / 2, height / 2, width, height);
-  else if (cityImg) image(cityImg, width / 2, height / 2, width, height);
-  else background(200);
 
 
 // ------------------------------------------------
@@ -1468,6 +1473,7 @@ function drawDiscoScene() {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
