@@ -197,57 +197,50 @@ async function safeStartCamera(deviceId) {
 async function startCamera(selectedCam) {
   console.log("🚀 Starting camera...");
 
-
   let constraints = {
-  audio: false,
-  video: {
-    facingMode: "user",
-    width: { ideal: 640 },
-    height: { ideal: 480 }
-  }
-};
+    audio: false,
+    video: {
+      facingMode: "user",
+      width: { ideal: 640 },
+      height: { ideal: 480 }
+    }
+  };
 
+  video = createCapture(constraints, () => {
+    console.log("📷 Camera started!");
+  });
 
-  video = createCapture(constraints, () =>
-    console.log("📷 Camera started!")
-  );
+  // ⭐ DO NOT HIDE ON DESKTOP — KEEP IT VISIBLE
+  video.show();
+  video.size(640, 480);
 
-  if (!/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-  video.hide();   // hide only on desktop
-} else {
-  video.show();   // show camera on mobile so handpose works
-  video.style("position","absolute");
-  video.style("opacity","0.18"); 
-// almost invisible but still 'visible' to OS
-  video.style("z-index","1");
-}
-
-
-  video.size(640, 480);   // ⬅️ Also bump size here
+  // ⭐ Put video on screen but tiny & transparent
+  video.style("position", "fixed");
+  video.style("bottom", "10px");
+  video.style("right", "10px");
+  video.style("width", "160px");
+  video.style("height", "120px");
+  video.style("z-index", "9999");
+  video.style("opacity", "0.3");
 
   video.elt.setAttribute("playsinline", "");
   video.elt.setAttribute("webkit-playsinline", "");
-
   video.elt.setAttribute("autoplay", "");
   video.elt.setAttribute("muted", "");
   video.elt.muted = true;
 
-  // 🎯 Start Handpose (ml5)
+  // ⭐ Handpose
   handpose = ml5.handpose(video, () => {
     console.log("✋ Handpose model loaded");
     gestureReady = true;
   });
 
-  // 🔥 Listen for predictions
   handpose.on("predict", results => {
-    if (results.length > 0) {
-      hand = results[0];
-    } else {
-      hand = null;
-    }
+    if (results.length > 0) hand = results[0];
+    else hand = null;
   });
+}
 
-} // ← end startCamera()
 
 // ---------- DRAW ----------
 function draw() {
@@ -1483,6 +1476,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
