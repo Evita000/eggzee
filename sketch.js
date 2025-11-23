@@ -1291,16 +1291,16 @@ function startCameraFromUserGesture() {
 }
 
 function touchStarted() {
-  // ⭐ EXIT DANCE MODE ON TOUCH
-  if (state === "dance") {
-    state = "awake";
-    return false;
-  }
-
-  // ⭐ FIRST TAP → Allow camera + unlock sketch
+  // 💥 PREVENT DOUBLE START (touch triggers mouse too)
   if (needsStart) {
     needsStart = false;
     startCameraFromUserGesture();
+    return false; // ⛔ NO mousePressed() call here
+  }
+
+  // ⭐ EXIT DANCE MODE ON TOUCH
+  if (state === "dance") {
+    state = "awake";
     return false;
   }
 
@@ -1329,9 +1329,8 @@ function touchStarted() {
     mouseY = touches[0].y;
   }
 
-  // ⭐ ⭐ ⭐ MAIN FIX: run button logic now ⭐ ⭐ ⭐
+  // ⭐ Now run button logic  
   mousePressed();
-
   return false;
 }
 
@@ -1480,6 +1479,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
