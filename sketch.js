@@ -260,6 +260,11 @@ function draw() {
     return;  // ⛔ Do NOT run the rest of draw() yet
   }
 
+  // DEBUG — show handY on ALL screens (awake, sleep, dance, feed)
+fill(255, 0, 0);
+textSize(32);
+text("handY: " + handY, 150, 120);
+
   const isNight = (energy <= 15 && startTime) || state === "sleep";
   if (isNight && cityNightImg) image(cityNightImg, width / 2, height / 2, width, height);
   else if (cityImg) image(cityImg, width / 2, height / 2, width, height);
@@ -1448,6 +1453,7 @@ function drawDiscoScene() {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
