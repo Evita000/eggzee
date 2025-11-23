@@ -1181,11 +1181,18 @@ function drawEnergyBar() {
 function mousePressed() {
 
   // ⭐ START on laptop OR mobile when they click ANYWHERE
-  if (needsStart) {
-    needsStart = false;
-    startCameraFromUserGesture();
-    return false;
+ if (needsStart) {
+  needsStart = false;
+
+  if (isMobileDevice()) {
+    startCameraFromUserGesture();  // mobile fix
+  } else {
+    startCamera();  // laptop fix
   }
+
+  return false;
+}
+
 
   // ⭐ EXIT DANCE MODE WITH TAP (MOVE THIS UP)
   if (state === "dance") {
@@ -1272,6 +1279,13 @@ function mousePressed() {
 function mouseReleased() {
   for (let f of foods) f.beingDragged = false;
 }
+
+function isMobileDevice() {
+  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+}
+
+
+
 function startCameraFromUserGesture() {
   // ⭐ Start auto-calibration for gestures
   calibStartTime = millis();
@@ -1479,6 +1493,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
