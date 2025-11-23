@@ -324,27 +324,31 @@ if (gestureReady && hand && millis() - lastGestureTime > gestureCooldown) {
     handY = null;
   }
 
-  // ⭐ Sleep and Dance logic
-  let sleepThreshold = /Android|iPhone|iPod/i.test(navigator.userAgent)
-    ? 0.55
-    : 0.70;
+  // ⭐ Sleep and Dance logic — CLEAN & CORRECT
+let isTablet = /iPad/i.test(navigator.userAgent);
 
-  if (handY !== null) {
+// ⭐ Revised thresholds for tablet vs mobile
+let sleepThreshold = isTablet ? 0.80 : 0.55;  
+let danceThreshold = isTablet ? 0.55 : 0.30;  
 
-    // Sleep
-    if (state === "awake" && handY > height * sleepThreshold) {
-      console.log("💤 LOW HAND → SLEEP");
-      state = "sleep";
-      lastGestureTime = millis();
-    }
+if (handY !== null) {
 
-    // Dance
-    else if (state === "awake" && handY < height * 0.30) {
-      console.log("💃 HIGH HAND → DANCE");
-      state = "dance";
-      lastGestureTime = millis();
-    }
+  // 💤 Sleep
+  if (state === "awake" && handY > height * sleepThreshold) {
+    console.log("💤 LOW HAND → SLEEP");
+    state = "sleep";
+    lastGestureTime = millis();
   }
+
+  // 💃 Dance
+  else if (state === "awake" && handY < height * danceThreshold) {
+    console.log("💃 HIGH HAND → DANCE");
+    state = "dance";
+    lastGestureTime = millis();
+  }
+}
+
+
 
   // ⭐ Pinch wake
   if (
@@ -1461,6 +1465,7 @@ function drawDiscoScene() {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
