@@ -319,12 +319,6 @@ if (gestureReady && hand && millis() - lastGestureTime > gestureCooldown) {
       }
     }
 
-// ⭐ ALWAYS FLIP Y-AXIS ON IPAD (your device reports upside-down)
-if (rawY !== null && /iPad/i.test(navigator.userAgent)) {
-  rawY = height - rawY;
-}
-
-
   }
 
   // ⭐ Now apply smoothing ONLY if rawY is valid
@@ -340,26 +334,27 @@ if (rawY !== null) {
 }
 
 
-  // ⭐ iPad calibrated thresholds (based on your real handY values)
-let sleepThreshold = 0.85;  
+ // ⭐ iPad calibrated thresholds
+let sleepThreshold = 0.85;
 let danceThreshold = 0.30;
 
 if (handY !== null) {
 
   // 💤 Sleep
-  if (state === "awake" && handY > height * sleepThreshold) {
+  if (state === "awake" && handY > sleepThreshold) {
     console.log("💤 LOW HAND → SLEEP");
     state = "sleep";
     lastGestureTime = millis();
   }
 
   // 💃 Dance
-  else if (state === "awake" && handY < height * danceThreshold) {
+  else if (state === "awake" && handY < danceThreshold) {
     console.log("💃 HIGH HAND → DANCE");
     state = "dance";
     lastGestureTime = millis();
   }
 }
+
 
 
 
@@ -1478,6 +1473,7 @@ function drawDiscoScene() {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
