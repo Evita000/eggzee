@@ -340,26 +340,27 @@ if (rawY !== null) {
 }
 
 
- // ⭐ iPad calibrated thresholds
+// ⭐ iPad calibrated thresholds
 let sleepThreshold = 0.85;
 let danceThreshold = 0.30;
 
 if (handY !== null) {
 
   // 💤 Sleep
-  if (state === "awake" && handY > sleepThreshold) {
+  if (state === "awake" && handY > height * sleepThreshold) {
     console.log("💤 LOW HAND → SLEEP");
     state = "sleep";
     lastGestureTime = millis();
   }
 
   // 💃 Dance
-  else if (state === "awake" && handY < danceThreshold) {
+  else if (state === "awake" && handY < height * danceThreshold) {
     console.log("💃 HIGH HAND → DANCE");
     state = "dance";
     lastGestureTime = millis();
   }
 }
+
 
 
 
@@ -1479,6 +1480,7 @@ function drawDiscoScene() {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
