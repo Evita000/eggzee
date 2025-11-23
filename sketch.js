@@ -278,10 +278,11 @@ text("handY: " + handY, 150, 120);
 
 // ------------------------------------------------
 // ✋ UNIVERSAL GESTURES (mobile + desktop)
-// ------------------------------------------------
 if (gestureReady && hand && millis() - lastGestureTime > gestureCooldown) {
 
-  // ⭐ SAFETY CHECK — make sure palm exists
+  let rawY = null; // ⭐ DECLARE HERE — AVAILABLE NO MATTER WHAT
+
+  // ⭐ Ensure palm exists
   if (
     hand.annotations &&
     hand.annotations.palmBase &&
@@ -290,53 +291,54 @@ if (gestureReady && hand && millis() - lastGestureTime > gestureCooldown) {
     let palm = hand.annotations.palmBase[0];
     let y = palm[1];
 
-    // ⭐ We must declare rawY first
-    let rawY = 0;
-
     // ⭐ Dynamic mapping for ALL devices
     let allY = [];
     for (let key in hand.annotations) {
-      hand.annotations[key].forEach(pt => allY.push(pt[1]));
+      if (hand.annotations[key]) {
+        hand.annotations[key].forEach(pt => allY.push(pt[1]));
+      }
     }
 
-    let minY = Math.min(...allY);
-    let maxY = Math.max(...allY);
+    if (allY.length > 0) {
+      let minY = Math.min(...allY);
+      let maxY = Math.max(...allY);
 
-    // Avoid divide-by-zero errors
-    if (maxY !== minY) {
-      rawY = map(y, minY, maxY, 0, height);
-    } else {
-      rawY = height / 2; // fallback
+      if (maxY !== minY) {
+        rawY = map(y, minY, maxY, 0, height);
+      } else {
+        rawY = height / 2;
+      }
     }
 
-    // ⭐ reverse camera on iPhone/iPad (including upside down)
-    if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+    // ⭐ Flip for iPad only
+    if (rawY !== null && /iPhone|iPad|iPod/i.test(navigator.userAgent)) {
       rawY = height - rawY;
     }
+  }
 
-    // ⭐ Smooth handY for stability
-    if (handY === null) handY = rawY;
+  // ⭐ Now apply smoothing ONLY if rawY is valid
+  if (rawY !== null) {
+    if (handY == null) handY = rawY;
     handY = lerp(handY, rawY, 0.25);
   } else {
     handY = null;
   }
 
-  // 📱 dynamic sleep threshold: mobile needs higher sensitivity
+  // ⭐ Sleep and Dance logic
   let sleepThreshold = /Android|iPhone|iPod/i.test(navigator.userAgent)
-    ? 0.55   // mobile phones
-    : 0.70;  // iPad + desktop
+    ? 0.55
+    : 0.70;
 
-  // ⭐ Only run gestures if handY is valid
   if (handY !== null) {
 
-    // 💤 Sleep gesture — low hand
+    // Sleep
     if (state === "awake" && handY > height * sleepThreshold) {
       console.log("💤 LOW HAND → SLEEP");
       state = "sleep";
       lastGestureTime = millis();
     }
 
-    // 💃 Dance gesture — high hand
+    // Dance
     else if (state === "awake" && handY < height * 0.30) {
       console.log("💃 HIGH HAND → DANCE");
       state = "dance";
@@ -344,7 +346,7 @@ if (gestureReady && hand && millis() - lastGestureTime > gestureCooldown) {
     }
   }
 
-  // 🤏 PINCH WAKE
+  // ⭐ Pinch wake
   if (
     hand.annotations &&
     hand.annotations.thumb &&
@@ -353,26 +355,14 @@ if (gestureReady && hand && millis() - lastGestureTime > gestureCooldown) {
     let thumb = hand.annotations.thumb[3];
     let index = hand.annotations.indexFinger[3];
     let d = dist(thumb[0], thumb[1], index[0], index[1]);
-    pinch = d < 30;
 
-    if (state === "sleep" && pinch) {
+    if (state === "sleep" && d < 30) {
       console.log("✨ PINCH → WAKE");
       state = "awake";
       lastGestureTime = millis();
     }
   }
 }
-
-
-// DEBUG — show handY
-fill(255, 0, 0);
-textSize(32);
-text("handY: " + handY, 120, 80);
-
-
-
-
-
 
   // 🕒 Always update energy every frame (global countdown)
   if (realStartTime) {
@@ -1471,6 +1461,7 @@ function drawDiscoScene() {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
