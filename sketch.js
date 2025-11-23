@@ -265,7 +265,7 @@ function draw() {
     return;  // ⛔ Do NOT run the rest of draw() yet
   }
 
-const isNight = (energy <= 15 && startTime) || state === "sleep";
+const isNight = (state === "sleep");
 
 if (isNight && cityNightImg) {
   image(cityNightImg, width / 2, height / 2, width, height);
@@ -1480,6 +1480,7 @@ function drawDiscoScene() {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
