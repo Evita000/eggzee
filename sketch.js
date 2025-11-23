@@ -316,6 +316,10 @@ if (gestureReady && hand && millis() - lastGestureTime > gestureCooldown) {
       if (maxY !== minY) {
         // ⭐ ALWAYS MAP top → 0, bottom → height
         rawY = map(y, minY, maxY, 0, height);
+        if (/iPad/i.test(navigator.userAgent)) {
+  rawY = height - rawY;
+}
+        
       } else {
         rawY = height / 2;
       }
@@ -1483,6 +1487,7 @@ function drawDiscoScene() {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
