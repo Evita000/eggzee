@@ -313,16 +313,15 @@ if (gestureReady && hand && millis() - lastGestureTime > gestureCooldown) {
   let maxY = Math.max(...allY);
 
   if (maxY !== minY) {
-    rawY = map(y, minY, maxY, 0, height);
+  rawY = map(y, minY, maxY, height, 0);
+
   } else {
     rawY = height / 2;
   }
 }
 
-// ⭐ Flip for iPad cameras that report upside-down Y
-if (rawY !== null && /iPad/i.test(navigator.userAgent)) {
-  rawY = height - rawY;
-}
+
+
 
 }  // ← ⭐ CLOSES the palmBase block PROPERLY
 
@@ -1480,6 +1479,7 @@ function drawDiscoScene() {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
