@@ -210,6 +210,22 @@ async function startCamera(selectedCam) {
     console.log("📷 Camera started!");
   });
 
+// ✅ FIX: force Chrome to keep the camera stream alive
+try {
+  const track = video.elt.srcObject?.getVideoTracks?.()[0];
+  if (track) {
+    track.applyConstraints({ advanced: [{ torch: false }] });
+  }
+  video.elt.addEventListener("loadeddata", () => {
+    console.log("🎥 Video streaming confirmed");
+  });
+} catch (e) {
+  console.warn("Stream not ready yet, continuing…");
+}
+
+
+
+  
   // ⭐ DO NOT HIDE ON DESKTOP — KEEP IT VISIBLE
   video.show();
   video.size(640, 480);
@@ -1476,6 +1492,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
