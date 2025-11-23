@@ -1187,7 +1187,8 @@ function mousePressed() {
   if (isMobileDevice()) {
     startCameraFromUserGesture();  // mobile fix
   } else {
-    startCamera();  // laptop fix
+   setTimeout(() => startCamera(), 300);  // DELAY FIXES HAND = null
+
   }
 
   return false;
@@ -1493,6 +1494,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
