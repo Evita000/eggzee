@@ -341,6 +341,10 @@ let sleepThreshold = /Android|iPhone|iPod/i.test(navigator.userAgent)
   }
 }
 
+// DEBUG — show handY
+fill(255, 0, 0);
+textSize(32);
+text("handY: " + handY, 120, 80);
 
 
 
@@ -1444,6 +1448,7 @@ function drawDiscoScene() {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
