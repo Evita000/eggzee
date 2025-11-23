@@ -188,8 +188,12 @@ text("Tap to Start Eggzee 🐣", width / 2, height / 2);
 async function startCamera() {
   console.log("🚀 Starting camera...");
 
-  // Use ONLY p5.js createCapture — no direct getUserMedia
-  let constraints = {
+  // Remove any old camera
+  if (video && video.elt && video.elt.srcObject) {
+    video.elt.srcObject.getTracks().forEach(t => t.stop());
+  }
+
+  const constraints = {
     audio: false,
     video: {
       facingMode: "user",
@@ -198,39 +202,54 @@ async function startCamera() {
     }
   };
 
-  // ⭐ Create camera ONCE using p5.js
-  video = createCapture(constraints, () => {
-    console.log("📷 Camera started!");
-  });
+  try {
+    // 1️⃣ GET REAL CAMERA STREAM
+    const stream = await navigator.mediaDevices.getUserMedia(constraints);
 
-  // ⭐ Keep stream alive + visible
-  video.show();
-  video.size(640, 480);
-  video.style("position","fixed");
-  video.style("bottom","10px");
-  video.style("right","10px");
-  video.style("width","160px");
-  video.style("height","120px");
-  video.style("opacity","0.3");
-  video.style("z-index","9999");
+    // 2️⃣ CREATE P5 VIDEO ELEMENT *WITHOUT* AUTO-STARTING
+    if (!video) {
+      video = createCapture(constraints);
+    }
 
-  video.elt.setAttribute("playsinline", "");
-  video.elt.setAttribute("webkit-playsinline", "");
-  video.elt.setAttribute("autoplay", "");
-  video.elt.setAttribute("muted", "");
-  video.elt.muted = true;
+    video.elt.srcObject = stream;
+    video.elt.muted = true;
+    video.elt.setAttribute("playsinline", "");
+    video.elt.setAttribute("autoplay", "");
+    video.elt.setAttribute("webkit-playsinline", "");
 
-  // ⭐ Handpose loads AFTER camera is running
-  handpose = ml5.handpose(video, () => {
-    console.log("✋ Handpose model loaded");
-    gestureReady = true;
-  });
+    // 3️⃣ WAIT UNTIL VIDEO ACTUALLY HAS DATA
+    await new Promise(resolve => {
+      video.elt.onloadeddata = () => {
+        console.log("🎥 Camera fully loaded!");
+        resolve();
+      };
+    });
 
-  handpose.on("predict", results => {
-    hand = results.length > 0 ? results[0] : null;
-  });
+    // 4️⃣ POSITION SMALL PREVIEW
+    video.show();
+    video.size(640, 480);
+    video.style("position","fixed");
+    video.style("bottom","10px");
+    video.style("right","10px");
+    video.style("width","160px");
+    video.style("height","120px");
+    video.style("opacity","0.3");
+
+    // 5️⃣ LOAD HANDPOSE *ONLY NOW*
+    console.log("🤖 Loading ml5 handpose...");
+    handpose = ml5.handpose(video, () => {
+      console.log("✋ Handpose model loaded NOW");
+      gestureReady = true;
+    });
+
+    handpose.on("predict", results => {
+      hand = results.length > 0 ? results[0] : null;
+    });
+
+  } catch (err) {
+    console.error("❌ Camera failed:", err);
+  }
 }
-
 
 
 // ---------- DRAW ----------
@@ -1254,7 +1273,6 @@ function mouseReleased() {
   for (let f of foods) f.beingDragged = false;
 }
 function startCameraFromUserGesture() {
-
   // ⭐ Start auto-calibration for gestures
   calibStartTime = millis();
   isCalibrating = true;
@@ -1265,9 +1283,11 @@ function startCameraFromUserGesture() {
     realStartTime = Date.now();
     startTime = millis();
   }
-  startCamera();
 
-
+  console.log("⏳ Waiting 300ms before starting camera...");
+  setTimeout(() => {
+    startCamera();  // ⭐ delayed camera start → avoids AbortError
+  }, 300);
 }
 
 function touchStarted() {
@@ -1460,6 +1480,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
