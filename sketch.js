@@ -188,6 +188,7 @@ text("Tap to Start Eggzee 🐣", width / 2, height / 2);
 async function startCamera() {
   console.log("🚀 Starting camera...");
 
+  // Use ONLY p5.js createCapture — no direct getUserMedia
   let constraints = {
     audio: false,
     video: {
@@ -197,26 +198,12 @@ async function startCamera() {
     }
   };
 
-  // Try native browser getUserMedia first
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia(constraints);
+  // ⭐ Create camera ONCE using p5.js
+  video = createCapture(constraints, () => {
+    console.log("📷 Camera started!");
+  });
 
-    // Fallback: manually attach stream to video element
-    if (!video) {
-      video = createCapture(constraints, () => {
-        console.log("📷 Camera started!");
-      });
-    }
-
-    video.elt.srcObject = stream;     // ⭐ REQUIRED FIX
-    video.elt.play();
-
-  } catch (err) {
-    console.error("❌ Failed to open camera:", err);
-    return;
-  }
-
-  // Keep stream alive + visible
+  // ⭐ Keep stream alive + visible
   video.show();
   video.size(640, 480);
   video.style("position","fixed");
@@ -227,14 +214,13 @@ async function startCamera() {
   video.style("opacity","0.3");
   video.style("z-index","9999");
 
-  // Mobile flags
   video.elt.setAttribute("playsinline", "");
   video.elt.setAttribute("webkit-playsinline", "");
   video.elt.setAttribute("autoplay", "");
   video.elt.setAttribute("muted", "");
   video.elt.muted = true;
 
-  // Handpose
+  // ⭐ Handpose loads AFTER camera is running
   handpose = ml5.handpose(video, () => {
     console.log("✋ Handpose model loaded");
     gestureReady = true;
@@ -244,7 +230,6 @@ async function startCamera() {
     hand = results.length > 0 ? results[0] : null;
   });
 }
-
 
 
 
@@ -1475,6 +1460,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
