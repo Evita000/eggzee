@@ -197,11 +197,26 @@ async function startCamera() {
     }
   };
 
-  video = createCapture(constraints, () => {
-    console.log("📷 Camera started!");
-  });
+  // Try native browser getUserMedia first
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia(constraints);
 
-  // Keep stream alive
+    // Fallback: manually attach stream to video element
+    if (!video) {
+      video = createCapture(constraints, () => {
+        console.log("📷 Camera started!");
+      });
+    }
+
+    video.elt.srcObject = stream;     // ⭐ REQUIRED FIX
+    video.elt.play();
+
+  } catch (err) {
+    console.error("❌ Failed to open camera:", err);
+    return;
+  }
+
+  // Keep stream alive + visible
   video.show();
   video.size(640, 480);
   video.style("position","fixed");
@@ -212,6 +227,7 @@ async function startCamera() {
   video.style("opacity","0.3");
   video.style("z-index","9999");
 
+  // Mobile flags
   video.elt.setAttribute("playsinline", "");
   video.elt.setAttribute("webkit-playsinline", "");
   video.elt.setAttribute("autoplay", "");
@@ -228,6 +244,7 @@ async function startCamera() {
     hand = results.length > 0 ? results[0] : null;
   });
 }
+
 
 
 
@@ -1458,6 +1475,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
