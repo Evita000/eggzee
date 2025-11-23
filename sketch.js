@@ -280,6 +280,8 @@ fill(255, 0, 0);
 textSize(50);
 textAlign(LEFT, TOP);
 text("handY: " + handY, 20, 20);
+// ⭐ RESET ALIGNMENT TO NORMAL
+textAlign(CENTER, CENTER);
 
 
 
@@ -333,12 +335,9 @@ if (rawY !== null && /iPad/i.test(navigator.userAgent)) {
     handY = null;
   }
 
-  // ⭐ Sleep and Dance logic — CLEAN & CORRECT
-let isTablet = /iPad/i.test(navigator.userAgent);
+  let sleepThreshold = 0.92;   // ~92% of screen height → iPad low hand
+let danceThreshold = 0.55;   // ~55% of screen height → iPad high hand
 
-// ⭐ Revised thresholds for tablet vs mobile
-let sleepThreshold = isTablet ? 0.80 : 0.55;  
-let danceThreshold = isTablet ? 0.55 : 0.30;  
 
 if (handY !== null) {
 
@@ -1474,6 +1473,7 @@ function drawDiscoScene() {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
