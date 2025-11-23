@@ -283,29 +283,33 @@ if (gestureReady && hand && millis() - lastGestureTime > gestureCooldown) {
     let palm = hand.annotations.palmBase[0];
     let y = palm[1];
 
-    // map Y from camera space → screen space
-    handY = map(y, 0, 240, 0, height);
+    // 🎯 Map Y from camera to screen
+    let rawY = map(y, 0, 240, 0, height);
 
-    // iPhone flip fix
+    // reverse camera on iPhone/iPad
     if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-      handY = height - handY;
+      rawY = height - rawY;
     }
+
+    // 🧽 Smooth handY for stability
+    if (handY === null) handY = rawY;
+    handY = lerp(handY, rawY, 0.25);
   } else {
-    handY = null; // no valid hand
+    handY = null;
   }
 
   // ⭐ Only run gestures if handY is valid
   if (handY !== null) {
 
-    // 🔽 LOW HAND → SLEEP
-    if (state === "awake" && handY > height * 0.66) {
+    // 💤 Sleep gesture — low hand (bottom 30% of screen)
+    if (state === "awake" && handY > height * 0.70) {
       console.log("💤 LOW HAND → SLEEP");
       state = "sleep";
       lastGestureTime = millis();
     }
 
-    // 🔼 HIGH HAND → DANCE
-    else if (state === "awake" && handY < height * 0.40) {
+    // 💃 Dance gesture — high hand (top 30% of screen)
+    else if (state === "awake" && handY < height * 0.30) {
       console.log("💃 HIGH HAND → DANCE");
       state = "dance";
       lastGestureTime = millis();
@@ -331,12 +335,7 @@ if (gestureReady && hand && millis() - lastGestureTime > gestureCooldown) {
   }
 }
 
-// 🔍 DEBUG display
-if (gestureReady && hand) {
-  fill(255);
-  textSize(24);
-  text("handY: " + nf(handY, 1, 0), 80, 40);
-}
+
 
 
 
@@ -1439,6 +1438,7 @@ function drawDiscoScene() {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
