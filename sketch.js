@@ -284,97 +284,84 @@ text("handY: " + handY, 20, 20);
 textAlign(CENTER, CENTER);
 
 
-
-// ------------------------------------------------
-// ------------------------------------------------
-// ✋ UNIVERSAL GESTURES (mobile + desktop)
+// ✋ UNIVERSAL GESTURES — FIXED FOR MOBILE + iPAD
 // ------------------------------------------------
 if (gestureReady && hand && millis() - lastGestureTime > gestureCooldown) {
 
   let rawY = null;
 
-  // ⭐ Extract palm Y safely
-  if (
-    hand.annotations &&
-    hand.annotations.palmBase &&
-    hand.annotations.palmBase[0]
-  ) {
-    let palm = hand.annotations.palmBase[0];
-    let y = palm[1];
-
-    let allY = [];
-    for (let key in hand.annotations) {
-      if (hand.annotations[key]) {
-        hand.annotations[key].forEach(pt => allY.push(pt[1]));
-      }
-    }
-
-    if (allY.length > 0) {
-      let minY = Math.min(...allY);
-      let maxY = Math.max(...allY);
-
-      if (maxY !== minY) {
-        // ⭐ ALWAYS MAP top → 0, bottom → height
-        rawY = map(y, minY, maxY, 0, height);
-        if (/iPad/i.test(navigator.userAgent)) {
-  rawY = height - rawY;
-}
-        
-      } else {
-        rawY = height / 2;
-      }
-    }
+  // ⭐ Grab raw palm Y
+  if (hand.annotations?.palmBase?.[0]) {
+    rawY = hand.annotations.palmBase[0][1];
   }
 
-  // ⭐ Smooth the Y value
+  // ⭐ Detect device
+  let isIPad = /iPad/i.test(navigator.userAgent);
+  let isMobile = /Android|iPhone/i.test(navigator.userAgent);
+
+  // ⭐ Final thresholds
+  let danceThreshold;
+  let sleepThreshold;
+
   if (rawY !== null) {
-    if (handY == null) handY = rawY;
-    handY = lerp(handY, rawY, 0.08);
-  } else {
-    handY = null;
+
+    // -------- iPAD ----------
+    if (isIPad) {
+      rawY = height - rawY;   // flip Y for iPad
+      if (handY == null) handY = rawY;
+      handY = lerp(handY, rawY, 0.20);
+      danceThreshold = height * 0.15;  // top
+      sleepThreshold = height * 0.85;  // bottom
+    }
+
+    // -------- MOBILE ----------
+    else if (isMobile) {
+      if (handY == null) handY = rawY;
+      handY = lerp(handY, rawY, 0.20);
+      // your measured mobile ranges: ~30 top, ~276 bottom
+      danceThreshold = 70;
+      sleepThreshold = 220;
+    }
+
+    // -------- DESKTOP ----------
+    else {
+      if (handY == null) handY = rawY;
+      handY = lerp(handY, rawY, 0.15);
+      danceThreshold = height * 0.20;
+      sleepThreshold = height * 0.80;
+    }
   }
 
-  // ⭐ New safe pixel thresholds
-  const danceThreshold = height * 0.20;  // top 20%
-  const sleepThreshold = height * 0.80;  // bottom 20%
 
-  // ⭐ Dead zone to prevent noise triggering both
-  const deadZoneTop = danceThreshold + height * 0.10;
-  const deadZoneBottom = sleepThreshold - height * 0.10;
-
-  // ⭐ Lockout to prevent flip-flopping
+  // ⭐ Lockout to stop flip-flopping
   if (!draw.lastStateChange) draw.lastStateChange = 0;
   const lockout = 1500;
 
   if (millis() - draw.lastStateChange > lockout && handY !== null) {
 
-    // 🎵 DANCE (top)
+    // 💃 DANCE
     if (handY < danceThreshold) {
-      console.log("💃 HIGH HAND → DANCE");
+      console.log("💃 → DANCE");
       state = "dance";
       draw.lastStateChange = millis();
       lastGestureTime = millis();
     }
 
-    // 😴 SLEEP (bottom)
+    // 😴 SLEEP
     else if (handY > sleepThreshold) {
-      console.log("💤 LOW HAND → SLEEP");
+      console.log("😴 → SLEEP");
       state = "sleep";
       draw.lastStateChange = millis();
       lastGestureTime = millis();
     }
-
-    // 🛑 ignore mid-range noise
-    else if (handY > deadZoneTop && handY < deadZoneBottom) {
-      // do nothing
-    }
   }
 
-  // ⭐ Pinch wake
+  // --------------------------------------------------
+  // ⭐ PINCH TO WAKE — KEEP THIS HERE
+  // --------------------------------------------------
   if (
-    hand.annotations &&
-    hand.annotations.thumb &&
-    hand.annotations.indexFinger
+    hand.annotations?.thumb &&
+    hand.annotations?.indexFinger
   ) {
     let t = hand.annotations.thumb[3];
     let i = hand.annotations.indexFinger[3];
@@ -388,7 +375,6 @@ if (gestureReady && hand && millis() - lastGestureTime > gestureCooldown) {
     }
   }
 }
-
 
   // 🕒 Always update energy every frame (global countdown)
   if (realStartTime) {
@@ -407,7 +393,6 @@ if (state !== "egg" && state !== "hatching") {
     state = "sleep";
     sleepFade = 0;
   }
-
 
 // ---------- SCENES ----------
 if (state === "egg") {
@@ -1484,9 +1469,8 @@ function drawDiscoScene() {
   
 }
 
-
-
 // ✅ End of Eggzee Script — all good!
+
 
 
 
