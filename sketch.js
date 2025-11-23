@@ -298,11 +298,17 @@ if (gestureReady && hand && millis() - lastGestureTime > gestureCooldown) {
     handY = null;
   }
 
+  // 📱 dynamic sleep threshold: mobile needs higher sensitivity
+let sleepThreshold = /Android|iPhone|iPod/i.test(navigator.userAgent)
+  ? 0.55   // mobile phones → use 55% instead of 70%
+  : 0.70;  // iPad + desktop → keep normal 70%
+
   // ⭐ Only run gestures if handY is valid
   if (handY !== null) {
 
     // 💤 Sleep gesture — low hand (bottom 30% of screen)
-    if (state === "awake" && handY > height * 0.70) {
+    if (state === "awake" && handY > height * sleepThreshold) {
+
       console.log("💤 LOW HAND → SLEEP");
       state = "sleep";
       lastGestureTime = millis();
@@ -1438,6 +1444,7 @@ function drawDiscoScene() {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
