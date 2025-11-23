@@ -328,12 +328,17 @@ if (rawY !== null && /iPad/i.test(navigator.userAgent)) {
   }
 
   // ⭐ Now apply smoothing ONLY if rawY is valid
-  if (rawY !== null) {
-    if (handY == null) handY = rawY;
-    handY = lerp(handY, rawY, 0.25);
-  } else {
-    handY = null;
-  }
+if (rawY !== null) {
+  if (handY == null) handY = rawY;
+
+  // ⭐ Heavy smoothing (stops wild jumps)
+  let smoothFactor = 0.08;  // very stable
+
+  handY = lerp(handY, rawY, smoothFactor);
+} else {
+  handY = null;
+}
+
 
   // ⭐ iPad calibrated thresholds (based on your real handY values)
 let sleepThreshold = 770;  // hand low → sleep
@@ -1476,6 +1481,7 @@ function drawDiscoScene() {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
