@@ -1266,15 +1266,6 @@ function startCameraFromUserGesture() {
   startCamera();
 
 
-  navigator.mediaDevices.enumerateDevices().then(devices => {
-    const cams = devices.filter(d =>
-      d.kind === "videoinput" &&
-      !d.label.toLowerCase().includes("logi") &&
-      !d.label.toLowerCase().includes("virtual")
-    );
-    let selectedCam = cams[0]?.deviceId;
-    safeStartCamera(selectedCam);
-  });
 }
 
 function touchStarted() {
@@ -1467,6 +1458,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
