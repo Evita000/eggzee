@@ -275,10 +275,7 @@ text("handY: " + handY, 150, 120);
   else if (cityImg) image(cityImg, width / 2, height / 2, width, height);
   else background(200);
 
-// ------------------------------------------------
-//// ------------------------------------------------
-// ------------------------------------------------
-// ------------------------------------------------
+
 // ------------------------------------------------
 // ✋ UNIVERSAL GESTURES (mobile + desktop)
 // ------------------------------------------------
@@ -293,30 +290,31 @@ if (gestureReady && hand && millis() - lastGestureTime > gestureCooldown) {
     let palm = hand.annotations.palmBase[0];
     let y = palm[1];
 
-    // 🎯 Map Y from camera to screen
-    // Get the SMALLEST and LARGEST Y of the hand model to normalize iPad values
-let allY = [];
-for (let key in hand.annotations) {
-  hand.annotations[key].forEach(pt => allY.push(pt[1]));
-}
+    // ⭐ We must declare rawY first
+    let rawY = 0;
 
-let minY = Math.min(...allY);
-let maxY = Math.max(...allY);
+    // ⭐ Dynamic mapping for ALL devices
+    let allY = [];
+    for (let key in hand.annotations) {
+      hand.annotations[key].forEach(pt => allY.push(pt[1]));
+    }
 
-// Avoid divide-by-zero errors
-if (maxY !== minY) {
-  rawY = map(y, minY, maxY, 0, height);
-} else {
-  rawY = height / 2; // fallback
-}
+    let minY = Math.min(...allY);
+    let maxY = Math.max(...allY);
 
+    // Avoid divide-by-zero errors
+    if (maxY !== minY) {
+      rawY = map(y, minY, maxY, 0, height);
+    } else {
+      rawY = height / 2; // fallback
+    }
 
-    // reverse camera on iPhone/iPad
+    // ⭐ reverse camera on iPhone/iPad (including upside down)
     if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
       rawY = height - rawY;
     }
 
-    // 🧽 Smooth handY for stability
+    // ⭐ Smooth handY for stability
     if (handY === null) handY = rawY;
     handY = lerp(handY, rawY, 0.25);
   } else {
@@ -324,22 +322,21 @@ if (maxY !== minY) {
   }
 
   // 📱 dynamic sleep threshold: mobile needs higher sensitivity
-let sleepThreshold = /Android|iPhone|iPod/i.test(navigator.userAgent)
-  ? 0.55   // mobile phones → use 55% instead of 70%
-  : 0.70;  // iPad + desktop → keep normal 70%
+  let sleepThreshold = /Android|iPhone|iPod/i.test(navigator.userAgent)
+    ? 0.55   // mobile phones
+    : 0.70;  // iPad + desktop
 
   // ⭐ Only run gestures if handY is valid
   if (handY !== null) {
 
-    // 💤 Sleep gesture — low hand (bottom 30% of screen)
+    // 💤 Sleep gesture — low hand
     if (state === "awake" && handY > height * sleepThreshold) {
-
       console.log("💤 LOW HAND → SLEEP");
       state = "sleep";
       lastGestureTime = millis();
     }
 
-    // 💃 Dance gesture — high hand (top 30% of screen)
+    // 💃 Dance gesture — high hand
     else if (state === "awake" && handY < height * 0.30) {
       console.log("💃 HIGH HAND → DANCE");
       state = "dance";
@@ -365,6 +362,7 @@ let sleepThreshold = /Android|iPhone|iPod/i.test(navigator.userAgent)
     }
   }
 }
+
 
 // DEBUG — show handY
 fill(255, 0, 0);
@@ -1473,6 +1471,7 @@ function drawDiscoScene() {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
