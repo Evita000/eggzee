@@ -286,12 +286,14 @@ textAlign(CENTER, CENTER);
 
 
 // ------------------------------------------------
+// ------------------------------------------------
 // ✋ UNIVERSAL GESTURES (mobile + desktop)
+// ------------------------------------------------
 if (gestureReady && hand && millis() - lastGestureTime > gestureCooldown) {
 
-  let rawY = null; // ⭐ DECLARE HERE — AVAILABLE NO MATTER WHAT
+  let rawY = null;
 
-  // ⭐ Ensure palm exists
+  // ⭐ Extract palm Y safely
   if (
     hand.annotations &&
     hand.annotations.palmBase &&
@@ -300,7 +302,6 @@ if (gestureReady && hand && millis() - lastGestureTime > gestureCooldown) {
     let palm = hand.annotations.palmBase[0];
     let y = palm[1];
 
-    // ⭐ Dynamic mapping for ALL devices
     let allY = [];
     for (let key in hand.annotations) {
       if (hand.annotations[key]) {
@@ -308,62 +309,62 @@ if (gestureReady && hand && millis() - lastGestureTime > gestureCooldown) {
       }
     }
 
-   if (allY.length > 0) {
-  let minY = Math.min(...allY);
-  let maxY = Math.max(...allY);
+    if (allY.length > 0) {
+      let minY = Math.min(...allY);
+      let maxY = Math.max(...allY);
 
-  if (maxY !== minY) {
-  rawY = map(y, minY, maxY, height, 0);
+      if (maxY !== minY) {
+        // ⭐ ALWAYS MAP top → 0, bottom → height
+        rawY = map(y, minY, maxY, 0, height);
+      } else {
+        rawY = height / 2;
+      }
+    }
+  }
 
+  // ⭐ Smooth the Y value
+  if (rawY !== null) {
+    if (handY == null) handY = rawY;
+    handY = lerp(handY, rawY, 0.08);
   } else {
-    rawY = height / 2;
-  }
-}
-
-
-
-
-}  // ← ⭐ CLOSES the palmBase block PROPERLY
-
-
-
-  // ⭐ Now apply smoothing ONLY if rawY is valid
-if (rawY !== null) {
-  if (handY == null) handY = rawY;
-
-  // ⭐ Heavy smoothing (stops wild jumps)
-  let smoothFactor = 0.08;  // very stable
-
-  handY = lerp(handY, rawY, smoothFactor);
-} else {
-  handY = null;
-}
-
-
-// ⭐ iPad calibrated thresholds
-let sleepThreshold = 0.85;
-let danceThreshold = 0.30;
-
-if (handY !== null) {
-
-  // 💤 Sleep
-  if (state === "awake" && handY > height * sleepThreshold) {
-    console.log("💤 LOW HAND → SLEEP");
-    state = "sleep";
-    lastGestureTime = millis();
+    handY = null;
   }
 
-  // 💃 Dance
-  else if (state === "awake" && handY < height * danceThreshold) {
-    console.log("💃 HIGH HAND → DANCE");
-    state = "dance";
-    lastGestureTime = millis();
+  // ⭐ New safe pixel thresholds
+  const danceThreshold = height * 0.20;  // top 20%
+  const sleepThreshold = height * 0.80;  // bottom 20%
+
+  // ⭐ Dead zone to prevent noise triggering both
+  const deadZoneTop = danceThreshold + height * 0.10;
+  const deadZoneBottom = sleepThreshold - height * 0.10;
+
+  // ⭐ Lockout to prevent flip-flopping
+  if (!draw.lastStateChange) draw.lastStateChange = 0;
+  const lockout = 1500;
+
+  if (millis() - draw.lastStateChange > lockout && handY !== null) {
+
+    // 🎵 DANCE (top)
+    if (handY < danceThreshold) {
+      console.log("💃 HIGH HAND → DANCE");
+      state = "dance";
+      draw.lastStateChange = millis();
+      lastGestureTime = millis();
+    }
+
+    // 😴 SLEEP (bottom)
+    else if (handY > sleepThreshold) {
+      console.log("💤 LOW HAND → SLEEP");
+      state = "sleep";
+      draw.lastStateChange = millis();
+      lastGestureTime = millis();
+    }
+
+    // 🛑 ignore mid-range noise
+    else if (handY > deadZoneTop && handY < deadZoneBottom) {
+      // do nothing
+    }
   }
-}
-
-
-
-
 
   // ⭐ Pinch wake
   if (
@@ -371,17 +372,19 @@ if (handY !== null) {
     hand.annotations.thumb &&
     hand.annotations.indexFinger
   ) {
-    let thumb = hand.annotations.thumb[3];
-    let index = hand.annotations.indexFinger[3];
-    let d = dist(thumb[0], thumb[1], index[0], index[1]);
+    let t = hand.annotations.thumb[3];
+    let i = hand.annotations.indexFinger[3];
+    let d = dist(t[0], t[1], i[0], i[1]);
 
     if (state === "sleep" && d < 30) {
       console.log("✨ PINCH → WAKE");
       state = "awake";
+      draw.lastStateChange = millis();
       lastGestureTime = millis();
     }
   }
 }
+
 
   // 🕒 Always update energy every frame (global countdown)
   if (realStartTime) {
@@ -1480,6 +1483,7 @@ function drawDiscoScene() {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
