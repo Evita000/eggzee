@@ -335,21 +335,24 @@ if (rawY !== null && /iPad/i.test(navigator.userAgent)) {
     handY = null;
   }
 
-  let sleepThreshold = 0.92;   // ~92% of screen height → iPad low hand
-let danceThreshold = 0.55;   // ~55% of screen height → iPad high hand
+  // ⭐ iPad calibrated thresholds (based on your real handY values)
+let sleepThreshold = 770;  // hand low → sleep
+let danceThreshold = 700;  // hand high → dance
 
 
 if (handY !== null) {
 
   // 💤 Sleep
-  if (state === "awake" && handY > height * sleepThreshold) {
+if (state === "awake" && handY > sleepThreshold) {
+
     console.log("💤 LOW HAND → SLEEP");
     state = "sleep";
     lastGestureTime = millis();
   }
 
   // 💃 Dance
-  else if (state === "awake" && handY < height * danceThreshold) {
+else if (state === "awake" && handY < danceThreshold) {
+
     console.log("💃 HIGH HAND → DANCE");
     state = "dance";
     lastGestureTime = millis();
@@ -1473,6 +1476,7 @@ function drawDiscoScene() {
 
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
