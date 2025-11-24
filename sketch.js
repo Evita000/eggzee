@@ -237,10 +237,18 @@ async function startCamera() {
 
     // 5️⃣ LOAD HANDPOSE *ONLY NOW*
     console.log("🤖 Loading ml5 handpose...");
-    handpose = ml5.handpose(video, () => {
-      console.log("✋ Handpose model loaded NOW");
-      gestureReady = true;
-    });
+   handpose = ml5.handpose(video, () => {
+  console.log("✋ Handpose model loaded");
+
+  gestureReady = false;
+  console.log("⏳ Waiting 1200ms before enabling gestures...");
+  
+  setTimeout(() => {
+    gestureReady = true;
+    console.log("📸 Gesture control now active");
+  }, 1200);   // 1.2 seconds = stable mobile detection
+});
+
 
     handpose.on("predict", results => {
       hand = results.length > 0 ? results[0] : null;
@@ -1509,6 +1517,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
