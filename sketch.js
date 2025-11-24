@@ -116,6 +116,8 @@ function preload() {
 function setup() {
   pixelDensity(1);
   createCanvas(windowWidth, windowHeight);
+  // ⭐ Remove restore flag so coming back from dance doesn't hatch the egg
+  localStorage.removeItem("eggzeeForceAwake");
 
 // 👇 SHOW TAP SCREEN INSTEAD
 background(0);
@@ -1256,10 +1258,13 @@ function mousePressed() {
     }
 
     // DANCE
-    if (insideButton(danceBtn)) {
-      window.open("eggzeedance.html", "_blank");
-      return false;
-    }
+ if (insideButton(danceBtn)) {
+  localStorage.setItem("eggzeeForceAwake", "true");  // ⭐ Save awake state
+  localStorage.setItem("eggzeeRealStartTime", realStartTime); // preserve timer
+  window.open("eggzeedance.html", "_blank");
+  return false;
+}
+
 
     // JOKE
     if (insideButton(jokeBtn)) {
@@ -1517,6 +1522,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
