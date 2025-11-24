@@ -334,16 +334,17 @@ if (gestureReady && hand && millis() - lastGestureTime > gestureCooldown) {
 
       let span = calibBottom - calibTop;
 
-// Mobile device fix — wider middle zone
+// Mobile thresholds — SIMPLE + RELIABLE
 if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-  danceThreshold = calibTop + span * 0.40;   // HAND HIGH = dance
-  sleepThreshold = calibTop + span * 0.60;   // HAND LOW = sleep
-}
-// Laptop fallback
+  danceThreshold = calibTop + span * 0.32;   // top 32% = DANCE
+  sleepThreshold = calibTop + span * 0.68;   // bottom 32% = SLEEP
+} 
+// Laptop (fallback)
 else {
   danceThreshold = calibTop + span * 0.20;
   sleepThreshold = calibTop + span * 0.80;
 }
+
 
 console.log("✔️ Mobile thresholds fixed!");
 console.log("danceThreshold:", danceThreshold);
@@ -1522,6 +1523,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
