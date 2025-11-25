@@ -445,10 +445,10 @@ if (showYum) {
     textSize(40);
     text(f.emoji, f.x, f.y);
 
-    // 🩷 Detect “eating”
-   // ⭐ Magnet effect when food gets close
+// 🩷 Detect “eating”
 let d = dist(f.x, f.y, eggzee.x, eggzee.y);
 
+// ⭐ Magnet effect when food gets close
 if (d < 120 && !f.toRemove) {
   // gently pull food towards Eggzee
   f.x = lerp(f.x, eggzee.x, 0.15);
@@ -463,72 +463,63 @@ if (d < 45 && !f.toRemove) {
   yumTimer = millis();
   drawYumBubble.currentPhrase = null;
 
-  // sparkles & hearts same as before...
+  // ✨ Sparkles
+  for (let i = 0; i < 10; i++) {
+    sparkles.push({
+      x: eggzee.x + random(-30, 30),
+      y: eggzee.y + random(-30, 30),
+      size: random(4, 10),
+      speedY: random(-2, -5),
+      alpha: 255
+    });
+  }
+
+ // ❤️ Heart float
+hearts.push({
+  x: eggzee.x + random(-20, 20),
+  y: eggzee.y - 60,
+  vy: -2,
+  alpha: 255
+});
+} // ← closes IF (d < 45)
+} // ← closes for (let f of foods)
+
+
+// 🚮 Remove eaten foods
+foods = foods.filter(f => !f.toRemove);
+
+// ✨ Animate sparkles
+for (let i = sparkles.length - 1; i >= 0; i--) {
+  const s = sparkles[i];
+  fill(255, 255, 200, s.alpha);
+  noStroke();
+  ellipse(s.x, s.y, s.size);
+  s.y += s.speedY;
+  s.alpha -= 5;
+  if (s.alpha <= 0) sparkles.splice(i, 1);
 }
 
-      // ✨ Sparkles
-      for (let i = 0; i < 10; i++) {
-        sparkles.push({
-          x: eggzee.x + random(-30, 30),
-          y: eggzee.y + random(-30, 30),
-          size: random(4, 10),
-          speedY: random(-2, -5),
-          alpha: 255
-        });
-      }
-
-      // ❤️ Heart float
-      hearts.push({
-        x: eggzee.x + random(-20, 20),
-        y: eggzee.y - 60,
-        vy: -2,
-        alpha: 255
-      });
-    }
-  }
-
-  // 🚮 Remove eaten foods
-  foods = foods.filter(f => !f.toRemove);
-
-  // ✨ Animate sparkles
-  for (let i = sparkles.length - 1; i >= 0; i--) {
-    const s = sparkles[i];
-    fill(255, 255, 200, s.alpha);
-    noStroke();
-    ellipse(s.x, s.y, s.size);
-    s.y += s.speedY;
-    s.alpha -= 5;
-    if (s.alpha <= 0) sparkles.splice(i, 1);
-  }
-
-  // ❤️ Animate hearts
-  for (let i = hearts.length - 1; i >= 0; i--) {
-    const h = hearts[i];
-    textSize(40);
-    text("❤️", h.x, h.y);
-    h.y += h.vy;
-    h.alpha -= 3;
-    if (h.alpha <= 0) hearts.splice(i, 1);
-  }
-
-  // 🕒 Return to main menu after 25 seconds of feeding
-
-// 🕒 Return to main menu after 25 seconds of feeding
-
-// 🛑 Guarantee timer starts only once
-if (feedStartTime === 0) feedStartTime = millis();
+// ❤️ Animate hearts
+for (let i = hearts.length - 1; i >= 0; i--) {
+  const h = hearts[i];
+  textSize(40);
+  text("❤️", h.x, h.y);
+  h.y += h.vy;
+  h.alpha -= 3;
+  if (h.alpha <= 0) hearts.splice(i, 1);
+}
 
 // 🕒 Return after 25 seconds
+if (feedStartTime === 0) feedStartTime = millis();
+
 if (millis() - feedStartTime >= 25000) {
   resetToAwake();
-  feedStartTime = 0; // reset for next feed session
+  feedStartTime = 0;
   return;
 }
 
+} // ← THIS closes the entire drawFeedScene() function
 
-
-
-}
 
 function drawSleepScene() {
   // 🌌 Soft fade to night background
@@ -1313,6 +1304,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
