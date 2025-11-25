@@ -269,6 +269,7 @@ drawButtons();
 drawEnergyBar();
 drawJoke();
 drawOverlayText();
+}
 
 // ---------- EGG SCENE ----------
 function drawEggScene() {
@@ -1311,6 +1312,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
