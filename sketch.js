@@ -1,27 +1,5 @@
-let calibTop = Infinity;
-let calibBottom = -Infinity;
-let isCalibrating = true;
-let calibStartTime = 0;
-
-
-
 let needsStart = true;   // mobile gate
-
-let lastGestureTime = 0;
-let gestureCooldown = 800; // ms (0.8 sec)
-
-let gestureReady = false;
-let video;
-// --- HANDPOSE (ml5) ---
-let handpose;
-let hand = null;
-let handY = null;
-let pinch = false;
-
-
-
 let lastTouchTime = 0;
-
 let state = "egg";
 let restoreAwake = localStorage.getItem("eggzeeForceAwake") === "true";
 
@@ -187,80 +165,7 @@ text("Tap to Start Eggzee 🐣", width / 2, height / 2);
 
 
 
-// ---------- CAMERA RETRY WRAPPER ----------
-async function startCamera() {
-  console.log("🚀 Starting camera...");
 
-  // Remove any old camera
-  if (video && video.elt && video.elt.srcObject) {
-    video.elt.srcObject.getTracks().forEach(t => t.stop());
-  }
-
-  const constraints = {
-    audio: false,
-    video: {
-      facingMode: "user",
-      width: { ideal: 640 },
-      height: { ideal: 480 }
-    }
-  };
-
-  try {
-    // 1️⃣ GET REAL CAMERA STREAM
-    const stream = await navigator.mediaDevices.getUserMedia(constraints);
-
-    // 2️⃣ CREATE P5 VIDEO ELEMENT *WITHOUT* AUTO-STARTING
-    if (!video) {
-      video = createCapture(constraints);
-    }
-
-    video.elt.srcObject = stream;
-    video.elt.muted = true;
-    video.elt.setAttribute("playsinline", "");
-    video.elt.setAttribute("autoplay", "");
-    video.elt.setAttribute("webkit-playsinline", "");
-
-    // 3️⃣ WAIT UNTIL VIDEO ACTUALLY HAS DATA
-    await new Promise(resolve => {
-      video.elt.onloadeddata = () => {
-        console.log("🎥 Camera fully loaded!");
-        resolve();
-      };
-    });
-
-    // 4️⃣ POSITION SMALL PREVIEW
-    video.show();
-    video.size(640, 480);
-    video.style("position","fixed");
-    video.style("bottom","10px");
-    video.style("right","10px");
-    video.style("width","160px");
-    video.style("height","120px");
-    video.style("opacity","0.3");
-
-    // 5️⃣ LOAD HANDPOSE *ONLY NOW*
-    console.log("🤖 Loading ml5 handpose...");
-   handpose = ml5.handpose(video, () => {
-  console.log("✋ Handpose model loaded");
-
-  gestureReady = false;
-  console.log("⏳ Waiting 1200ms before enabling gestures...");
-  
-  setTimeout(() => {
-    gestureReady = true;
-    console.log("📸 Gesture control now active");
-  }, 1200);   // 1.2 seconds = stable mobile detection
-});
-
-
-    handpose.on("predict", results => {
-      hand = results.length > 0 ? results[0] : null;
-    });
-
-  } catch (err) {
-    console.error("❌ Camera failed:", err);
-  }
-}
 
 
 // ---------- DRAW ----------
@@ -285,130 +190,9 @@ if (isNight && cityNightImg) {
   background(200);
 }
 
-// ⭐ NOW DRAW DEBUG ON TOP OF EVERYTHING
-fill(255, 0, 0);
-textSize(50);
-textAlign(LEFT, TOP);
-text("handY: " + handY, 20, 20);
-// ⭐ RESET ALIGNMENT TO NORMAL
-textAlign(CENTER, CENTER);
 
 
-// ✋ UNIVERSAL GESTURES — with AUTO-CALIBRATION
-// ------------------------------------------------
-if (gestureReady && hand && millis() - lastGestureTime > gestureCooldown) {
 
-  let rawY = null;
-
-  // ⭐ Grab raw palm Y
-  if (hand.annotations?.palmBase?.[0]) {
-    rawY = hand.annotations.palmBase[0][1];
-  }
-
-  let isIPad = /iPad/i.test(navigator.userAgent);
-  let isMobile = /Android|iPhone/i.test(navigator.userAgent);
-
-  // ---------------------------------------------
-  // ⭐ SMOOTH + DEVICE FIX
-  // ---------------------------------------------
-  if (rawY !== null) {
-
-    if (isIPad) {
-      rawY = height - rawY;   // iPad invert
-    }
-
-    if (handY == null) handY = rawY;
-    handY = lerp(handY, rawY, 0.20);
-  }
-
-  // ---------------------------------------------
-  // ⭐ AUTO-CALIBRATION (first 1 second)
-  // ---------------------------------------------
-  if (isCalibrating && rawY !== null) {
-
-    calibTop = min(calibTop, rawY);
-    calibBottom = max(calibBottom, rawY);
-
-    if (millis() - calibStartTime > 1000) {
-
-      isCalibrating = false;
-
-      let span = calibBottom - calibTop;
-
-// Mobile thresholds — SIMPLE + RELIABLE
-if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-  danceThreshold = calibTop + span * 0.32;   // top 32% = DANCE
-  sleepThreshold = calibTop + span * 0.68;   // bottom 32% = SLEEP
-} 
-// Laptop (fallback)
-else {
-  danceThreshold = calibTop + span * 0.20;
-  sleepThreshold = calibTop + span * 0.80;
-}
-
-
-console.log("✔️ Mobile thresholds fixed!");
-console.log("danceThreshold:", danceThreshold);
-console.log("sleepThreshold:", sleepThreshold);
-
-
-      console.log("✔️ Calibration done");
-      console.log("calibTop:", calibTop);
-      console.log("calibBottom:", calibBottom);
-      console.log("danceThreshold:", danceThreshold);
-      console.log("sleepThreshold:", sleepThreshold);
-    }
-
-    return; // ⛔ stop until calibration finishes
-  }
-
-  // ---------------------------------------------
-  // ⭐ AFTER CALIBRATION — APPLY THRESHOLDS
-  // ---------------------------------------------
-  if (!isCalibrating && handY !== null) {
-
-    if (!draw.lastStateChange) draw.lastStateChange = 0;
-    const lockout = 1500;
-
-    if (millis() - draw.lastStateChange > lockout) {
-
-      // 💃 DANCE (hand HIGH)
-      if (handY < danceThreshold) {
-        console.log("💃 → DANCE");
-        state = "dance";
-        draw.lastStateChange = millis();
-        lastGestureTime = millis();
-      }
-
-      // 😴 SLEEP (hand LOW)
-      else if (handY > sleepThreshold) {
-        console.log("😴 → SLEEP");
-        state = "sleep";
-        draw.lastStateChange = millis();
-        lastGestureTime = millis();
-      }
-    }
-  }
-
-  // --------------------------------------------------
-  // ⭐ PINCH TO WAKE — stays same
-  // --------------------------------------------------
-  if (
-    hand.annotations?.thumb &&
-    hand.annotations?.indexFinger
-  ) {
-    let t = hand.annotations.thumb[3];
-    let i = hand.annotations.indexFinger[3];
-    let d = dist(t[0], t[1], i[0], i[1]);
-
-    if (state === "sleep" && d < 30) {
-      console.log("✨ PINCH → WAKE");
-      state = "awake";
-      draw.lastStateChange = millis();
-      lastGestureTime = millis();
-    }
-  }
-}
 
 
   // 🕒 Always update energy every frame (global countdown)
@@ -529,12 +313,7 @@ function drawHatchingScene() {
   introMessageTimer = millis();
   showIntroMessage = true;
 
-  // delay gestures
-  gestureReady = false;
-  setTimeout(() => {
-    gestureReady = true;
-    console.log("📸 Gesture control now active");
-  }, 1500);
+
 }
 
 
@@ -745,7 +524,8 @@ function drawDanceScene() {
   textAlign(CENTER, CENTER);
   fill(255);
   textSize(width < 600 ? 22 : 26);
-  text("💃 Eggzee is dancing! Move your hand to stop 💃", width / 2, height - 100);
+  text("💃 Eggzee is dancing! Tap to stop 💃", width / 2, height - 100);
+
 }
 
 
@@ -1207,19 +987,12 @@ function drawEnergyBar() {
 
 function mousePressed() {
 
-  // ⭐ START on laptop OR mobile when they click ANYWHERE
- if (needsStart) {
+if (needsStart) {
   needsStart = false;
-
-  if (isMobileDevice()) {
-    startCameraFromUserGesture();  // mobile fix
-  } else {
-   setTimeout(() => startCamera(), 300);  // DELAY FIXES HAND = null
-
-  }
-
   return false;
 }
+
+   
 
 
   // ⭐ EXIT DANCE MODE WITH TAP (MOVE THIS UP)
@@ -1317,31 +1090,13 @@ function isMobileDevice() {
 
 
 
-function startCameraFromUserGesture() {
-  // ⭐ Start auto-calibration for gestures
-  calibStartTime = millis();
-  isCalibrating = true;
-  calibTop = Infinity;
-  calibBottom = -Infinity;
-
-  if (!realStartTime) {
-    realStartTime = Date.now();
-    startTime = millis();
-  }
-
-  console.log("⏳ Waiting 300ms before starting camera...");
-  setTimeout(() => {
-    startCamera();  // ⭐ delayed camera start → avoids AbortError
-  }, 300);
-}
 
 function touchStarted() {
-  // 💥 PREVENT DOUBLE START (touch triggers mouse too)
-  if (needsStart) {
-    needsStart = false;
-    startCameraFromUserGesture();
-    return false; // ⛔ NO mousePressed() call here
-  }
+if (needsStart) {
+  needsStart = false;
+  return false;
+}
+
 
   // ⭐ EXIT DANCE MODE ON TOUCH
   if (state === "dance") {
@@ -1432,35 +1187,6 @@ function tellJoke() {
   jokeTimer = millis();
 }
 
-function drawInstructions() {
-  // ⛔️ All old top-floating instructions removed
-  // Only feed, joke, and dance hints kept (if you want)
-  
-  fill(255, 255, 255, 240);
-  textAlign(CENTER, CENTER);
-  textSize(width < 600 ? 16 : 20);
-  let now = millis();
-
-  // 🍎 FEED instructions
-  if (showFeedInstructions) {
-    text("🍎 Drag food to Eggzee to feed her!", width / 2, height * 0.15);
-    if (now - feedInstructionTimer > 5000) showFeedInstructions = false;
-  }
-
-  // 😂 JOKE instructions
-  if (showJokeInstructions) {
-    text("😂 Tap the button to make Eggzee tell a joke!", width / 2, height * 0.18);
-    if (now - jokeInstructionTimer > 5000) showJokeInstructions = false;
-  }
-
-  // 💃 DANCE instructions
-  if (showDanceInstructions) {
-    text("💃 Tap once to make Eggzee dance in a new tab!", width / 2, height * 0.21);
-    if (now - danceInstructionTimer > 5000) showDanceInstructions = false;
-  }
-
-  // ✨ GAME instructions REMOVED because bottom bubble is better
-}
 
 
 
@@ -1524,6 +1250,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
