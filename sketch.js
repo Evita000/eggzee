@@ -446,7 +446,7 @@ eggzee.y += tiltY * moveSpeed;
 eggzee.x = constrain(eggzee.x, 60, width - 60);
 eggzee.y = constrain(eggzee.y, 120, height - 120);
 
-
+}
 
 
 function drawFeedScene() {
@@ -1401,6 +1401,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
