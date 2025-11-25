@@ -1316,6 +1316,8 @@ function drawDiscoScene() {
 
 // ✅ End of Eggzee Script — all good!
 
+}  // ← FINAL closing brace to end the whole file
+
 
 
 
