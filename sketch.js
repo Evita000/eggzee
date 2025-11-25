@@ -355,17 +355,29 @@ eggzee.visible = true;
   eggzee.y = constrain(eggzee.y, 120, height - 120);
 
 
-  // 🐣 Draw Eggzee
-  push();
-  translate(eggzee.x, eggzee.y);
-  image(
-    eggzeeAwakeImg,
-    0,
-    0,
-    eggzeeAwakeImg.width * 0.35,
-    eggzeeAwakeImg.height * 0.35
+// 🐣 Draw Eggzee
+push();
+translate(eggzee.x, eggzee.y);
+
+// ⭐ Eggzee leans toward nearest food
+if (foods.length > 0) {
+  let closest = foods.reduce((a, b) =>
+    dist(a.x, a.y, eggzee.x, eggzee.y) < dist(b.x, b.y, eggzee.x, eggzee.y)
+      ? a : b
   );
-  pop();
+  let angle = atan2(closest.y - eggzee.y, closest.x - eggzee.x);
+  rotate(angle / 12); // small lean movement
+}
+
+image(
+  eggzeeAwakeImg,
+  0,
+  0,
+  eggzeeAwakeImg.width * 0.35,
+  eggzeeAwakeImg.height * 0.35
+);
+pop();
+
 // ⭐ Keep Eggzee inside screen during feeding
 eggzee.x = constrain(eggzee.x, 60, width - 60);
 eggzee.y = constrain(eggzee.y, 120, height - 120);
@@ -396,6 +408,34 @@ if (!drawFeedScene.lastSpawn || millis() - drawFeedScene.lastSpawn > 2500) {
 }
 
 
+  // ⭐ FEEDING INSTRUCTIONS — ALWAYS SHOW
+push();
+textAlign(CENTER, CENTER);
+textStyle(BOLD);
+textSize(width < 600 ? 22 : 20);
+
+let instr = "Drag the food to Eggzee to feed 💕";
+let instrW = textWidth(instr) + 50;
+let instrH = 55;
+
+// background bubble
+fill(0, 150);
+noStroke();
+rect(width/2 - instrW/2, 40, instrW, instrH, 20);
+
+// text
+fill(255);
+text(instr, width/2, 40 + instrH/2 + 2);
+
+pop();
+
+// ⭐ Eggzee bounce animation while eating
+if (showYum) {
+  let bounce = sin(frameCount * 0.4) * 8;
+  eggzee.y += bounce;
+}
+
+
   // 🍪 Draw + drag foods
   for (let f of foods) {
     if (f.beingDragged) {
@@ -406,14 +446,25 @@ if (!drawFeedScene.lastSpawn || millis() - drawFeedScene.lastSpawn > 2500) {
     text(f.emoji, f.x, f.y);
 
     // 🩷 Detect “eating”
-    if (dist(f.x, f.y, eggzee.x, eggzee.y) < 80 && !f.toRemove) {
-      f.toRemove = true;
+   // ⭐ Magnet effect when food gets close
+let d = dist(f.x, f.y, eggzee.x, eggzee.y);
 
-      if (!showYum) {
-        showYum = true;
-        yumTimer = millis();
-        drawYumBubble.currentPhrase = null;
-      }
+if (d < 120 && !f.toRemove) {
+  // gently pull food towards Eggzee
+  f.x = lerp(f.x, eggzee.x, 0.15);
+  f.y = lerp(f.y, eggzee.y, 0.15);
+}
+
+if (d < 45 && !f.toRemove) {
+  f.toRemove = true;
+
+  // Yum bubble
+  showYum = true;
+  yumTimer = millis();
+  drawYumBubble.currentPhrase = null;
+
+  // sparkles & hearts same as before...
+}
 
       // ✨ Sparkles
       for (let i = 0; i < 10; i++) {
@@ -1262,6 +1313,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
