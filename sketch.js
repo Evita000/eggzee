@@ -1,6 +1,27 @@
 // ---- Tilt & Shake ----
 let tiltX = 0;
 let tiltY = 0;
+
+// ---- Motion Permission (iPhone) ----
+let motionPermissionGranted = false;
+
+function requestMotionPermission() {
+  if (typeof DeviceMotionEvent.requestPermission === "function") {
+    DeviceMotionEvent.requestPermission()
+      .then(response => {
+        if (response === "granted") {
+          motionPermissionGranted = true;
+          console.log("📱 Motion permission granted");
+          detectShake();   // start shake after permission
+        }
+      })
+      .catch(err => console.error("Motion error:", err));
+  } else {
+    motionPermissionGranted = true; // Android or desktop
+    detectShake(); // safe to start automatically
+  }
+}
+
 // ---- Shake Dance State ----
 let shakeDanceActive = false;
 let shakeDanceStartTime = 0;
@@ -12,7 +33,7 @@ function startShakeDance() {
 
 // ----- SHAKE DETECTION -----
 let lastShakeTime = 0;
-let shakeCooldown = 1500; // 1.5 seconds cooldown
+let shakeCooldown = 1500; // 1.5 sec
 
 function detectShake() {
   if (!window.DeviceMotionEvent) return;
@@ -42,7 +63,7 @@ function onShakeAction() {
     });
   }
 
-  // ❤️ Heart burst
+  // ❤️ Heart
   hearts.push({
     x: eggzee.x,
     y: eggzee.y - 70,
@@ -50,16 +71,15 @@ function onShakeAction() {
     alpha: 255
   });
 
-  // 💃 Mini dance wiggle
+  // 💃 Mini dance
   startShakeDance();
 }
 
-
-
-// Listen for tilt motion
+// ---- Listen for tilt ----
 window.addEventListener("deviceorientation", (e) => {
-  tiltX = e.gamma || 0;  // left/right
-  tiltY = e.beta || 0;   // forward/back
+  if (!motionPermissionGranted) return;
+  tiltX = e.gamma || 0;
+  tiltY = e.beta || 0;
 });
 
 
@@ -184,7 +204,11 @@ function setup() {
     eggzee.visible = true;   // ⭐ show Eggzee instantly
   }
 
-  detectShake();   // 👈 ⭐ CALL SHAKE DETECTION ONCE
+ // Only activate shake detection after permission is granted
+if (motionPermissionGranted) {
+  detectShake();
+}
+
 
 
 
@@ -252,15 +276,28 @@ function setup() {
 
 // ---------- DRAW ----------
 function draw() {
-    // ⭐ STOP EVERYTHING UNTIL USER TAPS ⭐
   if (needsStart) {
     background(0);
     fill(255);
     textAlign(CENTER, CENTER);
     textSize(26);
     text("Tap to Start Eggzee 🐣", width / 2, height / 2);
-    return;  // ⛔ Do NOT run the rest of draw() yet
+
+    // 🔓 Motion permission button for iPhone
+    textSize(18);
+    text("Tap here to enable motion (iPhone)", width/2, height/2 + 60);
+
+    // Detect tap on text area
+    if (mouseIsPressed &&
+        mouseY > height/2 + 40 &&
+        mouseY < height/2 + 90) {
+      requestMotionPermission();
+    }
+
+    return; // ⛔ still return after drawing the permission button
   }
+
+
 
 const isNight = (state === "sleep");
 
@@ -440,8 +477,11 @@ pop();
 
 // ----- TILT MOVEMENT -----
 let moveSpeed = 0.4;
-eggzee.x += tiltX * moveSpeed;
-eggzee.y += tiltY * moveSpeed;
+if (motionPermissionGranted) {
+  eggzee.x += tiltX * moveSpeed;
+  eggzee.y += tiltY * moveSpeed;
+}
+
 
 eggzee.x = constrain(eggzee.x, 60, width - 60);
 eggzee.y = constrain(eggzee.y, 120, height - 120);
@@ -1401,6 +1441,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
