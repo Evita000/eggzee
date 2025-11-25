@@ -1,24 +1,26 @@
 // ---- Tilt & Shake ----
 let tiltX = 0;
 let tiltY = 0;
+let motionPermissionGranted = false;
 
 // ---- Motion Permission (iPhone) ----
-let motionPermissionGranted = false;
+
 
 function requestMotionPermission() {
   if (typeof DeviceMotionEvent.requestPermission === "function") {
     DeviceMotionEvent.requestPermission()
       .then(response => {
+        console.log("Permission result:", response);
+
         if (response === "granted") {
           motionPermissionGranted = true;
-          console.log("📱 Motion permission granted");
-          detectShake();   // start shake after permission
+          detectShake(); 
         }
       })
-      .catch(err => console.error("Motion error:", err));
+      .catch(err => console.error("Error requesting motion:", err));
   } else {
-    motionPermissionGranted = true; // Android or desktop
-    detectShake(); // safe to start automatically
+    motionPermissionGranted = true;
+    detectShake();
   }
 }
 
@@ -276,26 +278,30 @@ if (motionPermissionGranted) {
 
 // ---------- DRAW ----------
 function draw() {
-  if (needsStart) {
-    background(0);
-    fill(255);
-    textAlign(CENTER, CENTER);
-    textSize(26);
-    text("Tap to Start Eggzee 🐣", width / 2, height / 2);
+if (needsStart) {
+  background(0);
+  fill(255);
+  textAlign(CENTER, CENTER);
 
-    // 🔓 Motion permission button for iPhone
+  textSize(28);
+  text("Tap to Start Eggzee 🐣", width/2, height/2 - 40);
+
+  // Motion permission (if not granted yet)
+  if (!motionPermissionGranted) {
     textSize(18);
-    text("Tap here to enable motion (iPhone)", width/2, height/2 + 60);
+    text("Tap to enable motion (iPhone)", width/2, height/2 + 30);
 
-    // Detect tap on text area
+    // BIG FAT HITBOX for easy tapping
     if (mouseIsPressed &&
-        mouseY > height/2 + 40 &&
-        mouseY < height/2 + 90) {
+        mouseY > height/2 &&
+        mouseY < height/2 + 80) {
       requestMotionPermission();
     }
-
-    return; // ⛔ still return after drawing the permission button
   }
+
+  return;
+}
+
 
 
 
@@ -1167,6 +1173,12 @@ function mousePressed() {
 
 if (needsStart) {
   needsStart = false;
+
+  // If iPhone user did NOT click motion button yet, try again:
+  if (!motionPermissionGranted) {
+    requestMotionPermission();
+  }
+
   return false;
 }
 
@@ -1441,6 +1453,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
