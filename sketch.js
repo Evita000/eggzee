@@ -536,12 +536,9 @@ function drawSleepScene() {
   );
   pop();
 
-  // 🌙 Calm “sleeping” text
-  textAlign(CENTER, CENTER);
-  textSize(width < 600 ? 18 : 22);
-  fill(255, 230, 255);
-  text("💤 Eggzee is sleeping... Tap to wake! 💫", width / 2, height - 100);
+  // ❌ Removed the "Tap to wake Eggzee" text
 }
+
 // ---------- DANCE SCENE ----------
 function drawDanceScene() {
   if (!eggzee.visible) eggzee.visible = true;
@@ -1312,6 +1309,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
