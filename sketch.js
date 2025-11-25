@@ -464,7 +464,7 @@ if (d < 120 && !f.toRemove) {
 if (d < 45 && !f.toRemove) {
   f.toRemove = true;
 
-  // Yum bubble
+  // ⭐ Show Yum bubble
   showYum = true;
   yumTimer = millis();
   drawYumBubble.currentPhrase = null;
@@ -480,15 +480,14 @@ if (d < 45 && !f.toRemove) {
     });
   }
 
- // ❤️ Heart float
-hearts.push({
-  x: eggzee.x + random(-20, 20),
-  y: eggzee.y - 60,
-  vy: -2,
-  alpha: 255
-});
-} // ← closes IF (d < 45)
-} // ← closes for (let f of foods)
+  // ❤️ Heart float
+  hearts.push({
+    x: eggzee.x + random(-20, 20),
+    y: eggzee.y - 60,
+    vy: -2,
+    alpha: 255
+  });
+}
 
 
 // 🚮 Remove eaten foods
@@ -832,12 +831,10 @@ function drawHearts() {
     if (h.alpha <= 0) hearts.splice(i, 1);
   }
 }
-
 function drawYumBubble() {
-  // 🩷 Prevent multiple overlapping or double-triggered bubbles
   if (!showYum) return;
 
-  // 💬 Choose phrase once per feed
+  // Pick a phrase ONCE per food eaten
   if (!drawYumBubble.currentPhrase) {
     const phrases = [
       "Yum! 💕",
@@ -849,41 +846,50 @@ function drawYumBubble() {
     ];
     drawYumBubble.currentPhrase = random(phrases);
   }
+
   const phrase = drawYumBubble.currentPhrase;
 
-  // 🫧 Bubble style
-  textSize(18);
+  // Bubble position above Eggzee
+  const bx = eggzee.x;
+  const by = eggzee.y - 160;
+
+  // Fade out
+  let alpha = map(millis() - yumTimer, 0, 1500, 255, 0);
+  alpha = constrain(alpha, 0, 255);
+
+  textSize(20);
   const padding = 40;
   const bubbleW = textWidth(phrase) + padding;
   const bubbleH = 60;
 
-  const bx = eggzee.x + 80;
-  const by = eggzee.y - 160;
-
-  fill(255, 230, 250);
-  stroke(200, 120, 200);
+  // Bubble box
+  fill(255, 230, 250, alpha);
+  stroke(200, 120, 200, alpha);
   strokeWeight(2);
   rect(bx - bubbleW / 2, by - bubbleH / 2, bubbleW, bubbleH, 25);
 
+  // Tail
   noStroke();
-  fill(255, 230, 250);
+  fill(255, 230, 250, alpha);
   triangle(
-    bx - 10, by + bubbleH / 2,
-    bx + 10, by + bubbleH / 2,
-    bx, by + bubbleH / 2 + 15
+    bx - 12, by + bubbleH / 2,
+    bx + 12, by + bubbleH / 2,
+    bx, by + bubbleH / 2 + 18
   );
 
-  fill(50);
-  noStroke();
+  // Text
+  fill(50, alpha);
   textAlign(CENTER, CENTER);
   text(phrase, bx, by);
 
-  // 🕒 Hide + reset phrase once done
-  if (millis() - yumTimer > 1500) {
+  // When alpha is gone → reset
+  if (alpha <= 0) {
     showYum = false;
     drawYumBubble.currentPhrase = null;
   }
 }
+
+
 
 // ---------- TEXT & ENERGY ----------
 function drawJoke() {
@@ -1322,6 +1328,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
