@@ -4,8 +4,6 @@ let tiltY = 0;
 let motionPermissionGranted = false;
 
 // ---- Motion Permission (iPhone) ----
-
-
 function requestMotionPermission() {
   if (typeof DeviceMotionEvent.requestPermission === "function") {
     DeviceMotionEvent.requestPermission()
@@ -14,13 +12,20 @@ function requestMotionPermission() {
 
         if (response === "granted") {
           motionPermissionGranted = true;
-          detectShake(); 
+
+          // iPhone requires attaching listeners after permission
+          window.addEventListener("devicemotion", handleShake);
+          window.addEventListener("deviceorientation", handleTilt);
+
+          console.log("📱 Motion events now active");
         }
       })
       .catch(err => console.error("Error requesting motion:", err));
   } else {
+    // Android or desktop
     motionPermissionGranted = true;
-    detectShake();
+    window.addEventListener("devicemotion", handleShake);
+    window.addEventListener("deviceorientation", handleTilt);
   }
 }
 
@@ -35,26 +40,27 @@ function startShakeDance() {
 
 // ----- SHAKE DETECTION -----
 let lastShakeTime = 0;
-let shakeCooldown = 1500; // 1.5 sec
+let shakeCooldown = 1500;
 
-function detectShake() {
-  if (!window.DeviceMotionEvent) return;
+function handleTilt(e) {
+  tiltX = e.gamma || 0;
+  tiltY = e.beta || 0;
+}
 
-  window.addEventListener("devicemotion", (event) => {
-    let acc = event.accelerationIncludingGravity;
-    if (!acc) return;
+function handleShake(event) {
+  let acc = event.accelerationIncludingGravity;
+  if (!acc) return;
 
-    let strength = Math.abs(acc.x) + Math.abs(acc.y) + Math.abs(acc.z);
+  let strength = Math.abs(acc.x) + Math.abs(acc.y) + Math.abs(acc.z);
 
-    if (strength > 28 && millis() > lastShakeTime + shakeCooldown) {
-      lastShakeTime = millis();
-      onShakeAction();
-    }
-  });
+  if (strength > 28 && millis() > lastShakeTime + shakeCooldown) {
+    lastShakeTime = millis();
+    onShakeAction();
+  }
 }
 
 function onShakeAction() {
-  // 💥 Sparkle explosion
+  // sparkles
   for (let i = 0; i < 25; i++) {
     sparkles.push({
       x: eggzee.x + random(-40, 40),
@@ -65,7 +71,7 @@ function onShakeAction() {
     });
   }
 
-  // ❤️ Heart
+  // heart
   hearts.push({
     x: eggzee.x,
     y: eggzee.y - 70,
@@ -73,20 +79,9 @@ function onShakeAction() {
     alpha: 255
   });
 
-  // 💃 Mini dance
+  // mini dance
   startShakeDance();
 }
-
-// ---- Listen for tilt ----
-window.addEventListener("deviceorientation", (e) => {
-  if (!motionPermissionGranted) return;
-  tiltX = e.gamma || 0;
-  tiltY = e.beta || 0;
-});
-
-
-
-
 
 
 let needsStart = true;   // mobile gate
@@ -205,15 +200,6 @@ function setup() {
   } else {
     eggzee.visible = true;   // ⭐ show Eggzee instantly
   }
-
- // Only activate shake detection after permission is granted
-if (motionPermissionGranted) {
-  detectShake();
-}
-
-
-
-
 
   // 🕐 Restore timer if returning from dance page
   if (restoreTime) {
@@ -1453,6 +1439,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
