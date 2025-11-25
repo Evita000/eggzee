@@ -1,3 +1,72 @@
+// ---- Tilt & Shake ----
+let tiltX = 0;
+let tiltY = 0;
+// ---- Shake Dance State ----
+let shakeDanceActive = false;
+let shakeDanceStartTime = 0;
+
+function startShakeDance() {
+  shakeDanceActive = true;
+  shakeDanceStartTime = millis();
+}
+
+// ----- SHAKE DETECTION -----
+let lastShakeTime = 0;
+let shakeCooldown = 1500; // 1.5 seconds cooldown
+
+function detectShake() {
+  if (!window.DeviceMotionEvent) return;
+
+  window.addEventListener("devicemotion", (event) => {
+    let acc = event.accelerationIncludingGravity;
+    if (!acc) return;
+
+    let strength = Math.abs(acc.x) + Math.abs(acc.y) + Math.abs(acc.z);
+
+    if (strength > 28 && millis() > lastShakeTime + shakeCooldown) {
+      lastShakeTime = millis();
+      onShakeAction();
+    }
+  });
+}
+
+function onShakeAction() {
+  // 💥 Sparkle explosion
+  for (let i = 0; i < 25; i++) {
+    sparkles.push({
+      x: eggzee.x + random(-40, 40),
+      y: eggzee.y + random(-40, 40),
+      size: random(6, 14),
+      speedY: random(-4, -8),
+      alpha: 255
+    });
+  }
+
+  // ❤️ Heart burst
+  hearts.push({
+    x: eggzee.x,
+    y: eggzee.y - 70,
+    vy: -3,
+    alpha: 255
+  });
+
+  // 💃 Mini dance wiggle
+  startShakeDance();
+}
+
+
+
+// Listen for tilt motion
+window.addEventListener("deviceorientation", (e) => {
+  tiltX = e.gamma || 0;  // left/right
+  tiltY = e.beta || 0;   // forward/back
+});
+
+
+
+
+
+
 let needsStart = true;   // mobile gate
 let lastTouchTime = 0;
 let state = "egg";
@@ -115,6 +184,7 @@ function setup() {
     eggzee.visible = true;   // ⭐ show Eggzee instantly
   }
 
+  detectShake();   // 👈 ⭐ CALL SHAKE DETECTION ONCE
 
 
 
@@ -342,18 +412,40 @@ function drawEggzeeScene() {
   // 🧘 Gentle idle motion for Eggzee
   let sway = sin(frameCount * 0.03) * 2; // small side sway
   let bounce = showJoke ? sin(frameCount * 0.2) * 3 : 0; // gentle bounce when laughing
+// ----- SHAKE DANCE ANIMATION -----
+let wiggle = 0;
+let danceBounce = 0;
 
-  push();
-  translate(eggzee.x, eggzee.y + bounce);
-  rotate(radians(sway));
-  image(
-    eggzeeAwakeImg,
-    0, 0,
-    eggzeeAwakeImg.width * eggzee.scale,
-    eggzeeAwakeImg.height * eggzee.scale
-  );
-  pop();
+if (shakeDanceActive) {
+  wiggle = sin(frameCount * 0.45) * 10;
+  danceBounce = sin(frameCount * 0.6) * 10;
+
+  if (millis() - shakeDanceStartTime > 2200) {
+    shakeDanceActive = false;
+  }
 }
+
+// ----- DRAW EGGZEE -----
+push();
+translate(eggzee.x, eggzee.y + danceBounce);
+rotate(radians(wiggle));
+image(
+  eggzeeAwakeImg,
+  0,
+  0,
+  eggzeeAwakeImg.width * eggzee.scale,
+  eggzeeAwakeImg.height * eggzee.scale
+);
+pop();
+
+// ----- TILT MOVEMENT -----
+let moveSpeed = 0.4;
+eggzee.x += tiltX * moveSpeed;
+eggzee.y += tiltY * moveSpeed;
+
+eggzee.x = constrain(eggzee.x, 60, width - 60);
+eggzee.y = constrain(eggzee.y, 120, height - 120);
+
 
 
 
@@ -1309,6 +1401,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
