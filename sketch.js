@@ -18,18 +18,19 @@ let introMessageTimer = 0;
 let feedStartTime = 0;
 let gameStartTime = 0; // you already had but put it here anyway
 
-// ⭐ STEP B — detect when returning from dance page
+//// ⭐ STEP B — detect when returning from dance page
 let justDanced = localStorage.getItem("eggzeeJustDanced") === "true";
 
 if (justDanced) {
   console.log("💃 Returned from dance — restoring state");
-  // Don’t reset anything — keep Eggzee awake + keep timer
+  needsStart = false;   // ⭐ SKIP the Tap-to-Start screen
   localStorage.removeItem("eggzeeJustDanced");
 } else {
   // Normal behavior (fresh load)
   localStorage.removeItem("eggzeeForceAwake");
   localStorage.removeItem("eggzeeRealStartTime");
 }
+
 
 // Buttons + UI
 let feedBtn, danceBtn, gameBtn, jokeBtn;
@@ -1304,6 +1305,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
