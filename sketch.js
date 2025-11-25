@@ -255,41 +255,23 @@ function setup() {
 
 } // ← THIS is the only closing brace for setup()
 
-
-
-
-
-
-
-
 // ---------- DRAW ----------
 function draw() {
-if (needsStart) {
-  background(0);
-  fill(255);
-  textAlign(CENTER, CENTER);
 
-  textSize(28);
-  text("Tap to Start Eggzee 🐣", width/2, height/2 - 40);
+  // ⭐ START SCREEN (tap anywhere + request motion permission)
+  if (needsStart) {
+    background(0);
+    fill(255);
+    textAlign(CENTER, CENTER);
 
-  // Motion permission (if not granted yet)
-  if (!motionPermissionGranted) {
+    textSize(28);
+    text("Tap to Start Eggzee 🐣", width/2, height/2 - 40);
+
     textSize(18);
-    text("Tap to enable motion (iPhone)", width/2, height/2 + 30);
+    text("Tap anywhere to enable tilt/shake", width/2, height/2 + 20);
 
-    // BIG FAT HITBOX for easy tapping
-    if (mouseIsPressed &&
-        mouseY > height/2 &&
-        mouseY < height/2 + 80) {
-      requestMotionPermission();
-    }
+    return; // NOTHING else runs until tapped once
   }
-
-  return;
-}
-
-
-
 
 const isNight = (state === "sleep");
 
@@ -300,11 +282,6 @@ if (isNight && cityNightImg) {
 } else {
   background(200);
 }
-
-
-
-
-
 
   // 🕒 Always update energy every frame (global countdown)
   if (realStartTime) {
@@ -1157,26 +1134,19 @@ function drawEnergyBar() {
 
 function mousePressed() {
 
-if (needsStart) {
-  needsStart = false;
-
-  // If iPhone user did NOT click motion button yet, try again:
-  if (!motionPermissionGranted) {
-    requestMotionPermission();
+  // ⭐ FIRST TAP: leave start screen + request motion permission
+  if (needsStart) {
+    needsStart = false;
+    requestMotionPermission();   // <-- ALWAYS call on first tap
+    return false;
   }
 
-  return false;
-}
 
-   
-
-
-  // ⭐ EXIT DANCE MODE WITH TAP (MOVE THIS UP)
+  // ⭐ EXIT DANCE MODE
   if (state === "dance") {
     state = "awake";
     return false;
   }
-
 
   // 🥚 Hatch egg
   if (state === "egg") {
@@ -1185,55 +1155,46 @@ if (needsStart) {
     return false;
   }
 
-  // 🌞 MAIN MENU
+  // 🌞 MENU BEHAVIOUR
   if (state === "awake") {
     hasWelcomed = true;
 
+    // FEED
+    if (insideButton(feedBtn)) {
+      state = "feed";
+      foods = [];
+      sparkles = [];
+      hearts = [];
+      showYum = false;
+      drawYumBubble.currentPhrase = null;
 
- // FEED
-if (insideButton(feedBtn)) {
-  state = "feed";
-  foods = [];
-  sparkles = [];
-  hearts = [];
-  showYum = false;
-  drawYumBubble.currentPhrase = null;
+      eggzee.x = width / 2;
+      eggzee.y = height / 2;
 
-  eggzee.x = width / 2;
-  eggzee.y = height / 2;
+      feedStartTime = 0;
 
-  feedStartTime = 0;
+      showFeedInstructions = true;
+      feedInstructionTimer = millis();
 
-  showFeedInstructions = true;
-  feedInstructionTimer = millis();
+      foods.push({
+        x: random(60, width - 60),
+        y: random(height / 2, height - 100),
+        emoji: random(["🍩", "🍎", "🍓", "🍪", "🍕"]),
+        beingDragged: false,
+        toRemove: false
+      });
 
-  // ⭐ Spawn one instant food so screen isn't empty
-  foods.push({
-    x: random(60, width - 60),
-    y: random(height / 2, height - 100),
-    emoji: random(["🍩", "🍎", "🍓", "🍪", "🍕"]),
-    beingDragged: false,
-    toRemove: false
-  });
+      return false;
+    }
 
-  return false;
-}
-
-
- // DANCE
-if (insideButton(danceBtn)) {
-  // ⭐ STEP A FIX: mark that user intentionally entered dance mode
-  localStorage.setItem("eggzeeJustDanced", "true");
-
-  // ⭐ Save current awake state + timer
-  localStorage.setItem("eggzeeForceAwake", "true");
-  localStorage.setItem("eggzeeRealStartTime", realStartTime);
-
-  // ⭐ Go to dance page (same tab, not new tab)
-  window.location.href = "eggzeedance.html";
-  return false;
-}
-
+    // DANCE
+    if (insideButton(danceBtn)) {
+      localStorage.setItem("eggzeeJustDanced", "true");
+      localStorage.setItem("eggzeeForceAwake", "true");
+      localStorage.setItem("eggzeeRealStartTime", realStartTime);
+      window.location.href = "eggzeedance.html";
+      return false;
+    }
 
     // JOKE
     if (insideButton(jokeBtn)) {
@@ -1243,7 +1204,7 @@ if (insideButton(danceBtn)) {
       return false;
     }
 
-    // MINI GAME
+    // GAME
     if (insideButton(gameBtn)) {
       state = "miniGame";
       gameStartTime = millis();
@@ -1261,14 +1222,14 @@ if (insideButton(danceBtn)) {
     return false;
   }
 
-  // 🍎 DRAG FOOD (THIS STAYS INSIDE mousePressed)
+  // 🍎 DRAG FOOD
   for (let f of foods) {
     if (dist(mouseX, mouseY, f.x, f.y) < 30) {
       f.beingDragged = true;
     }
   }
-}   // ✅ THIS IS THE ONLY CLOSING BRACE
 
+}
 
 
 
@@ -1439,6 +1400,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
