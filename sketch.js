@@ -3,7 +3,6 @@ let lastTouchTime = 0;
 let state = "egg";
 let restoreAwake = localStorage.getItem("eggzeeForceAwake") === "true";
 
-
 let realStartTime = null;   // tracks total time even when user leaves for dance
 let restoreTime = localStorage.getItem("eggzeeRealStartTime");
 
@@ -19,11 +18,18 @@ let introMessageTimer = 0;
 let feedStartTime = 0;
 let gameStartTime = 0; // you already had but put it here anyway
 
+// ⭐ STEP B — detect when returning from dance page
+let justDanced = localStorage.getItem("eggzeeJustDanced") === "true";
 
-
-
-
-
+if (justDanced) {
+  console.log("💃 Returned from dance — restoring state");
+  // Don’t reset anything — keep Eggzee awake + keep timer
+  localStorage.removeItem("eggzeeJustDanced");
+} else {
+  // Normal behavior (fresh load)
+  localStorage.removeItem("eggzeeForceAwake");
+  localStorage.removeItem("eggzeeRealStartTime");
+}
 
 // Buttons + UI
 let feedBtn, danceBtn, gameBtn, jokeBtn;
@@ -32,7 +38,7 @@ let foods = [];
 let showYum = false;
 let yumTimer = 0;
 let showJoke = false;
-// Instruction overlays
+
 
 
 // ---------- Instruction overlays ----------
@@ -1032,11 +1038,17 @@ if (needsStart) {
       return false;
     }
 
-    // DANCE
- if (insideButton(danceBtn)) {
-  localStorage.setItem("eggzeeForceAwake", "true");  // ⭐ Save awake state
-  localStorage.setItem("eggzeeRealStartTime", realStartTime); // preserve timer
-  window.open("eggzeedance.html", "_blank");
+ // DANCE
+if (insideButton(danceBtn)) {
+  // ⭐ STEP A FIX: mark that user intentionally entered dance mode
+  localStorage.setItem("eggzeeJustDanced", "true");
+
+  // ⭐ Save current awake state + timer
+  localStorage.setItem("eggzeeForceAwake", "true");
+  localStorage.setItem("eggzeeRealStartTime", realStartTime);
+
+  // ⭐ Go to dance page (same tab, not new tab)
+  window.location.href = "eggzeedance.html";
   return false;
 }
 
@@ -1250,6 +1262,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
