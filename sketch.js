@@ -3,7 +3,7 @@ let lastTouchTime = 0;
 let state = "egg";
 let restoreAwake = localStorage.getItem("eggzeeForceAwake") === "true";
 
-let realStartTime = null;   // tracks total time even when user leaves for dance
+let realStartTime = null;  
 let restoreTime = localStorage.getItem("eggzeeRealStartTime");
 
 let eggImg, eggzeeAwakeImg, eggzeeSleepImg, cityImg, cityNightImg;
@@ -12,24 +12,26 @@ let crackTime = 0;
 let energy = 120;
 let startTime = null;
 let hasWelcomed = false;
-let sleepFade = 0; // 🌙 controls smooth fade for sleep transition
+let sleepFade = 0; 
 let showIntroMessage = false;
 let introMessageTimer = 0;
 let feedStartTime = 0;
-let gameStartTime = 0; // you already had but put it here anyway
+let gameStartTime = 0;
 
-//// ⭐ STEP B — detect when returning from dance page
+// ⭐ Detect returning from dance page (ONLY ONCE — DO NOT DUPLICATE)
 let justDanced = localStorage.getItem("eggzeeJustDanced") === "true";
 
 if (justDanced) {
   console.log("💃 Returned from dance — restoring state");
-  needsStart = false;   // ⭐ SKIP the Tap-to-Start screen
+  needsStart = false;      // skip tap-to-start
+  state = "awake";         // go straight to menu
   localStorage.removeItem("eggzeeJustDanced");
 } else {
-  // Normal behavior (fresh load)
+  // fresh load → reset timers
   localStorage.removeItem("eggzeeForceAwake");
   localStorage.removeItem("eggzeeRealStartTime");
 }
+
 
 
 // Buttons + UI
@@ -102,15 +104,18 @@ function preload() {
 function setup() {
   pixelDensity(1);
   createCanvas(windowWidth, windowHeight);
-  // ⭐ Remove restore flag so coming back from dance doesn't hatch the egg
-  localStorage.removeItem("eggzeeForceAwake");
+   // ⭐ ONLY show Tap screen if NOT returning from dance
+  if (!justDanced) {
+    background(0);
+    fill(255);
+    textAlign(CENTER, CENTER);
+    textSize(26);
+    text("Tap to Start Eggzee 🐣", width / 2, height / 2);
+  } else {
+    eggzee.visible = true;   // ⭐ show Eggzee instantly
+  }
 
-// 👇 SHOW TAP SCREEN INSTEAD
-background(0);
-fill(255);
-textAlign(CENTER, CENTER);
-textSize(26);
-text("Tap to Start Eggzee 🐣", width / 2, height / 2);
+
 
 
 
@@ -1062,24 +1067,36 @@ if (needsStart) {
   if (state === "awake") {
     hasWelcomed = true;
 
-    // FEED
-    if (insideButton(feedBtn)) {
-      state = "feed";
-      foods = [];
-      sparkles = [];
-      hearts = [];
-      showYum = false;
-      drawYumBubble.currentPhrase = null;
 
-      eggzee.x = width / 2;
-      eggzee.y = height / 2;
+ // FEED
+if (insideButton(feedBtn)) {
+  state = "feed";
+  foods = [];
+  sparkles = [];
+  hearts = [];
+  showYum = false;
+  drawYumBubble.currentPhrase = null;
 
-      feedStartTime = 0;
+  eggzee.x = width / 2;
+  eggzee.y = height / 2;
 
-      showFeedInstructions = true;
-      feedInstructionTimer = millis();
-      return false;
-    }
+  feedStartTime = 0;
+
+  showFeedInstructions = true;
+  feedInstructionTimer = millis();
+
+  // ⭐ Spawn one instant food so screen isn't empty
+  foods.push({
+    x: random(60, width - 60),
+    y: random(height / 2, height - 100),
+    emoji: random(["🍩", "🍎", "🍓", "🍪", "🍕"]),
+    beingDragged: false,
+    toRemove: false
+  });
+
+  return false;
+}
+
 
  // DANCE
 if (insideButton(danceBtn)) {
@@ -1305,6 +1322,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
