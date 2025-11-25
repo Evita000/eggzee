@@ -526,6 +526,7 @@ if (millis() - feedStartTime >= 25000) {
 } // ← THIS closes the entire drawFeedScene() function
 
 
+
 function drawSleepScene() {
   // 🌌 Soft fade to night background
   background(15, 10, 40);
@@ -1328,6 +1329,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
