@@ -1285,12 +1285,10 @@ function touchEnded() {
 function drawDiscoScene() {
   background(0);
 
-  // 🔥 Flashing disco glow
   let glow = sin(frameCount * 0.15) * 100 + 155;
   fill(glow, 50, 180, 70);
   rect(0, 0, width, height);
 
-  // 🕺 Eggzee bouncing & rotating
   push();
   translate(eggzee.x, eggzee.y);
   rotate(radians(sin(frameCount * 0.3) * 12));
@@ -1305,18 +1303,15 @@ function drawDiscoScene() {
   );
   pop();
 
-  // 💬 Text
   textAlign(CENTER, CENTER);
   textSize(width < 600 ? 26 : 30);
   fill(255);
   text("💃 Eggzee is DISCO dancing!", width / 2, height - 70);
-
-  
 }
 
 // ✅ End of Eggzee Script — all good!
 
-}  // ← FINAL closing brace to end the whole file
+
 
 
 
