@@ -148,10 +148,19 @@ function resizeCanvas() {
 
 <script>
 function closeDance() {
+  // ⭐ Tell index.html we are returning from dance
+  localStorage.setItem("eggzeeJustDanced", "true");
+
+  // ⭐ Keep Eggzee awake
   localStorage.setItem("eggzeeForceAwake", "true");
+
+  // ⭐ Preserve energy timer
   localStorage.setItem("eggzeeRealStartTime", Date.now());
+
+  // ⭐ Return to main menu
   window.location.href = "index.html";
 }
+
 
 
   document.getElementById("eggzeeReturnBtn").addEventListener("click", closeDance);
@@ -167,6 +176,7 @@ function closeDance() {
 
 </body>
 </html>
+
 
 
 
