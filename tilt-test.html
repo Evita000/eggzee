@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Motion Test</title>
+<style>
+  body {
+    font-family: sans-serif;
+    background: #111;
+    color: #0f0;
+    padding: 20px;
+  }
+  .box {
+    border: 2px solid #0f0;
+    padding: 15px;
+    margin-top: 20px;
+  }
+  h2 { margin-bottom: 5px; }
+</style>
+</head>
+<body>
+
+<h1>📱 Motion Sensor Test</h1>
+<p>Tap anywhere to request permission.</p>
+
+<div class="box">
+  <h2>Status:</h2>
+  <div id="status">Waiting for tap...</div>
+</div>
+
+<div class="box">
+  <h2>Tilt:</h2>
+  gamma (left/right): <span id="gamma">--</span><br>
+  beta (forward/back): <span id="beta">--</span><br>
+  alpha (compass): <span id="alpha">--</span>
+</div>
+
+<div class="box">
+  <h2>Shake Strength:</h2>
+  <span id="shake">--</span>
+</div>
+
+<script>
+let granted = false;
+
+document.addEventListener("touchstart", function askPerm() {
+  document.getElementById("status").innerHTML = "Requesting permission…";
+
+  if (typeof DeviceMotionEvent.requestPermission === "function") {
+    // iPhone / iPad
+    DeviceMotionEvent.requestPermission().then(res => {
+      if (res === "granted") {
+        granted = true;
+        document.getElementById("status").innerHTML = "Permission GRANTED ✔";
+        startSensors();
+      } else {
+        document.getElementById("status").innerHTML = "Permission DENIED ❌";
+      }
+    });
+  } else {
+    // Android + Chrome + older iPads
+    granted = true;
+    document.getElementById("status").innerHTML = "Auto allowed (non-iOS)";
+    startSensors();
+  }
+
+  document.removeEventListener("touchstart", askPerm);
+});
+
+function startSensors() {
+  window.addEventListener("deviceorientation", e => {
+    document.getElementById("gamma").innerHTML = e.gamma;
+    document.getElementById("beta").innerHTML = e.beta;
+    document.getElementById("alpha").innerHTML = e.alpha;
+  });
+
+  window.addEventListener("devicemotion", e => {
+    let acc = e.accelerationIncludingGravity;
+    if (!acc) return;
+
+    let strength = Math.abs(acc.x) + Math.abs(acc.y) + Math.abs(acc.z);
+    document.getElementById("shake").innerHTML = strength.toFixed(2);
+  });
+}
+</script>
+
+</body>
+</html>
