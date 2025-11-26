@@ -1,3 +1,20 @@
+// SAFARI FULLSCREEN FIX — MUST COME FIRST
+document.addEventListener("touchstart", function () {
+  if (!window._safariStarted) {
+    window._safariStarted = true;
+
+    // Unlock audio, motion, etc.
+    if (typeof DeviceMotionEvent?.requestPermission === "function") {
+      DeviceMotionEvent.requestPermission().catch(() => {});
+    }
+    if (typeof DeviceOrientationEvent?.requestPermission === "function") {
+      DeviceOrientationEvent.requestPermission().catch(() => {});
+    }
+  }
+});
+
+
+
 // --- Universal Tilt Vars ---
 let tiltX = 0;
 let tiltY = 0;
@@ -200,6 +217,9 @@ function setup() {
 
   pixelDensity(1);
   createCanvas(windowWidth, windowHeight);
+  // SAFARI CANVAS KICKSTART
+touchStarted = () => true;
+
 
   // ⭐ AUTO-ENABLE MOTION ON ANDROID (fixes Chrome)
 if (/Android/i.test(navigator.userAgent)) {
@@ -1485,6 +1505,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
