@@ -190,6 +190,7 @@ function preload() {
 function setup() {
   pixelDensity(1);
   createCanvas(windowWidth, windowHeight);
+window.motionPermissionGranted = false;   // ⭐ REQUIRED
 
    // ⭐ ONLY show Tap screen if NOT returning from dance
   if (!justDanced) {
@@ -1387,6 +1388,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
