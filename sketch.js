@@ -5,10 +5,19 @@ let needsStart = true;
 
 // SAFARI FULLSCREEN FIX — MUST COME FIRST
 document.addEventListener("touchstart", function () {
+
+  console.log("🔥 SAFARI RAW TOUCH FIRED");
+
+  // ⭐ SAFARI FIX — ALWAYS break out of start screen
+  if (window.needsStart) {
+    window.needsStart = false;
+    console.log("💥 needsStart → FALSE (Safari override)");
+  }
+
   if (!window._safariStarted) {
     window._safariStarted = true;
 
-    // Unlock audio, motion, etc.
+    // Unlock sensors
     if (typeof DeviceMotionEvent?.requestPermission === "function") {
       DeviceMotionEvent.requestPermission().catch(() => {});
     }
@@ -17,6 +26,7 @@ document.addEventListener("touchstart", function () {
     }
   }
 });
+
 
 
 
@@ -1515,6 +1525,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
