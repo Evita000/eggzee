@@ -55,7 +55,8 @@
 <script>
 document.addEventListener("touchstart", function firstTouch() {
     console.log("🔥 First touch — requesting motion permission");
-needsStart = false; // ⭐ SAFARI FIX — allow setup to continue
+window.needsStart = false;
+
 
 
   
@@ -115,6 +116,7 @@ try {
 
 </body>
 </html>
+
 
 
 
