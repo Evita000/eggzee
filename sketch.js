@@ -373,14 +373,19 @@ else if (state === "disco") {
 }
 
 // --------------------------------------------
+// --------------------------------------------
 // ⭐ Always draw Yum bubble (even in feed mode)
 drawYumBubble();
 
 // --------------------------------------------
 // 🛑 IMPORTANT: STOP HERE unless in AWAKE MODE
 // --------------------------------------------
-if (state !== "awake") {
-  return;   // no buttons, no jokes, no overlays
+if (state === "feed" || 
+    state === "miniGame" ||
+    state === "sleep" ||
+    state === "playground"
+) {
+    return;
 }
 
 // ---------- UI + FX (AWAKE ONLY) ----------
@@ -391,6 +396,7 @@ drawEnergyBar();
 drawJoke();
 drawOverlayText();
 }
+
 
 // ---------- EGG SCENE ----------
 function drawEggScene() {
@@ -1424,6 +1430,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
