@@ -101,7 +101,16 @@ try {
     });
   </script>
 
+
+  <script>
+  window.addEventListener("touchstart", () => {
+    document.body.style.opacity = "1"; // Safari fix for hidden body
+  });
+</script>
+
+
 </body>
 </html>
+
 
 
