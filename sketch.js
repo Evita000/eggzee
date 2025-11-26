@@ -4,38 +4,45 @@ let tiltY = 0;
 let lastGamma = 0;
 let lastBeta = 0;
 
+// shake still works but does NOT control tilt
+let motionPermissionGranted = false;
 
+let shakeDanceActive = false;
+let shakeDanceStartTime = 0;
 
+// shake detection
+let lastShakeTime = 0;
+let shakeCooldown = 1500;
 
+function handleShake(event) {
+  let acc = event.accelerationIncludingGravity;
+  if (!acc) return;
 
-document.addEventListener("touchstart", () => {
-  console.log("🔥 RAW TOUCH FIRED");
-});
+  let strength = Math.abs(acc.x) + Math.abs(acc.y) + Math.abs(acc.z);
 
-
-// 🔥 FALLBACK: GUARANTEED handlers for iPhone first tap
-document.body.addEventListener("touchstart", () => {
-  if (!window._motionRequested) {
-    window._motionRequested = true;
-    console.log("🔥 HTML FALLBACK TOUCH — requestMotionPermission()");
-    requestMotionPermission();
+  if (strength > 28 && millis() > lastShakeTime + shakeCooldown) {
+    lastShakeTime = millis();
+    onShakeAction();
   }
-}, { once: true });
-
-document.body.addEventListener("click", () => {
-  if (!window._motionRequested) {
-    window._motionRequested = true;
-    console.log("🔥 HTML FALLBACK CLICK — requestMotionPermission()");
-    requestMotionPermission();
-  }
-}, { once: true });
-
-// ---- Motion Permission Helpers ----
-function enableMotionListeners() {
-  console.log("📡 Enabling motion listeners…");
-  window.addEventListener("devicemotion", handleShake);
-  window.addEventListener("deviceorientation", handleTilt);
 }
+
+// ★★★ MAIN TILT FUNCTION (ONLY KEEP THIS ONE) ★★★
+function handleTilt(event) {
+  if (!window.motionPermissionGranted) return;
+
+  let g = event.gamma;
+  let b = event.beta;
+
+  if (g === null) g = lastGamma;
+  if (b === null) b = lastBeta;
+
+  lastGamma = g;
+  lastBeta = b;
+
+  tiltX = lerp(tiltX, g, 0.1);
+  tiltY = lerp(tiltY, b, 0.1);
+}
+
 
 function requestMotionPermission() {
   console.log("Requesting motion permission…");
@@ -1434,6 +1441,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
