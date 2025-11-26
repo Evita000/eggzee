@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<body style="font-family:Arial; text-align:center; padding-top:40px;">
+
+<h2>📱 SENSOR TEST</h2>
+<p id="status">Waiting for touch…</p>
+
+<script>
+let granted = false;
+
+function handleTilt(e) {
+  document.getElementById("status").innerHTML =
+    "Tilt: gamma=" + e.gamma + " beta=" + e.beta;
+}
+
+function handleShake(e) {
+  const a = e.accelerationIncludingGravity;
+  const str = Math.abs(a.x) + Math.abs(a.y) + Math.abs(a.z);
+  if (str > 22) {
+    document.getElementById("status").innerHTML =
+      "🔥 SHAKE DETECTED: " + str.toFixed(1);
+  }
+}
+
+document.body.addEventListener("touchstart", () => {
+  if (granted) return;
+
+  if (typeof DeviceMotionEvent.requestPermission === "function") {
+    // iPhone
+    DeviceMotionEvent.requestPermission().then(res => {
+      if (res === "granted") {
+        granted = true;
+        document.getElementById("status").innerHTML = "✔ Permission granted";
+        window.addEventListener("deviceorientation", handleTilt);
+        window.addEventListener("devicemotion", handleShake);
+      } else {
+        document.getElementById("status").innerHTML = "❌ Permission denied";
+      }
+    });
+  } else {
+    // Android + Chrome
+    granted = true;
+    document.getElementById("status").innerHTML = "✔ Auto-enabled";
+    window.addEventListener("deviceorientation", handleTilt);
+    window.addEventListener("devicemotion", handleShake);
+  }
+});
+</script>
+
+</body>
+</html>
