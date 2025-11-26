@@ -25,7 +25,7 @@ let tiltX = 0;
 let tiltY = 0;
 let lastGamma = 0;
 let lastBeta = 0;
-let needsStart = true;   // ← YOU ARE MISSING THIS LINE
+
 
 
 // ---- Motion Permission Helpers ----
@@ -1515,6 +1515,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
