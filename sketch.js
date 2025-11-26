@@ -456,15 +456,7 @@ function drawEggzeeScene() {
 
 
 
-eggzee.x = constrain(eggzee.x, 60, width - 60);
-eggzee.y = constrain(eggzee.y, 120, height - 120);
-// Tilt movement
-if (window.motionPermissionGranted) {
-    eggzee.x = width/2 + tiltX * 5;
-    eggzee.y = height/2 + tiltY * 3;
-}
 
-}
 
 
 function drawFeedScene() {
@@ -1377,6 +1369,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
