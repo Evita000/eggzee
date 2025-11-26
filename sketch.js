@@ -343,14 +343,25 @@ else if (state === "dance") {
 }
 
 else if (state === "playground") {
-    // 🌳 Draw playground background
+
+    // Draw playground background
     if (playgroundImg) {
         image(playgroundImg, width/2, height/2, width, height);
     } else {
-        background(200, 230, 255); // fallback sky color
+        background(200, 230, 255);
     }
 
-    // 🐣 Draw Eggzee on the playground (tilt still works!)
+    // ⭐ APPLY TILT MOVEMENT
+    if (window.motionPermissionGranted) {
+        eggzee.x = width/2 + tiltX * 5;
+         eggzee.y = height/2 + tiltY * 3;   // ✔️ FIXED
+    }
+
+    // ⭐ Keep inside screen
+    eggzee.x = constrain(eggzee.x, 60, width - 60);
+    eggzee.y = constrain(eggzee.y, 120, height - 120);
+
+    // Draw Eggzee
     eggzee.visible = true;
     push();
     translate(eggzee.x, eggzee.y);
@@ -363,12 +374,13 @@ else if (state === "playground") {
     );
     pop();
 
-    // 🔙 Tap to return to menu
+    // Exit text
     fill(255);
     textSize(width < 600 ? 24 : 28);
     textAlign(CENTER, CENTER);
     text("Tap anywhere to return", width/2, height - 80);
 }
+
 
 
 else if (state === "disco") {
@@ -1427,6 +1439,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
