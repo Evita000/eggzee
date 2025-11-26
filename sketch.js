@@ -372,16 +372,31 @@ else if (state === "playground") {
     eggzee.x = constrain(eggzee.x, 60, width - 60);
     eggzee.y = constrain(eggzee.y, 120, height - 120);
 
-    // Draw Eggzee
-    push();
-    translate(eggzee.x, eggzee.y);
-    image(
-      eggzeeAwakeImg,
-      0,0,
-      eggzeeAwakeImg.width * eggzee.scale,
-      eggzeeAwakeImg.height * eggzee.scale
-    );
-    pop();
+    // ⭐ SHAKE animation in playground
+let wiggle = 0;
+let bounce = 0;
+
+if (shakeDanceActive) {
+    wiggle = sin(frameCount * 0.45) * 10;
+    bounce = sin(frameCount * 0.6) * 10;
+
+    if (millis() - shakeDanceStartTime > 2200) {
+        shakeDanceActive = false;
+    }
+}
+
+// ⭐ DRAW EGGZEE with tilt + shake
+push();
+translate(eggzee.x, eggzee.y + bounce);
+rotate(radians(wiggle));
+image(
+  eggzeeAwakeImg,
+  0, 0,
+  eggzeeAwakeImg.width * eggzee.scale,
+  eggzeeAwakeImg.height * eggzee.scale
+);
+pop();
+
 
     fill(255);
     textSize(width < 600 ? 24 : 28);
@@ -1470,6 +1485,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
