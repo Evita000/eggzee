@@ -196,7 +196,14 @@ function preload() {
 function setup() {
   pixelDensity(1);
   createCanvas(windowWidth, windowHeight);
-window.motionPermissionGranted = false;   // ⭐ REQUIRED
+
+  // ⭐ AUTO-ENABLE MOTION ON ANDROID (fixes Chrome)
+if (/Android/i.test(navigator.userAgent)) {
+  console.log("Android detected — enabling motion immediately");
+  window.motionPermissionGranted = true;
+  enableMotionListeners();
+}
+
 
    // ⭐ ONLY show Tap screen if NOT returning from dance
   if (!justDanced) {
@@ -1435,6 +1442,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
