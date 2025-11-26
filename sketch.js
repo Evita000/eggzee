@@ -1280,6 +1280,7 @@ function touchStarted() {
   return false;
 }
 
+
 // ✔️ Correct, stand-alone insideButton() function
 // --------------------------------------------------
 function insideButton(btn) {
@@ -1386,6 +1387,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
