@@ -196,6 +196,8 @@ function preload() {
 
 // ---------- SETUP ----------
 function setup() {
+  window.motionPermissionGranted = false;
+
   pixelDensity(1);
   createCanvas(windowWidth, windowHeight);
 
@@ -1464,6 +1466,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
