@@ -478,11 +478,15 @@ image(
 );
 pop();
 
-// ----- TILT MOVEMENT -----
-let moveSpeed = 0.4;
+// ----- TILT MOVEMENT (TEST MODE) -----
 if (motionPermissionGranted) {
-  eggzee.x += tiltX * moveSpeed;
-  eggzee.y += tiltY * moveSpeed;
+  let moveX = map(tiltX, -45, 45, -8, 8);
+  let moveY = map(tiltY, -45, 45, -8, 8);
+
+  console.log("MOVE:", moveX, moveY);
+
+  eggzee.x += moveX;
+  eggzee.y += moveY;
 }
 
 
@@ -1414,6 +1418,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
