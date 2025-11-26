@@ -3,31 +3,6 @@ let tiltX = 0;
 let tiltY = 0;
 let motionPermissionGranted = false;
 
-// ---- Motion Permission (iPhone) ----
-function requestMotionPermission() {
-  if (typeof DeviceMotionEvent.requestPermission === "function") {
-    DeviceMotionEvent.requestPermission()
-      .then(response => {
-        console.log("Permission result:", response);
-
-        if (response === "granted") {
-          motionPermissionGranted = true;
-
-          // iPhone requires attaching listeners after permission
-          window.addEventListener("devicemotion", handleShake);
-          window.addEventListener("deviceorientation", handleTilt);
-
-          console.log("📱 Motion events now active");
-        }
-      })
-      .catch(err => console.error("Error requesting motion:", err));
-  } else {
-    // Android or desktop
-    motionPermissionGranted = true;
-    window.addEventListener("devicemotion", handleShake);
-    window.addEventListener("deviceorientation", handleTilt);
-  }
-}
 
 // ---- Shake Dance State ----
 let shakeDanceActive = false;
@@ -82,6 +57,7 @@ function onShakeAction() {
   // mini dance
   startShakeDance();
 }
+
 
 
 let needsStart = true;   // mobile gate
@@ -1403,6 +1379,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
