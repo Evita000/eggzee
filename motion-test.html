@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Motion Test</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  body { font-family: sans-serif; padding: 20px; text-align: center; }
+  #box { padding: 20px; border: 2px solid #333; border-radius: 10px; margin-top: 20px; }
+</style>
+</head>
+<body>
+
+<h2>📱 Motion Permission Test</h2>
+<p>Tap the button below:</p>
+
+<button id="btn" style="padding:15px 25px; font-size:20px;">Enable Motion</button>
+
+<div id="box">
+  <h3>Orientation</h3>
+  <p>gamma: <span id="gamma">0</span></p>
+  <p>beta: <span id="beta">0</span></p>
+
+  <h3>Shake</h3>
+  <p>x: <span id="x">0</span></p>
+  <p>y: <span id="y">0</span></p>
+  <p>z: <span id="z">0</span></p>
+</div>
+
+<script>
+document.getElementById("btn").addEventListener("click", function () {
+  if (typeof DeviceMotionEvent.requestPermission === "function") {
+    DeviceMotionEvent.requestPermission().then(response => {
+      alert("Permission: " + response);
+      if (response === "granted") startSensors();
+    });
+  } else {
+    startSensors();
+  }
+});
+
+function startSensors() {
+  window.addEventListener("deviceorientation", e => {
+    document.getElementById("gamma").innerText = e.gamma;
+    document.getElementById("beta").innerText = e.beta;
+  });
+
+  window.addEventListener("devicemotion", e => {
+    let acc = e.accelerationIncludingGravity || {};
+    document.getElementById("x").innerText = acc.x;
+    document.getElementById("y").innerText = acc.y;
+    document.getElementById("z").innerText = acc.z;
+  });
+}
+</script>
+
+</body>
+</html>
