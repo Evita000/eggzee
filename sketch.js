@@ -98,7 +98,7 @@ let restoreAwake = localStorage.getItem("eggzeeForceAwake") === "true";
 let realStartTime = null;  
 let restoreTime = localStorage.getItem("eggzeeRealStartTime");
 
-let eggImg, eggzeeAwakeImg, eggzeeSleepImg, cityImg, cityNightImg;
+let eggImg, eggzeeAwakeImg, eggzeeSleepImg, cityImg, cityNightImg,playgroundImg;
 let eggzee = {};
 let crackTime = 0;
 let energy = 120;
@@ -186,6 +186,8 @@ function preload() {
   eggzeeSleepImg = loadImage("assets/eggzee5.png");
   cityImg = loadImage("assets/city.jpg");
   cityNightImg = loadImage("assets/city_night.jpg");
+  playgroundImg = loadImage("assets/playground.webp");
+
 }
 
 // ---------- SETUP ----------
@@ -1369,6 +1371,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
