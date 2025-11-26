@@ -256,23 +256,7 @@ window.motionPermissionGranted = false;   // ⭐ REQUIRED
   console.log("HEIGHT:", height);
 
 } // ← THIS is the only closing brace for setup()
-function handleTilt(event) {
-  if (!window.motionPermissionGranted) return;
 
-  let g = event.gamma;
-  let b = event.beta;
-
-  // iPad sometimes sends null — fallback to previous values
-  if (g === null) g = lastGamma;
-  if (b === null) b = lastBeta;
-
-  lastGamma = g;
-  lastBeta = b;
-
-  // smooth it
-  tiltX = lerp(tiltX, g, 0.1);
-  tiltY = lerp(tiltY, b, 0.1);
-}
 
 // ---------- DRAW ----------
 function draw() {
@@ -1388,6 +1372,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
