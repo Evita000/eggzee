@@ -46,59 +46,6 @@ function handleTilt(event) {
 
 
 
-// ---- Shake Dance State ----
-let shakeDanceActive = false;
-let shakeDanceStartTime = 0;
-
-function startShakeDance() {
-  shakeDanceActive = true;
-  shakeDanceStartTime = millis();
-}
-
-// ----- SHAKE DETECTION -----
-let lastShakeTime = 0;
-let shakeCooldown = 1500;
-
-function handleTilt(e) {
-  tiltX = e.gamma || 0;
-  tiltY = e.beta || 0;
-}
-
-function handleShake(event) {
-  let acc = event.accelerationIncludingGravity;
-  if (!acc) return;
-
-  let strength = Math.abs(acc.x) + Math.abs(acc.y) + Math.abs(acc.z);
-
-  if (strength > 28 && millis() > lastShakeTime + shakeCooldown) {
-    lastShakeTime = millis();
-    onShakeAction();
-  }
-}
-
-function onShakeAction() {
-  // sparkles
-  for (let i = 0; i < 25; i++) {
-    sparkles.push({
-      x: eggzee.x + random(-40, 40),
-      y: eggzee.y + random(-40, 40),
-      size: random(6, 14),
-      speedY: random(-4, -8),
-      alpha: 255
-    });
-  }
-
-  // heart
-  hearts.push({
-    x: eggzee.x,
-    y: eggzee.y - 70,
-    vy: -3,
-    alpha: 255
-  });
-
-  // mini dance
-  startShakeDance();
-}
 
 
 
@@ -1416,6 +1363,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
