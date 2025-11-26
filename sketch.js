@@ -1245,16 +1245,15 @@ function isMobileDevice() {
 
 function touchStarted() {
 
+  // ---- FIRST TAP: LEAVE START SCREEN + ENABLE MOTION ----
   if (needsStart) {
-    console.log("FIRST TOUCH — calling permission");  // add this
+    console.log("FIRST TOUCH — calling permission");
     needsStart = false;
-    requestMotionPermission();  // ← MUST CALL HERE FOR iPHONE
+    requestMotionPermission();
     return false;
   }
 
-
-
-  // ⭐ EXIT DANCE MODE ON TOUCH
+  // ⭐ EXIT DANCE MODE
   if (state === "dance") {
     state = "awake";
     return false;
@@ -1270,7 +1269,9 @@ function touchStarted() {
   if (millis() < lastTouchTime + 250) return false;
   lastTouchTime = millis();
 
-  // 🐣 Hatch egg
+  // -------------------------
+  // 🍳 HATCHING THE EGG
+  // -------------------------
   if (state === "egg" && !eggzee.isHatching) {
     state = "hatching";
     crackTime = millis();
@@ -1285,10 +1286,11 @@ function touchStarted() {
     mouseY = touches[0].y;
   }
 
-  // ⭐ Now run button logic  
+  // Run button logic
   mousePressed();
   return false;
 }
+
 
 
 // --------------------------------------------------
@@ -1401,6 +1403,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
