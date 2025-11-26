@@ -72,20 +72,7 @@ function handleTilt(event) {
   tiltX = lerp(tiltX, g, 0.1);
   tiltY = lerp(tiltY, b, 0.1);
 }
-window.addEventListener("devicemotion", function(e) {
-  if (!window.motionPermissionGranted) return;
 
-  const acc = e.accelerationIncludingGravity;
-  if (!acc) return;
-
-  const strength = Math.abs(acc.x) + Math.abs(acc.y) + Math.abs(acc.z);
-
-  // shake threshold
-  if (strength > 25) {
-    console.log("🔥 SHAKE DETECTED:", strength);
-    onShakeAction(); // your function
-  }
-});
 
 let needsStart = true;   // mobile gate
 let lastTouchTime = 0;
@@ -1378,6 +1365,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
