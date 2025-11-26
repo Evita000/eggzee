@@ -53,6 +53,17 @@ window.addEventListener("devicemotion", function(e) {
     onShakeAction();
   }
 });
+function onShakeAction() {
+  shakeDanceActive = true;
+  shakeDanceStartTime = millis();
+  hearts.push({
+    x: eggzee.x,
+    y: eggzee.y - 60,
+    vy: -2,
+    alpha: 255
+  });
+  console.log("💓 Shake animation started!");
+}
 
 
 // ★★★ MAIN TILT FUNCTION (ONLY KEEP THIS ONE) ★★★
@@ -1364,6 +1375,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
