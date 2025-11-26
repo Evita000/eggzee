@@ -1,3 +1,9 @@
+document.addEventListener("touchstart", () => {
+  console.log("🔥 RAW TOUCH FIRED");
+});
+
+
+
 // ---- Tilt & Shake ----
 let tiltX = 0;
 let tiltY = 0;
@@ -1252,53 +1258,30 @@ function isMobileDevice() {
 }
 
 function touchStarted() {
+  console.log("🌟 touchStarted triggered");
 
-  // ---- FIRST TAP: LEAVE START SCREEN + ENABLE MOTION ----
-  if (needsStart) {
-    console.log("FIRST TOUCH — calling permission");
-    needsStart = false;
+  // ALWAYS try to request motion on first real touch
+  if (!motionPermissionGranted) {
+    console.log("📡 Requesting motion permission NOW");
     requestMotionPermission();
+  }
+
+  // Your original start gate
+  if (needsStart) {
+    console.log("🎬 Clearing needsStart");
+    needsStart = false;
     return false;
   }
 
-  // ⭐ EXIT DANCE MODE
-  if (state === "dance") {
-    state = "awake";
-    return false;
-  }
-
-  // ⭐ Start energy timer if not started
-  if (!realStartTime) {
-    realStartTime = Date.now();
-    startTime = millis();
-  }
-
-  // ⭐ Prevent double-tap
-  if (millis() < lastTouchTime + 250) return false;
-  lastTouchTime = millis();
-
-  // -------------------------
-  // 🍳 HATCHING THE EGG
-  // -------------------------
-  if (state === "egg" && !eggzee.isHatching) {
-    state = "hatching";
-    crackTime = millis();
-    eggzee.isHatching = true;
-    setTimeout(() => { eggzee.isHatching = false; }, 3000);
-    return false;
-  }
-
-  // ⭐ Sync touch → mouse for button hitboxes
+  // Enable button/touch logic
   if (touches.length > 0) {
     mouseX = touches[0].x;
     mouseY = touches[0].y;
   }
 
-  // Run button logic
   mousePressed();
   return false;
 }
-
 
 
 // --------------------------------------------------
@@ -1411,6 +1394,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
