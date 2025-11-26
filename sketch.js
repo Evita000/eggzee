@@ -344,10 +344,6 @@ else if (state === "dance") {
 
 else if (state === "playground") {
 
-    // ⭐ Reset starting point so tilt works correctly
-    eggzee.x = width/2;
-    eggzee.y = height/2;
-
     // Background
     if (playgroundImg) {
         image(playgroundImg, width/2, height/2, width, height);
@@ -1439,6 +1435,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
