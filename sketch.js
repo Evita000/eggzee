@@ -307,6 +307,8 @@ playgroundBtn = {
 
 
 // ---------- DRAW ----------
+function draw() {
+
   // ⭐ START SCREEN (tap anywhere + request motion permission)
   if (window.needsStart) {
     background(0);
@@ -452,7 +454,9 @@ drawButtons();
 drawEnergyBar();
 drawJoke();
 drawOverlayText();
-}
+
+} // END OF draw()
+
 
 
 // ---------- EGG SCENE ----------
@@ -1508,6 +1512,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
