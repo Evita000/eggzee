@@ -221,7 +221,8 @@ function preload() {
   eggzeeSleepImg = loadImage("assets/eggzee5.png");
   cityImg = loadImage("assets/city.jpg");
   cityNightImg = loadImage("assets/city_night.jpg");
-  playgroundImg = loadImage("assets/playground.webp");
+  // playgroundImg = loadImage("assets/playground.webp");
+
 
 }
 
@@ -1520,6 +1521,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
