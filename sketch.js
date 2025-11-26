@@ -125,7 +125,7 @@ if (justDanced) {
 }
 
 // Buttons + UI
-let feedBtn, danceBtn, gameBtn, jokeBtn;
+let feedBtn, danceBtn, gameBtn, jokeBtn,playgroundBtn;
 let hearts = [];
 let foods = [];
 let showYum = false;
@@ -243,6 +243,14 @@ window.motionPermissionGranted = false;   // ⭐ REQUIRED
   danceBtn = { x: rightX + btnW/2, y: row1Y + btnH/2, w: btnW, h: btnH };
   gameBtn  = { x: leftX + btnW/2,  y: row2Y + btnH/2, w: btnW, h: btnH };
   jokeBtn  = { x: rightX + btnW/2, y: row2Y + btnH/2, w: btnW, h: btnH };
+const row3Y = row2Y + btnH + gap;
+
+playgroundBtn = {
+  x: width / 2,
+  y: row3Y + btnH/2,
+  w: btnW,
+  h: btnH
+};
 
   // Restore awake if returning from dance page
   if (restoreAwake) {
@@ -330,6 +338,36 @@ else if (state === "sleep") {
 else if (state === "dance") {
   drawDanceScene();
 }
+
+else if (state === "playground") {
+    // 🌳 Draw playground background
+    if (playgroundImg) {
+        image(playgroundImg, width/2, height/2, width, height);
+    } else {
+        background(200, 230, 255); // fallback sky color
+    }
+
+    // 🐣 Draw Eggzee on the playground (tilt still works!)
+    eggzee.visible = true;
+    push();
+    translate(eggzee.x, eggzee.y);
+    image(
+      eggzeeAwakeImg,
+      0,
+      0,
+      eggzeeAwakeImg.width * eggzee.scale,
+      eggzeeAwakeImg.height * eggzee.scale
+    );
+    pop();
+
+    // 🔙 Tap to return to menu
+    fill(255);
+    textSize(width < 600 ? 24 : 28);
+    textAlign(CENTER, CENTER);
+    text("Tap anywhere to return", width/2, height - 80);
+}
+
+
 else if (state === "disco") {
   drawDiscoScene();
 }
@@ -822,6 +860,8 @@ function drawButtons() {
   drawPillButton(rightX, row1Y, danceBtn, "💃", "Dance");
   drawPillButton(leftX,  row2Y, gameBtn,  "✨", "Game");
   drawPillButton(rightX, row2Y, jokeBtn,  "😂", "Joke");
+  drawPillButton(width/2 - btnW/2, row3Y, playgroundBtn, "🌳", "Play");
+
 }
 
 function drawPillButton(x, y, btnObj, emoji, label) {
@@ -1206,13 +1246,26 @@ function mousePressed() {
       gameInstructionTimer = millis();
       return false;
     }
-  }
+
+ // ⭐ PLAYGROUND (NEW)
+    if (insideButton(playgroundBtn)) {
+      state = "playground";
+      return false;
+    }
+}
 
   // 🌙 WAKE FROM SLEEP
   if (state === "sleep") {
     state = "awake";
     return false;
   }
+
+  
+// 🔙 EXIT PLAYGROUND
+if (state === "playground") {
+    state = "awake";
+    return false;
+}
 
   // 🍎 DRAG FOOD
   for (let f of foods) {
@@ -1371,6 +1424,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
