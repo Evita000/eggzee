@@ -3,6 +3,8 @@ let tiltX = 0;
 let tiltY = 0;
 let lastGamma = 0;
 let lastBeta = 0;
+let motionPermissionGranted = false;
+
 // ---- Motion Permission Helpers ----
 function enableMotionListeners() {
   console.log("📡 Enabling motion listeners…");
@@ -1371,6 +1373,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
