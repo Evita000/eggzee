@@ -3,6 +3,36 @@ let tiltX = 0;
 let tiltY = 0;
 let lastGamma = 0;
 let lastBeta = 0;
+// ---- Motion Permission Helpers ----
+function enableMotionListeners() {
+  console.log("📡 Enabling motion listeners…");
+  window.addEventListener("devicemotion", handleShake);
+  window.addEventListener("deviceorientation", handleTilt);
+}
+
+function requestMotionPermission() {
+  console.log("Requesting motion permission…");
+
+  if (typeof DeviceMotionEvent.requestPermission === "function") {
+    // iPhone / iPad
+    DeviceMotionEvent.requestPermission().then(response => {
+      console.log("Permission result:", response);
+
+      if (response === "granted") {
+        window.motionPermissionGranted = true;
+        enableMotionListeners();
+      } else {
+        console.log("❌ Motion permission denied");
+      }
+    })
+    .catch(err => console.error("Error requesting motion:", err));
+  } else {
+    // Android / Desktop / Chrome
+    console.log("Non-iPhone detected — enabling motion automatically");
+    window.motionPermissionGranted = true;
+    enableMotionListeners();
+  }
+}
 
 // shake still works but does NOT control tilt
 let motionPermissionGranted = false;
@@ -1363,6 +1393,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
