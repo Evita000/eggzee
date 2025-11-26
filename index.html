@@ -55,6 +55,10 @@
 <script>
 document.addEventListener("touchstart", function firstTouch() {
     console.log("🔥 First touch — requesting motion permission");
+needsStart = false; // ⭐ SAFARI FIX — allow setup to continue
+
+
+  
   // 🔥 ANDROID/CHROME SHAKE UNLOCK — DO NOT REMOVE
 try {
   window.dispatchEvent(new Event("devicemotion"));
@@ -111,6 +115,7 @@ try {
 
 </body>
 </html>
+
 
 
 
