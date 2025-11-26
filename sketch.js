@@ -1,13 +1,17 @@
+// --- Universal Tilt Vars ---
+let tiltX = 0;
+let tiltY = 0;
+let lastGamma = 0;
+let lastBeta = 0;
+
+
+
+
+
 document.addEventListener("touchstart", () => {
   console.log("🔥 RAW TOUCH FIRED");
 });
 
-
-
-// ---- Tilt & Shake ----
-let tiltX = 0;
-let tiltY = 0;
-let motionPermissionGranted = false;
 
 // 🔥 FALLBACK: GUARANTEED handlers for iPhone first tap
 document.body.addEventListener("touchstart", () => {
@@ -25,8 +29,6 @@ document.body.addEventListener("click", () => {
     requestMotionPermission();
   }
 }, { once: true });
-
-
 
 // ---- Motion Permission Helpers ----
 function enableMotionListeners() {
@@ -224,6 +226,7 @@ function preload() {
 function setup() {
   pixelDensity(1);
   createCanvas(windowWidth, windowHeight);
+
    // ⭐ ONLY show Tap screen if NOT returning from dance
   if (!justDanced) {
     background(0);
@@ -288,6 +291,23 @@ function setup() {
   console.log("HEIGHT:", height);
 
 } // ← THIS is the only closing brace for setup()
+function handleTilt(event) {
+  if (!window.motionPermissionGranted) return;
+
+  let g = event.gamma;
+  let b = event.beta;
+
+  // iPad sometimes sends null — fallback to previous values
+  if (g === null) g = lastGamma;
+  if (b === null) b = lastBeta;
+
+  lastGamma = g;
+  lastBeta = b;
+
+  // smooth it
+  tiltX = lerp(tiltX, g, 0.1);
+  tiltY = lerp(tiltY, b, 0.1);
+}
 
 // ---------- DRAW ----------
 function draw() {
@@ -478,20 +498,16 @@ image(
 );
 pop();
 
-// ----- TILT MOVEMENT (TEST MODE) -----
-if (motionPermissionGranted) {
-  let moveX = map(tiltX, -45, 45, -8, 8);
-  let moveY = map(tiltY, -45, 45, -8, 8);
 
-  console.log("MOVE:", moveX, moveY);
-
-  eggzee.x += moveX;
-  eggzee.y += moveY;
-}
 
 
 eggzee.x = constrain(eggzee.x, 60, width - 60);
 eggzee.y = constrain(eggzee.y, 120, height - 120);
+// Tilt movement
+if (window.motionPermissionGranted) {
+    eggzee.x = width/2 + tiltX * 5;
+    eggzee.y = height/2 + tiltY * 3;
+}
 
 }
 
@@ -1418,6 +1434,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
