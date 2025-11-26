@@ -35,7 +35,7 @@ function requestMotionPermission() {
 }
 
 // shake still works but does NOT control tilt
-let motionPermissionGranted = false;
+
 
 let shakeDanceActive = false;
 let shakeDanceStartTime = 0;
@@ -1364,6 +1364,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
