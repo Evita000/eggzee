@@ -1,3 +1,4 @@
+window.needsStart = true;
 
 
 
@@ -111,8 +112,6 @@ function handleTilt(event) {
   tiltY = lerp(tiltY, b, 0.1);
 }
 
-
-let needsStart = true;   // mobile gate
 let lastTouchTime = 0;
 let state = "egg";
 let restoreAwake = localStorage.getItem("eggzeeForceAwake") === "true";
@@ -308,10 +307,8 @@ playgroundBtn = {
 
 
 // ---------- DRAW ----------
-function draw() {
-
   // ⭐ START SCREEN (tap anywhere + request motion permission)
-  if (needsStart) {
+  if (window.needsStart) {
     background(0);
     fill(255);
     textAlign(CENTER, CENTER);
@@ -324,6 +321,7 @@ function draw() {
 
     return; // NOTHING else runs until tapped once
   }
+
 
 const isNight = (state === "sleep");
 
@@ -1226,16 +1224,17 @@ function drawEnergyBar() {
 
 function mousePressed() {
 
-if (needsStart) {
-  console.log("FIRST TAP — requesting permission + enabling listeners");
+  if (window.needsStart) {
+    console.log("FIRST TAP — requesting permission + enabling listeners");
 
-  needsStart = false;
+    window.needsStart = false;
 
-  requestMotionPermission();   // ask user for permission
-  enableMotionListeners();     // ⭐ FORCE ATTACH LISTENER (CRITICAL FOR iPhone 11)
+    requestMotionPermission();   // ask user for permission
+    enableMotionListeners();     // ⭐ FORCE ATTACH LISTENER (CRITICAL FOR iPhone 11)
 
-  return false;
-}
+    return false;
+  }
+
 
 
   // ⭐ EXIT DANCE MODE
@@ -1383,11 +1382,12 @@ function touchStarted() {
     return false;
   }
 
-  // ⭐ After permission granted → handle the Start screen
-  if (needsStart) {
-    needsStart = false;
-    return false;
-  }
+// ⭐ After permission granted → handle the Start screen
+if (window.needsStart) {
+  window.needsStart = false;
+  return false;
+}
+
 
   // ⭐ Pass touch to main tap handler
   if (touches.length > 0) {
@@ -1508,6 +1508,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
