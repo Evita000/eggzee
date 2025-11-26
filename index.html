@@ -49,12 +49,51 @@
   <p id="loading">🥚 Loading Eggzee... please wait</p>
 
 
-  <!-- p5 libraries -->
+    <!-- p5 libraries -->
   <script src="p5lib.js"></script>
   <script src="p5playlib.js"></script>
 
+  <!-- 🔥 UNIVERSAL TILT PERMISSION HANDLER (works iPhone + iPad + Android) -->
+  <script>
+    // Global so sketch.js can read it
+    window.motionPermissionGranted = false;
+
+    function requestMotionPermission() {
+      // iOS 13+ (iPhone + iPad)
+      if (typeof DeviceMotionEvent !== "undefined" &&
+          typeof DeviceMotionEvent.requestPermission === "function") {
+
+        DeviceMotionEvent.requestPermission()
+          .then(response => {
+            if (response === "granted") {
+              window.motionPermissionGranted = true;
+              // Start listening
+              window.addEventListener("deviceorientation", () => {});
+              console.log("🔥 Motion permission granted!");
+            } else {
+              console.log("❌ Motion permission denied");
+            }
+          })
+          .catch(err => console.log("Permission error:", err));
+
+      } else {
+        // Android + older iPads + Chrome
+        window.motionPermissionGranted = true;
+        window.addEventListener("deviceorientation", () => {});
+        console.log("🔥 Motion automatically allowed");
+      }
+    }
+
+    // 1st tap required on EVERY mobile browser
+    document.addEventListener("touchstart", function initMotion() {
+      requestMotionPermission();
+      document.removeEventListener("touchstart", initMotion);
+    });
+  </script>
+
   <!-- Your sketch -->
-<script src="sketch.js?v=11"></script>
+  <script src="sketch.js?v=11"></script>
+
 
 
 
@@ -66,6 +105,7 @@
   </script>
 </body>
 </html>
+
 
 
 
