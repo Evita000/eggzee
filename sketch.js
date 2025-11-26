@@ -1368,45 +1368,39 @@ function isMobileDevice() {
 function touchStarted() {
   console.log("🌟 touchStarted triggered");
 
-  // ⭐ ALWAYS request permission on first touch for all platforms
+  // If motion not granted → request it HERE (this is the ONLY legal place)
   if (!window.motionPermissionGranted) {
-    console.log("📡 Requesting motion permission NOW");
+    console.log("📡 Requesting motion permission NOW (Safari)");
 
-    // iPhone/iPad Chrome+Safari
     if (typeof DeviceMotionEvent.requestPermission === "function") {
       DeviceMotionEvent.requestPermission()
-        .then(result => {
-          console.log("🍏 Permission result:", result);
-
-          if (result === "granted") {
+        .then(res => {
+          console.log("🍏 Motion result:", res);
+          if (res === "granted") {
             window.motionPermissionGranted = true;
             enableMotionListeners();
+          } else {
+            console.log("❌ Motion denied by user");
           }
         })
         .catch(err => console.error("Permission error:", err));
-    } 
-    else {
-      // Android + Desktop
-      console.log("🤖 Non-iOS detected — enabling motion automatically");
+    } else {
+      // Android & desktop
       window.motionPermissionGranted = true;
       enableMotionListeners();
     }
 
-    // ⭐ Force Chrome iOS to wake sensors
-    try { window.dispatchEvent(new Event("devicemotion")); } catch(e) {}
-
-    // ⭐ STOP HERE — do not run start logic yet
+    // STOP HERE — do NOT run start logic yet
     return false;
   }
 
-// ⭐ After permission granted → handle the Start screen
-if (needsStart) {
-  needsStart = false;
-  return false;
-}
+  // If motion is already granted → now continue the game
+  if (window.needsStart) {
+    window.needsStart = false;
+    return false;
+  }
 
-
-  // ⭐ Pass touch to main tap handler
+  // Redirect touch to mousePressed logic
   if (touches.length > 0) {
     mouseX = touches[0].x;
     mouseY = touches[0].y;
@@ -1415,6 +1409,7 @@ if (needsStart) {
   mousePressed();
   return false;
 }
+
 
 
 
@@ -1525,6 +1520,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
