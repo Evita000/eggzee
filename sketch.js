@@ -6,7 +6,6 @@ let lastBeta = 0;
 // ---- Motion Permission Helpers ----
 function enableMotionListeners() {
   console.log("📡 Enabling motion listeners…");
-  window.addEventListener("devicemotion", handleShake);
   window.addEventListener("deviceorientation", handleTilt);
 }
 
@@ -1365,6 +1364,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
