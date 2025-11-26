@@ -1306,25 +1306,44 @@ function isMobileDevice() {
 function touchStarted() {
   console.log("🌟 touchStarted triggered");
 
-  // ⭐ Request permission on FIRST TOUCH
+  // ⭐ ALWAYS request permission on first touch for all platforms
   if (!window.motionPermissionGranted) {
     console.log("📡 Requesting motion permission NOW");
-    requestMotionPermission();
 
-    // ⭐ FORCE Android/Chrome to activate sensors
-    
-    try {
-      window.dispatchEvent(new Event("devicemotion"));
-    } catch(e) {}
+    // iPhone/iPad Chrome+Safari
+    if (typeof DeviceMotionEvent.requestPermission === "function") {
+      DeviceMotionEvent.requestPermission()
+        .then(result => {
+          console.log("🍏 Permission result:", result);
+
+          if (result === "granted") {
+            window.motionPermissionGranted = true;
+            enableMotionListeners();
+          }
+        })
+        .catch(err => console.error("Permission error:", err));
+    } 
+    else {
+      // Android + Desktop
+      console.log("🤖 Non-iOS detected — enabling motion automatically");
+      window.motionPermissionGranted = true;
+      enableMotionListeners();
+    }
+
+    // ⭐ Force Chrome iOS to wake sensors
+    try { window.dispatchEvent(new Event("devicemotion")); } catch(e) {}
+
+    // ⭐ STOP HERE — do not run start logic yet
+    return false;
   }
 
-  // ⭐ First tap unlock screen
+  // ⭐ After permission granted → handle the Start screen
   if (needsStart) {
     needsStart = false;
     return false;
   }
 
-  // ⭐ Pass touch to mousePressed
+  // ⭐ Pass touch to main tap handler
   if (touches.length > 0) {
     mouseX = touches[0].x;
     mouseY = touches[0].y;
@@ -1333,6 +1352,7 @@ function touchStarted() {
   mousePressed();
   return false;
 }
+
 
 
 
@@ -1442,6 +1462,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
