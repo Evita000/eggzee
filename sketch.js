@@ -73,12 +73,6 @@ function handleTilt(event) {
   tiltY = lerp(tiltY, b, 0.1);
 }
 
-
-
-
-
-
-
 let needsStart = true;   // mobile gate
 let lastTouchTime = 0;
 let state = "egg";
@@ -113,8 +107,6 @@ if (justDanced) {
   localStorage.removeItem("eggzeeRealStartTime");
 }
 
-
-
 // Buttons + UI
 let feedBtn, danceBtn, gameBtn, jokeBtn;
 let hearts = [];
@@ -122,8 +114,6 @@ let foods = [];
 let showYum = false;
 let yumTimer = 0;
 let showJoke = false;
-
-
 
 // ---------- Instruction overlays ----------
 let showFeedInstructions = false;
@@ -626,9 +616,6 @@ function drawFeedScene() {
   }
 }
 
-
-
-
 function drawSleepScene() {
   // 🌌 Soft fade to night background
   background(15, 10, 40);
@@ -680,9 +667,6 @@ function drawDanceScene() {
   text("💃 Eggzee is dancing! Tap to stop 💃", width / 2, height - 100);
 
 }
-
-
-
 
 function drawMiniGame() {
   if (state !== "miniGame") return;
@@ -989,8 +973,6 @@ function drawYumBubble() {
   }
 }
 
-
-
 // ---------- TEXT & ENERGY ----------
 function drawJoke() {
   if (!showJoke) return;
@@ -1096,9 +1078,6 @@ text("What breaks me… makes me 💕", width / 2, 120);
 
   pop();
 }
-
-
-
 
 function drawEnergyBar() {
   if (state === "egg") return;
@@ -1245,9 +1224,6 @@ function mousePressed() {
 }
 
 
-
-
-
 function mouseReleased() {
   for (let f of foods) f.beingDragged = false;
 }
@@ -1281,8 +1257,6 @@ function touchStarted() {
   mousePressed();
   return false;
 }
-
-
 // --------------------------------------------------
 // ✔️ Correct, stand-alone insideButton() function
 // --------------------------------------------------
@@ -1334,9 +1308,6 @@ function tellJoke() {
   showJoke = true;
   jokeTimer = millis();
 }
-
-
-
 
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
@@ -1393,6 +1364,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
