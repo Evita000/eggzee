@@ -40,21 +40,21 @@ function requestMotionPermission() {
 let shakeDanceActive = false;
 let shakeDanceStartTime = 0;
 
-// shake detection
-let lastShakeTime = 0;
-let shakeCooldown = 1500;
+// 🌍 UNIVERSAL SHAKE FOR ALL DEVICES (Android + Chrome + iPhone + iPad)
+window.addEventListener("devicemotion", function(e) {
+  if (!window.motionPermissionGranted) return;
 
-function handleShake(event) {
-  let acc = event.accelerationIncludingGravity;
+  const acc = e.accelerationIncludingGravity;
   if (!acc) return;
 
-  let strength = Math.abs(acc.x) + Math.abs(acc.y) + Math.abs(acc.z);
+  const strength = Math.abs(acc.x) + Math.abs(acc.y) + Math.abs(acc.z);
 
-  if (strength > 28 && millis() > lastShakeTime + shakeCooldown) {
-    lastShakeTime = millis();
+  if (strength > 25) {
+    console.log("🔥 SHAKE DETECTED:", strength);
     onShakeAction();
   }
-}
+});
+
 
 // ★★★ MAIN TILT FUNCTION (ONLY KEEP THIS ONE) ★★★
 function handleTilt(event) {
@@ -1365,6 +1365,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
