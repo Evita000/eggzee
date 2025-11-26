@@ -1188,10 +1188,14 @@ function drawEnergyBar() {
 
 function mousePressed() {
 
-  if (needsStart) {
-  console.log("FIRST TAP — calling permission");  // ✅ ADD THIS
+if (needsStart) {
+  console.log("FIRST TAP — requesting permission + enabling listeners");
+
   needsStart = false;
-  requestMotionPermission();  // ← iPhone permission call
+
+  requestMotionPermission();   // ask user for permission
+  enableMotionListeners();     // ⭐ FORCE ATTACH LISTENER (CRITICAL FOR iPhone 11)
+
   return false;
 }
 
@@ -1466,6 +1470,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
