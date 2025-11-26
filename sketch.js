@@ -44,31 +44,6 @@ function handleTilt(event) {
 }
 
 
-function requestMotionPermission() {
-  console.log("Requesting motion permission…");
-
-  if (typeof DeviceMotionEvent.requestPermission === "function") {
-    // iPhone
-    DeviceMotionEvent.requestPermission()
-      .then(response => {
-        console.log("Permission result:", response);
-
-        if (response === "granted") {
-          motionPermissionGranted = true;
-          enableMotionListeners();
-        } else {
-          console.log("❌ Motion permission denied");
-        }
-      })
-      .catch(err => console.error("Error requesting motion:", err));
-
-  } else {
-    // Android / Desktop
-    console.log("Non-iPhone detected — enabling motion automatically");
-    motionPermissionGranted = true;
-    enableMotionListeners();
-  }
-}
 
 
 // ---- Shake Dance State ----
@@ -1441,6 +1416,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
