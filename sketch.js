@@ -1254,6 +1254,13 @@ function touchStarted() {
   if (!motionPermissionGranted) {
     console.log("📡 Requesting motion permission NOW");
     requestMotionPermission();
+
+    // 🔥 Chrome/Android devicemotion unlock
+    try {
+      window.dispatchEvent(new Event("devicemotion"));
+    } catch (e) {
+      console.log("devicemotion dispatch error:", e);
+    }
   }
 
   // Your original start gate
@@ -1272,7 +1279,7 @@ function touchStarted() {
   mousePressed();
   return false;
 }
-// --------------------------------------------------
+---------------
 // ✔️ Correct, stand-alone insideButton() function
 // --------------------------------------------------
 function insideButton(btn) {
@@ -1379,6 +1386,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
