@@ -1134,12 +1134,12 @@ function drawEnergyBar() {
 
 function mousePressed() {
 
-  // ⭐ FIRST TAP: leave start screen + request motion permission
   if (needsStart) {
-    needsStart = false;
-    requestMotionPermission();   // <-- ALWAYS call on first tap
-    return false;
-  }
+  console.log("FIRST TAP — calling permission");  // ✅ ADD THIS
+  needsStart = false;
+  requestMotionPermission();  // ← iPhone permission call
+  return false;
+}
 
 
   // ⭐ EXIT DANCE MODE
@@ -1243,14 +1243,15 @@ function isMobileDevice() {
   return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 }
 
-
-
-
 function touchStarted() {
-if (needsStart) {
-  needsStart = false;
-  return false;
-}
+
+  if (needsStart) {
+    console.log("FIRST TOUCH — calling permission");  // add this
+    needsStart = false;
+    requestMotionPermission();  // ← MUST CALL HERE FOR iPHONE
+    return false;
+  }
+
 
 
   // ⭐ EXIT DANCE MODE ON TOUCH
@@ -1400,6 +1401,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
