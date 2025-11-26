@@ -310,7 +310,8 @@ playgroundBtn = {
 function draw() {
 
   // ⭐ START SCREEN (tap anywhere + request motion permission)
-  if (window.needsStart) {
+if (needsStart) {
+
     background(0);
     fill(255);
     textAlign(CENTER, CENTER);
@@ -1387,8 +1388,8 @@ function touchStarted() {
   }
 
 // ⭐ After permission granted → handle the Start screen
-if (window.needsStart) {
-  window.needsStart = false;
+if (needsStart) {
+  needsStart = false;
   return false;
 }
 
@@ -1512,6 +1513,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
