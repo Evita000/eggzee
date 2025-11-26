@@ -1,5 +1,4 @@
 
-window.needsStart = true;
 
 
 // SAFARI FULLSCREEN FIX — MUST COME FIRST
@@ -1509,6 +1508,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
