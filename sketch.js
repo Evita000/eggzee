@@ -1,4 +1,4 @@
-window.needsStart = true;
+
 
 
 
@@ -1512,6 +1512,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
