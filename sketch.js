@@ -8,6 +8,26 @@ document.addEventListener("touchstart", () => {
 let tiltX = 0;
 let tiltY = 0;
 let motionPermissionGranted = false;
+
+// 🔥 FALLBACK: GUARANTEED handlers for iPhone first tap
+document.body.addEventListener("touchstart", () => {
+  if (!window._motionRequested) {
+    window._motionRequested = true;
+    console.log("🔥 HTML FALLBACK TOUCH — requestMotionPermission()");
+    requestMotionPermission();
+  }
+}, { once: true });
+
+document.body.addEventListener("click", () => {
+  if (!window._motionRequested) {
+    window._motionRequested = true;
+    console.log("🔥 HTML FALLBACK CLICK — requestMotionPermission()");
+    requestMotionPermission();
+  }
+}, { once: true });
+
+
+
 // ---- Motion Permission Helpers ----
 function enableMotionListeners() {
   console.log("📡 Enabling motion listeners…");
@@ -1394,6 +1414,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
