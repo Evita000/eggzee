@@ -10,8 +10,7 @@ function enableMotionListeners() {
   console.log("📡 Enabling motion listeners…");
   window.addEventListener("deviceorientation", handleTilt);
 }
-// ⭐ IMPORTANT FIX — forces permission request on iPhone/Chrome
-window.motionPermissionGranted = false;
+
 
 
 function requestMotionPermission() {
@@ -1465,6 +1464,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
