@@ -128,6 +128,8 @@ if (justDanced) {
 let feedBtn, danceBtn, gameBtn, jokeBtn,playgroundBtn;
 let hearts = [];
 let foods = [];
+let row3Y;
+
 let showYum = false;
 let yumTimer = 0;
 let showJoke = false;
@@ -243,7 +245,8 @@ window.motionPermissionGranted = false;   // ⭐ REQUIRED
   danceBtn = { x: rightX + btnW/2, y: row1Y + btnH/2, w: btnW, h: btnH };
   gameBtn  = { x: leftX + btnW/2,  y: row2Y + btnH/2, w: btnW, h: btnH };
   jokeBtn  = { x: rightX + btnW/2, y: row2Y + btnH/2, w: btnW, h: btnH };
-const row3Y = row2Y + btnH + gap;
+row3Y = row2Y + btnH + gap;
+
 
 playgroundBtn = {
   x: width / 2,
@@ -497,12 +500,6 @@ function drawEggzeeScene() {
   );
   pop();
 }
-
-
-
-
-
-
 
 
 function drawFeedScene() {
@@ -1430,6 +1427,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
