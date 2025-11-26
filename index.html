@@ -52,34 +52,37 @@
   <script src="p5lib.js"></script>
   <script src="p5playlib.js"></script>
 
-  <!-- 🔥 UNIVERSAL PERMISSION HANDLER ONLY -->
-  <script>
-  document.addEventListener("touchstart", function firstTouch() {
-      console.log("🔥 iPad first touch detected — requesting motion permission");
+<script>
+document.addEventListener("touchstart", function firstTouch() {
+    console.log("🔥 First touch — requesting motion permission");
 
-      window.motionPermissionGranted = false;
+    window.motionPermissionGranted = false;
 
-      // iPhone/iPad require permission
-      if (typeof DeviceMotionEvent !== "undefined" &&
-          typeof DeviceMotionEvent.requestPermission === "function") {
+    if (typeof DeviceMotionEvent !== "undefined"
+        && typeof DeviceMotionEvent.requestPermission === "function") {
 
-          DeviceMotionEvent.requestPermission().then(response => {
-              if (response === "granted") {
-                  window.motionPermissionGranted = true;
-                  console.log("📱 Motion granted");
-              } else {
-                  console.log("❌ Motion denied");
-              }
-          });
-      } else {
-          // Android + Chrome + older iPads
-          window.motionPermissionGranted = true;
-          console.log("✨ Motion auto allowed");
-      }
+        // iPhone/iPad
+        DeviceMotionEvent.requestPermission().then(response => {
+            if (response === "granted") {
+                console.log("📱 Motion granted");
+                window.motionPermissionGranted = true;
+                if (window.enableMotionListeners) enableMotionListeners(); // ⭐ ADD THIS
+            } else {
+                console.log("❌ Motion denied");
+            }
+        });
 
-      document.removeEventListener("touchstart", firstTouch);
-  });
-  </script>
+    } else {
+        // Android + Chrome + older iPads
+        console.log("✨ Motion auto allowed");
+        window.motionPermissionGranted = true;
+        if (window.enableMotionListeners) enableMotionListeners(); // ⭐ ADD THIS
+    }
+
+    document.removeEventListener("touchstart", firstTouch);
+});
+</script>
+
 
   <!-- Your Sketch -->
   <script src="sketch.js?v=11"></script>
@@ -93,3 +96,4 @@
 
 </body>
 </html>
+
