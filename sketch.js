@@ -411,43 +411,47 @@ function drawHatchingScene() {
 
 }
 
-
 function drawEggzeeScene() {
 
-  eggzee.visible = true;   // ⭐ Force Eggzee to exist every time awake scene runs
+  eggzee.visible = true;
 
-  // ⭐ Keep Eggzee inside the screen (fix disappearing)
+  // ----- SHAKE ANIMATION -----
+  let wiggle = 0;
+  let danceBounce = 0;
+
+  if (shakeDanceActive) {
+    wiggle = sin(frameCount * 0.45) * 10;
+    danceBounce = sin(frameCount * 0.6) * 10;
+
+    if (millis() - shakeDanceStartTime > 2200) {
+      shakeDanceActive = false;
+    }
+  }
+
+  // ----- APPLY TILT MOVEMENT FIRST -----
+  if (window.motionPermissionGranted) {
+    eggzee.x = width/2 + tiltX * 5;
+    eggzee.y = height/2 + tiltY * 3;
+  }
+
+  // ----- KEEP INSIDE SCREEN ONCE -----
   eggzee.x = constrain(eggzee.x, 60, width - 60);
   eggzee.y = constrain(eggzee.y, 120, height - 120);
 
-  // 🧘 Gentle idle motion for Eggzee
-  let sway = sin(frameCount * 0.03) * 2; // small side sway
-  let bounce = showJoke ? sin(frameCount * 0.2) * 3 : 0; // gentle bounce when laughing
-// ----- SHAKE DANCE ANIMATION -----
-let wiggle = 0;
-let danceBounce = 0;
-
-if (shakeDanceActive) {
-  wiggle = sin(frameCount * 0.45) * 10;
-  danceBounce = sin(frameCount * 0.6) * 10;
-
-  if (millis() - shakeDanceStartTime > 2200) {
-    shakeDanceActive = false;
-  }
+  // ----- DRAW EGGZEE -----
+  push();
+  translate(eggzee.x, eggzee.y + danceBounce);
+  rotate(radians(wiggle));
+  image(
+    eggzeeAwakeImg,
+    0,
+    0,
+    eggzeeAwakeImg.width * eggzee.scale,
+    eggzeeAwakeImg.height * eggzee.scale
+  );
+  pop();
 }
 
-// ----- DRAW EGGZEE -----
-push();
-translate(eggzee.x, eggzee.y + danceBounce);
-rotate(radians(wiggle));
-image(
-  eggzeeAwakeImg,
-  0,
-  0,
-  eggzeeAwakeImg.width * eggzee.scale,
-  eggzeeAwakeImg.height * eggzee.scale
-);
-pop();
 
 
 
@@ -1373,6 +1377,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
