@@ -1241,8 +1241,7 @@ function touchStarted() {
     requestMotionPermission();
 
     // ⭐ FORCE Android/Chrome to activate sensors
-    window.motionPermissionGranted = true;
-    enableMotionListeners();
+    
     try {
       window.dispatchEvent(new Event("devicemotion"));
     } catch(e) {}
@@ -1372,6 +1371,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
