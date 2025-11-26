@@ -18,15 +18,15 @@
       background: black;
     }
     canvas {
-  display: block;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: transparent;
-  z-index: 1;
-}
+      display: block;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: transparent;
+      z-index: 1;
+    }
 
     #loading {
       color: white;
@@ -48,18 +48,41 @@
 <body>
   <p id="loading">🥚 Loading Eggzee... please wait</p>
 
-
-    <!-- p5 libraries -->
+  <!-- p5 libraries -->
   <script src="p5lib.js"></script>
   <script src="p5playlib.js"></script>
 
+  <!-- 🔥 UNIVERSAL PERMISSION HANDLER ONLY -->
+  <script>
+  document.addEventListener("touchstart", function firstTouch() {
+      console.log("🔥 iPad first touch detected — requesting motion permission");
 
+      window.motionPermissionGranted = false;
 
-  <!-- Your sketch -->
+      // iPhone/iPad require permission
+      if (typeof DeviceMotionEvent !== "undefined" &&
+          typeof DeviceMotionEvent.requestPermission === "function") {
+
+          DeviceMotionEvent.requestPermission().then(response => {
+              if (response === "granted") {
+                  window.motionPermissionGranted = true;
+                  console.log("📱 Motion granted");
+              } else {
+                  console.log("❌ Motion denied");
+              }
+          });
+      } else {
+          // Android + Chrome + older iPads
+          window.motionPermissionGranted = true;
+          console.log("✨ Motion auto allowed");
+      }
+
+      document.removeEventListener("touchstart", firstTouch);
+  });
+  </script>
+
+  <!-- Your Sketch -->
   <script src="sketch.js?v=11"></script>
-
-
-
 
   <script>
     window.addEventListener("load", () => {
@@ -67,10 +90,6 @@
       if (msg) msg.remove();
     });
   </script>
+
 </body>
 </html>
-
-
-
-
-
