@@ -1235,27 +1235,26 @@ function isMobileDevice() {
 function touchStarted() {
   console.log("🌟 touchStarted triggered");
 
-  // ALWAYS try to request motion on first real touch
-  if (!motionPermissionGranted) {
+  // ⭐ Request permission on FIRST TOUCH
+  if (!window.motionPermissionGranted) {
     console.log("📡 Requesting motion permission NOW");
     requestMotionPermission();
 
-    // 🔥 Chrome/Android devicemotion unlock
+    // ⭐ FORCE Android/Chrome to activate sensors
+    window.motionPermissionGranted = true;
+    enableMotionListeners();
     try {
       window.dispatchEvent(new Event("devicemotion"));
-    } catch (e) {
-      console.log("devicemotion dispatch error:", e);
-    }
+    } catch(e) {}
   }
 
-  // Your original start gate
+  // ⭐ First tap unlock screen
   if (needsStart) {
-    console.log("🎬 Clearing needsStart");
     needsStart = false;
     return false;
   }
 
-  // Enable button/touch logic
+  // ⭐ Pass touch to mousePressed
   if (touches.length > 0) {
     mouseX = touches[0].x;
     mouseY = touches[0].y;
@@ -1264,6 +1263,7 @@ function touchStarted() {
   mousePressed();
   return false;
 }
+
 
 
 // ✔️ Correct, stand-alone insideButton() function
@@ -1372,6 +1372,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
