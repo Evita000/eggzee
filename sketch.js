@@ -39,20 +39,24 @@ function requestMotionPermission() {
 let shakeDanceActive = false;
 let shakeDanceStartTime = 0;
 
-// 🌍 UNIVERSAL SHAKE FOR ALL DEVICES (Android + Chrome + iPhone + iPad)
-window.addEventListener("devicemotion", function(e) {
+// 🌍 FIXED UNIVERSAL SHAKE LISTENER — WORKS ON CHROME + SAFARI + ANDROID
+window.addEventListener("devicemotion", (e) => {
   if (!window.motionPermissionGranted) return;
 
-  const acc = e.accelerationIncludingGravity;
+  const acc = e.accelerationIncludingGravity || e.acceleration;
   if (!acc) return;
 
-  const strength = Math.abs(acc.x) + Math.abs(acc.y) + Math.abs(acc.z);
+  const strength =
+    Math.abs(acc.x || 0) +
+    Math.abs(acc.y || 0) +
+    Math.abs(acc.z || 0);
 
-  if (strength > 25) {
-    console.log("🔥 SHAKE DETECTED:", strength);
+  if (strength > 22) {
+    console.log("🔥 UNIVERSAL SHAKE DETECTED:", strength);
     onShakeAction();
   }
-});
+}, true);
+
 function onShakeAction() {
   shakeDanceActive = true;
   shakeDanceStartTime = millis();
@@ -1375,6 +1379,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
