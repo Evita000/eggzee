@@ -344,44 +344,43 @@ else if (state === "dance") {
 
 else if (state === "playground") {
 
-    // Draw playground background
+    // ⭐ Reset starting point so tilt works correctly
+    eggzee.x = width/2;
+    eggzee.y = height/2;
+
+    // Background
     if (playgroundImg) {
         image(playgroundImg, width/2, height/2, width, height);
     } else {
         background(200, 230, 255);
     }
 
-    // ⭐ APPLY TILT MOVEMENT
+    // ⭐ Tilt movement
     if (window.motionPermissionGranted) {
         eggzee.x = width/2 + tiltX * 5;
-         eggzee.y = height/2 + tiltY * 3;   // ✔️ FIXED
+        eggzee.y = height/2 + tiltY * 3;
     }
 
-    // ⭐ Keep inside screen
+    // Constrain
     eggzee.x = constrain(eggzee.x, 60, width - 60);
     eggzee.y = constrain(eggzee.y, 120, height - 120);
 
     // Draw Eggzee
-    eggzee.visible = true;
     push();
     translate(eggzee.x, eggzee.y);
     image(
       eggzeeAwakeImg,
-      0,
-      0,
+      0,0,
       eggzeeAwakeImg.width * eggzee.scale,
       eggzeeAwakeImg.height * eggzee.scale
     );
     pop();
 
-    // Exit text
     fill(255);
     textSize(width < 600 ? 24 : 28);
     textAlign(CENTER, CENTER);
     text("Tap anywhere to return", width/2, height - 80);
 }
-
-
 
 else if (state === "disco") {
   drawDiscoScene();
@@ -875,7 +874,8 @@ function drawButtons() {
   drawPillButton(rightX, row1Y, danceBtn, "💃", "Dance");
   drawPillButton(leftX,  row2Y, gameBtn,  "✨", "Game");
   drawPillButton(rightX, row2Y, jokeBtn,  "😂", "Joke");
-  drawPillButton(width/2 - btnW/2, row3Y, playgroundBtn, "🌳", "Play");
+ drawPillButton(width/2 - btnW/2, row2Y + btnH + 10, playgroundBtn, "🌳", "Play");
+
 
 }
 
@@ -1439,6 +1439,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
