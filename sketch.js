@@ -1,3 +1,7 @@
+
+window.needsStart = true;
+
+
 // SAFARI FULLSCREEN FIX — MUST COME FIRST
 document.addEventListener("touchstart", function () {
   if (!window._safariStarted) {
@@ -1505,6 +1509,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
