@@ -333,7 +333,7 @@ if (needsStart) {
     textSize(18);
     text("Tap anywhere to enable tilt/shake", width/2, height/2 + 20);
 
-   // NOTHING else runs until tapped once
+     return; // 🔥 REQUIRED// NOTHING else runs until tapped once
   }
 
 
@@ -1542,6 +1542,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
