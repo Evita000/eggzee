@@ -1,47 +1,15 @@
-let needsStart = true;
-
-
-
-
-// SAFARI FULLSCREEN FIX — MUST COME FIRST
-document.addEventListener("touchstart", function () {
-
-  console.log("🔥 SAFARI RAW TOUCH FIRED");
-
-  // ❗ DO NOT modify needsStart here anymore
-  // p5.js must handle "tap to start"
-
-  if (!window._safariStarted) {
-    window._safariStarted = true;
-
-    // Unlock sensors silently
-    if (typeof DeviceMotionEvent?.requestPermission === "function") {
-      DeviceMotionEvent.requestPermission().catch(() => {});
-    }
-    if (typeof DeviceOrientationEvent?.requestPermission === "function") {
-      DeviceOrientationEvent.requestPermission().catch(() => {});
-    }
-  }
-});
-
-
-
-
 // --- Universal Tilt Vars ---
 let tiltX = 0;
 let tiltY = 0;
 let lastGamma = 0;
 let lastBeta = 0;
-
-
+let motionPermissionGranted = false;
 
 // ---- Motion Permission Helpers ----
 function enableMotionListeners() {
   console.log("📡 Enabling motion listeners…");
   window.addEventListener("deviceorientation", handleTilt);
 }
-
-
 
 function requestMotionPermission() {
   console.log("Requesting motion permission…");
@@ -121,6 +89,8 @@ function handleTilt(event) {
   tiltY = lerp(tiltY, b, 0.1);
 }
 
+
+let needsStart = true;   // mobile gate
 let lastTouchTime = 0;
 let state = "egg";
 let restoreAwake = localStorage.getItem("eggzeeForceAwake") === "true";
@@ -128,7 +98,7 @@ let restoreAwake = localStorage.getItem("eggzeeForceAwake") === "true";
 let realStartTime = null;  
 let restoreTime = localStorage.getItem("eggzeeRealStartTime");
 
-let eggImg, eggzeeAwakeImg, eggzeeSleepImg, cityImg, cityNightImg,playgroundImg;
+let eggImg, eggzeeAwakeImg, eggzeeSleepImg, cityImg, cityNightImg;
 let eggzee = {};
 let crackTime = 0;
 let energy = 120;
@@ -155,11 +125,9 @@ if (justDanced) {
 }
 
 // Buttons + UI
-let feedBtn, danceBtn, gameBtn, jokeBtn,playgroundBtn;
+let feedBtn, danceBtn, gameBtn, jokeBtn;
 let hearts = [];
 let foods = [];
-let row3Y;
-
 let showYum = false;
 let yumTimer = 0;
 let showJoke = false;
@@ -218,26 +186,13 @@ function preload() {
   eggzeeSleepImg = loadImage("assets/eggzee5.png");
   cityImg = loadImage("assets/city.jpg");
   cityNightImg = loadImage("assets/city_night.jpg");
-  // playgroundImg = loadImage("assets/playground.webp");
-
-
 }
 
 // ---------- SETUP ----------
 function setup() {
-  window.motionPermissionGranted = false;
-
   pixelDensity(1);
   createCanvas(windowWidth, windowHeight);
-  
-
-  // ⭐ AUTO-ENABLE MOTION ON ANDROID (fixes Chrome)
-if (/Android/i.test(navigator.userAgent)) {
-  console.log("Android detected — enabling motion immediately");
-  window.motionPermissionGranted = true;
-  enableMotionListeners();
-}
-
+window.motionPermissionGranted = false;   // ⭐ REQUIRED
 
    // ⭐ ONLY show Tap screen if NOT returning from dance
   if (!justDanced) {
@@ -286,15 +241,6 @@ if (/Android/i.test(navigator.userAgent)) {
   danceBtn = { x: rightX + btnW/2, y: row1Y + btnH/2, w: btnW, h: btnH };
   gameBtn  = { x: leftX + btnW/2,  y: row2Y + btnH/2, w: btnW, h: btnH };
   jokeBtn  = { x: rightX + btnW/2, y: row2Y + btnH/2, w: btnW, h: btnH };
-row3Y = row2Y + btnH + gap;
-
-
-playgroundBtn = {
-  x: width / 2,
-  y: row3Y + btnH/2,
-  w: btnW,
-  h: btnH
-};
 
   // Restore awake if returning from dance page
   if (restoreAwake) {
@@ -318,8 +264,7 @@ playgroundBtn = {
 function draw() {
 
   // ⭐ START SCREEN (tap anywhere + request motion permission)
-if (needsStart) {
-
+  if (needsStart) {
     background(0);
     fill(255);
     textAlign(CENTER, CENTER);
@@ -330,9 +275,8 @@ if (needsStart) {
     textSize(18);
     text("Tap anywhere to enable tilt/shake", width/2, height/2 + 20);
 
-     return; // 🔥 REQUIRED// NOTHING else runs until tapped once
+    return; // NOTHING else runs until tapped once
   }
-
 
 const isNight = (state === "sleep");
 
@@ -384,64 +328,10 @@ else if (state === "sleep") {
 else if (state === "dance") {
   drawDanceScene();
 }
-
-else if (state === "playground") {
-
-    // Background
-    if (playgroundImg) {
-        image(playgroundImg, width/2, height/2, width, height);
-    } else {
-        background(200, 230, 255);
-    }
-
-    // ⭐ Tilt movement
-    if (window.motionPermissionGranted) {
-        eggzee.x = width/2 + tiltX * 5;
-        eggzee.y = height/2 + tiltY * 3;
-    }
-
-    // Constrain
-    eggzee.x = constrain(eggzee.x, 60, width - 60);
-    eggzee.y = constrain(eggzee.y, 120, height - 120);
-
-    // ⭐ SHAKE animation in playground
-let wiggle = 0;
-let bounce = 0;
-
-if (shakeDanceActive) {
-    wiggle = sin(frameCount * 0.45) * 10;
-    bounce = sin(frameCount * 0.6) * 10;
-
-    if (millis() - shakeDanceStartTime > 2200) {
-        shakeDanceActive = false;
-    }
-}
-
-// ⭐ DRAW EGGZEE with tilt + shake
-push();
-translate(eggzee.x, eggzee.y + bounce);
-rotate(radians(wiggle));
-image(
-  eggzeeAwakeImg,
-  0, 0,
-  eggzeeAwakeImg.width * eggzee.scale,
-  eggzeeAwakeImg.height * eggzee.scale
-);
-pop();
-
-
-    fill(255);
-    textSize(width < 600 ? 24 : 28);
-    textAlign(CENTER, CENTER);
-    text("Tap anywhere to return", width/2, height - 80);
-}
-
 else if (state === "disco") {
   drawDiscoScene();
 }
 
-
-// --------------------------------------------
 // --------------------------------------------
 // ⭐ Always draw Yum bubble (even in feed mode)
 drawYumBubble();
@@ -449,12 +339,8 @@ drawYumBubble();
 // --------------------------------------------
 // 🛑 IMPORTANT: STOP HERE unless in AWAKE MODE
 // --------------------------------------------
-if (state === "feed" || 
-    state === "miniGame" ||
-    state === "sleep" ||
-    state === "playground"
-) {
-    return;
+if (state !== "awake") {
+  return;   // no buttons, no jokes, no overlays
 }
 
 // ---------- UI + FX (AWAKE ONLY) ----------
@@ -464,11 +350,7 @@ drawButtons();
 drawEnergyBar();
 drawJoke();
 drawOverlayText();
-
-} // END OF draw()
-
-
-
+}
 
 // ---------- EGG SCENE ----------
 function drawEggScene() {
@@ -569,6 +451,12 @@ function drawEggzeeScene() {
   );
   pop();
 }
+
+
+
+
+
+
 
 
 function drawFeedScene() {
@@ -932,9 +820,6 @@ function drawButtons() {
   drawPillButton(rightX, row1Y, danceBtn, "💃", "Dance");
   drawPillButton(leftX,  row2Y, gameBtn,  "✨", "Game");
   drawPillButton(rightX, row2Y, jokeBtn,  "😂", "Joke");
- drawPillButton(width/2 - btnW/2, row2Y + btnH + 10, playgroundBtn, "🌳", "Play");
-
-
 }
 
 function drawPillButton(x, y, btnObj, emoji, label) {
@@ -1239,17 +1124,12 @@ function drawEnergyBar() {
 
 function mousePressed() {
 
-  if (window.needsStart) {
-    console.log("FIRST TAP — requesting permission + enabling listeners");
-
-    window.needsStart = false;
-
-    requestMotionPermission();   // ask user for permission
-    enableMotionListeners();     // ⭐ FORCE ATTACH LISTENER (CRITICAL FOR iPhone 11)
-
-    return false;
-  }
-
+  if (needsStart) {
+  console.log("FIRST TAP — calling permission");  // ✅ ADD THIS
+  needsStart = false;
+  requestMotionPermission();  // ← iPhone permission call
+  return false;
+}
 
 
   // ⭐ EXIT DANCE MODE
@@ -1324,26 +1204,13 @@ function mousePressed() {
       gameInstructionTimer = millis();
       return false;
     }
-
- // ⭐ PLAYGROUND (NEW)
-    if (insideButton(playgroundBtn)) {
-      state = "playground";
-      return false;
-    }
-}
+  }
 
   // 🌙 WAKE FROM SLEEP
   if (state === "sleep") {
     state = "awake";
     return false;
   }
-
-  
-// 🔙 EXIT PLAYGROUND
-if (state === "playground") {
-    state = "awake";
-    return false;
-}
 
   // 🍎 DRAG FOOD
   for (let f of foods) {
@@ -1364,48 +1231,27 @@ function isMobileDevice() {
 }
 
 function touchStarted() {
+  console.log("🌟 touchStarted triggered");
 
-  // ✅ FIRST TAP → EXIT START SCREEN
-  if (window.needsStart) {
-    console.log("🎉 First tap — start unlocked");
-    window.needsStart = false;
+  // ⭐ Request permission on FIRST TOUCH
+  if (!window.motionPermissionGranted) {
+    console.log("📡 Requesting motion permission NOW");
+    requestMotionPermission();
 
-    // also request motion permission if needed
-    if (!window.motionPermissionGranted) {
-      requestMotionPermission();
-    }
+    // ⭐ FORCE Android/Chrome to activate sensors
+    
+    try {
+      window.dispatchEvent(new Event("devicemotion"));
+    } catch(e) {}
+  }
 
+  // ⭐ First tap unlock screen
+  if (needsStart) {
+    needsStart = false;
     return false;
   }
 
-  console.log("🌟 touchStarted triggered");
-
-  // ✅ Motion permission block
-  if (!window.motionPermissionGranted) {
-    console.log("📡 Requesting motion permission NOW (Safari)");
-
-    if (typeof DeviceMotionEvent.requestPermission === "function") {
-      DeviceMotionEvent.requestPermission()
-        .then(res => {
-          console.log("🍏 Motion result:", res);
-          if (res === "granted") {
-            window.motionPermissionGranted = true;
-            enableMotionListeners();
-          } else {
-            console.log("❌ Motion denied by user");
-          }
-        })
-        .catch(err => console.error("Permission error:", err));
-    } else {
-      // Android + Chrome
-      window.motionPermissionGranted = true;
-      enableMotionListeners();
-    }
-
-    return false; // DO NOT run tap logic yet
-  }
-
-  // ✅ If motion is granted AND we're past needsStart
+  // ⭐ Pass touch to mousePressed
   if (touches.length > 0) {
     mouseX = touches[0].x;
     mouseY = touches[0].y;
@@ -1414,9 +1260,6 @@ function touchStarted() {
   mousePressed();
   return false;
 }
-
-
-
 
 
 
@@ -1526,6 +1369,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
