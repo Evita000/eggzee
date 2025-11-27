@@ -442,28 +442,7 @@ pop();
 else if (state === "disco") {
   drawDiscoScene();
 }
-// ⭐ UNIVERSAL START FIX ⭐
-function touchStarted() {
-  console.log("🔥 touchStarted fired");
-  needsStart = false;
 
-  if (!window.motionPermissionGranted) {
-    requestMotionPermission();
-  }
-
-  return false;
-}
-
-function mousePressed() {
-  console.log("🔥 mousePressed fired");
-  needsStart = false;
-
-  if (!window.motionPermissionGranted) {
-    requestMotionPermission();
-  }
-
-  return false;
-}
 
 // --------------------------------------------
 // --------------------------------------------
@@ -1542,6 +1521,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
