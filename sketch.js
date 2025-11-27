@@ -8,16 +8,13 @@ document.addEventListener("touchstart", function () {
 
   console.log("🔥 SAFARI RAW TOUCH FIRED");
 
-  // ⭐ SAFARI FIX — ALWAYS break out of start screen
-  if (window.needsStart) {
-    window.needsStart = false;
-    console.log("💥 needsStart → FALSE (Safari override)");
-  }
+  // ❗ DO NOT modify needsStart here anymore
+  // p5.js must handle "tap to start"
 
   if (!window._safariStarted) {
     window._safariStarted = true;
 
-    // Unlock sensors
+    // Unlock sensors silently
     if (typeof DeviceMotionEvent?.requestPermission === "function") {
       DeviceMotionEvent.requestPermission().catch(() => {});
     }
@@ -1367,9 +1364,23 @@ function isMobileDevice() {
 }
 
 function touchStarted() {
+
+  // ✅ FIRST TAP → EXIT START SCREEN
+  if (window.needsStart) {
+    console.log("🎉 First tap — start unlocked");
+    window.needsStart = false;
+
+    // also request motion permission if needed
+    if (!window.motionPermissionGranted) {
+      requestMotionPermission();
+    }
+
+    return false;
+  }
+
   console.log("🌟 touchStarted triggered");
 
-  // If motion not granted → request it HERE (this is the ONLY legal place)
+  // ✅ Motion permission block
   if (!window.motionPermissionGranted) {
     console.log("📡 Requesting motion permission NOW (Safari)");
 
@@ -1386,22 +1397,15 @@ function touchStarted() {
         })
         .catch(err => console.error("Permission error:", err));
     } else {
-      // Android & desktop
+      // Android + Chrome
       window.motionPermissionGranted = true;
       enableMotionListeners();
     }
 
-    // STOP HERE — do NOT run start logic yet
-    return false;
+    return false; // DO NOT run tap logic yet
   }
 
-  // If motion is already granted → now continue the game
-  if (window.needsStart) {
-    window.needsStart = false;
-    return false;
-  }
-
-  // Redirect touch to mousePressed logic
+  // ✅ If motion is granted AND we're past needsStart
   if (touches.length > 0) {
     mouseX = touches[0].x;
     mouseY = touches[0].y;
@@ -1410,6 +1414,7 @@ function touchStarted() {
   mousePressed();
   return false;
 }
+
 
 
 
@@ -1521,6 +1526,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
