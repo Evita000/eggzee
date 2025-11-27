@@ -232,9 +232,7 @@ function setup() {
 
   pixelDensity(1);
   createCanvas(windowWidth, windowHeight);
-  // SAFARI CANVAS KICKSTART
-touchStarted = () => true;
-
+  
 
   // ⭐ AUTO-ENABLE MOTION ON ANDROID (fixes Chrome)
 if (/Android/i.test(navigator.userAgent)) {
@@ -335,7 +333,7 @@ if (needsStart) {
     textSize(18);
     text("Tap anywhere to enable tilt/shake", width/2, height/2 + 20);
 
-    return; // NOTHING else runs until tapped once
+   // NOTHING else runs until tapped once
   }
 
 
@@ -444,6 +442,28 @@ pop();
 else if (state === "disco") {
   drawDiscoScene();
 }
+// ⭐ UNIVERSAL START FIX ⭐
+function touchStarted() {
+  console.log("🔥 touchStarted fired");
+  needsStart = false;
+
+  if (!window.motionPermissionGranted) {
+    requestMotionPermission();
+  }
+
+  return false;
+}
+
+function mousePressed() {
+  console.log("🔥 mousePressed fired");
+  needsStart = false;
+
+  if (!window.motionPermissionGranted) {
+    requestMotionPermission();
+  }
+
+  return false;
+}
 
 // --------------------------------------------
 // --------------------------------------------
@@ -470,6 +490,7 @@ drawJoke();
 drawOverlayText();
 
 } // END OF draw()
+
 
 
 
@@ -1521,6 +1542,7 @@ function drawDiscoScene() {
 }
 
 // ✅ End of Eggzee Script — all good!
+
 
 
 
